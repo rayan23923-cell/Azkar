@@ -42,3 +42,14 @@ their text from the Tanzil Quran text above, as whole verses joined by a single 
 All other items were transcribed by the project and carry
 `reviewStatus = CONTENT_REVIEW_REQUIRED` until a qualified reviewer checks the wording,
 diacritics, source and repeat count.
+
+## Hisn Al-Muslim
+
+`hisn.json` contains «حصن المسلم من أذكار الكتاب والسنة» by سعيد بن علي بن وهف القحطاني, taken verbatim
+from `hisn.json` in https://github.com/asellam/HisnElMuslim (MIT licence, Copyright (c) 2021
+Abdellah SELLAM; a copy is in `Upstream/hisn/asellam/LICENSE.md`). That repository transcribed a
+printed edition by دار السجلات.
+
+The MIT licence covers the repository's transcription. It is not a grant from the book's rights
+holder. Rights status: PENDING_PRE_RELEASE_REVIEW. The final attribution wording will be set in the
+pre-release rights review and is not final here.
