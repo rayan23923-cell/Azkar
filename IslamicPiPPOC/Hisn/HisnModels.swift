@@ -38,7 +38,13 @@ final class HisnLibraryModel: ObservableObject {
         state = .loading
         do {
             let book = try await repository.loadBook()
-            let audio = BundledHisnAudioRepository(knownItemIds: Set(book.allItems.map(\.id)))
+            let itemIds = Set(book.allItems.map(\.id))
+            #if HISN_AUDIO_FIXTURE
+            let audio = HisnAudioFixture.repository(knownItemIds: itemIds)
+                ?? BundledHisnAudioRepository(knownItemIds: itemIds)
+            #else
+            let audio = BundledHisnAudioRepository(knownItemIds: itemIds)
+            #endif
             state = .loaded(HisnLibrary(book: book), HisnSearchIndex(book: book), audio)
             refreshResume()
         } catch {
@@ -73,5 +79,28 @@ extension HisnReaderController {
         let audio = HisnAudioPlayer(repository: audioRepository, engine: AVHisnAudioEngine(),
                                     session: AudioSessionCoordinator.shared)
         return HisnReaderController(reader: reader, store: store, audio: audio)
+    }
+}
+
+/// Everything one open chapter needs, created once per reader screen: the reader and its
+/// recording (`HisnReaderController`), and the Hisn PiP coordinator with its surface. PiP
+/// reads the controller; the controller does not know about PiP.
+@MainActor
+final class HisnReaderScreenModel: ObservableObject {
+    let controller: HisnReaderController
+    let surface: SampleBufferPiPSurface
+    let pip: HisnPiPCoordinator
+
+    init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository) {
+        controller = .make(reader: reader, store: store, audioRepository: audioRepository)
+        surface = SampleBufferPiPSurface()
+        pip = HisnPiPCoordinator(controller: controller, surface: surface)
+        surface.coordinator = pip
+    }
+
+    /// The screen is closing: leave PiP first, then stop the recording and save the place.
+    func close() {
+        pip.close()
+        controller.close()
     }
 }
