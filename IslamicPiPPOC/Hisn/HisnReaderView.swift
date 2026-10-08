@@ -36,6 +36,7 @@ struct HisnReaderView: View {
 
 private struct HisnReaderContent: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.isPresented) private var isPresented
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.colorScheme) private var colorScheme
@@ -80,7 +81,7 @@ private struct HisnReaderContent: View {
                     .accessibilityHidden(true)
             }
         }
-        .onDisappear { screen.close() }
+        .onDisappear { screen.disappeared(closed: !isPresented) }
         .onChange(of: scenePhase) { _, phase in
             // Leaving the foreground: the cursor is already saved on each step; save once more
             // so the stored time is the last moment of reading.
@@ -220,8 +221,8 @@ private struct HisnReaderContent: View {
             #endif
             if let audio = model.audio {
                 HisnAudioControls(player: audio)
-                HisnPiPControls(pip: screen.pip, player: audio, surface: screen.surface)
             }
+            PiPEntryView(pip: screen.pip)
             counter
             HStack {
                 Button {

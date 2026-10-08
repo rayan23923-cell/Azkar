@@ -3,7 +3,7 @@ name: PiP azkar POC build
 # Compile check for the standalone PiPAzkarPOC project (no signing, no device).
 on:
   push:
-    branches: [main, 'feature/**']
+    branches: [main, 'feature/**', 'claude/**']
   workflow_dispatch:
 
 jobs:
@@ -125,8 +125,10 @@ jobs:
           if plutil -p "$APP/Info.plist" | grep -E 'NS[A-Za-z]+UsageDescription'; then echo "unexpected usage description"; exit 1; fi
           # No background mode while no production audio ships (App Review 2.5.4).
           if plutil -p "$APP/Info.plist" | grep -q UIBackgroundModes; then echo "background mode in the Release app"; exit 1; fi
-          # The PiP test screen and its engine are Debug-only.
-          if grep -rlaF 'PiPEngine' "$APP"; then echo "PiP test engine in the Release app"; exit 1; fi
+          # The PiP test screen and its engine are Debug-only; production PiP (PiPCore) ships.
+          if grep -rlaF 'PiPTestEngine' "$APP"; then echo "PiP test engine in the Release app"; exit 1; fi
+          if grep -rlaF 'PiP Technical Test' "$APP"; then echo "PiP test screen in the Release app"; exit 1; fi
+          grep -rlaF 'PiPEngine' "$APP" > /dev/null || { echo "production PiP engine missing"; exit 1; }
           find "$APP" -name '*.ttf' -o -name '*.json' | sed "s|$APP/||" | sort
           du -sh "$APP"
 

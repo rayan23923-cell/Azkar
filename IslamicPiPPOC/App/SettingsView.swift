@@ -3,6 +3,7 @@ import UIKit
 import ContentKit
 import QuranReading
 import HisnReading
+import PiPCore
 
 /// The app's appearance setting, applied at the root.
 enum AppAppearance: String, CaseIterable {
@@ -34,10 +35,14 @@ struct SettingsView: View {
     @AppStorage(AppAppearance.key) private var appearance: AppAppearance = .system
     @AppStorage("quran.textSize") private var quranTextSize: Double = 26
     @AppStorage("adhkar.textSize") private var adhkarTextSize: Double = 24
+    @AppStorage(PiPAvailability.settingKey) private var pipEnabled = true
     @ObservedObject private var favorites = AppServices.shared.favorites
     @State private var confirmsReset = false
     @State private var confirmsFavorites = false
     @State private var notice: String?
+
+    /// This build declares the PiP background mode (see docs/UNIFIED_PIP.md).
+    private var pipInBuild: Bool { AppServices.shared.pip.availability.backgroundModeDeclared }
 
     var body: some View {
         Form {
@@ -94,11 +99,16 @@ struct SettingsView: View {
 
             Section {
                 LabeledContent("التلاوات الصوتية", value: "غير متاحة")
-                LabeledContent("العرض العائم", value: "مع التلاوة فقط")
+                if pipInBuild {
+                    Toggle("العرض العائم", isOn: $pipEnabled)
+                        .onChange(of: pipEnabled) { _, enabled in AppServices.shared.pip.setUserEnabled(enabled) }
+                }
             } header: {
-                Text("الصوت والعرض العائم")
+                Text(pipInBuild ? "الصوت والعرض العائم" : "الصوت")
             } footer: {
-                Text("لا تُضمَّن تسجيلات صوتية في هذا الإصدار حتى تُستوفى حقوقها. يظهر العرض العائم عند تشغيل تلاوة.")
+                Text(pipInBuild
+                     ? "يعرض الآية أو الذكر أو الدعاء الحالي في نافذة عائمة فوق التطبيقات الأخرى، مع السابق والتالي. يُفتح من زر «نافذة عائمة» في كل قسم. لا تُضمَّن تسجيلات صوتية في هذا الإصدار حتى تُستوفى حقوقها."
+                     : "لا تُضمَّن تسجيلات صوتية في هذا الإصدار حتى تُستوفى حقوقها.")
             }
 
             Section("البيانات") {

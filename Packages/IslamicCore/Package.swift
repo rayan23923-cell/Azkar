@@ -15,6 +15,9 @@ import PackageDescription
 // on the Hisn audio player and PiP surface protocols; its pack (content_audio.json) is empty.
 // QuranText bundles the OFL Amiri Quran font and its Core Text layout checks.
 // HisnShareCard draws the share image with Core Text / Core Graphics (testable here).
+// Unified PiP: PiPCore is the engine, state, navigation, pages and session, free of AVKit;
+// PiPRendering draws PiP frames with Core Text; PiPProviders adapts the Quran, Hisn, adhkar and
+// dua readers to it. The AVKit controller lives in the app.
 let package = Package(
     name: "IslamicCore",
     platforms: [.iOS(.v17), .macOS(.v14)],
@@ -29,6 +32,9 @@ let package = Package(
         .library(name: "AdhkarReading", targets: ["AdhkarReading"]),
         .library(name: "GlobalSearch", targets: ["GlobalSearch"]),
         .library(name: "ContentAudio", targets: ["ContentAudio"]),
+        .library(name: "PiPCore", targets: ["PiPCore"]),
+        .library(name: "PiPRendering", targets: ["PiPRendering"]),
+        .library(name: "PiPProviders", targets: ["PiPProviders"]),
     ],
     targets: [
         .target(
@@ -71,6 +77,17 @@ let package = Package(
             name: "HisnShareCard",
             dependencies: ["HisnReading"]
         ),
+        .target(
+            name: "PiPCore"
+        ),
+        .target(
+            name: "PiPRendering",
+            dependencies: ["PiPCore", "QuranText"]
+        ),
+        .target(
+            name: "PiPProviders",
+            dependencies: ["PiPCore", "IslamicCore", "QuranReading", "HisnReading", "AdhkarReading"]
+        ),
         .testTarget(
             name: "IslamicCoreTests",
             dependencies: ["IslamicCore"]
@@ -107,6 +124,19 @@ let package = Package(
         .testTarget(
             name: "HisnShareCardTests",
             dependencies: ["HisnShareCard", "HisnReading", "IslamicCore", "QuranText"]
+        ),
+        .testTarget(
+            name: "PiPCoreTests",
+            dependencies: ["PiPCore"]
+        ),
+        .testTarget(
+            name: "PiPRenderingTests",
+            dependencies: ["PiPRendering", "PiPCore", "QuranText", "IslamicCore", "HisnReading"]
+        ),
+        .testTarget(
+            name: "PiPProvidersTests",
+            dependencies: ["PiPProviders", "PiPCore", "PiPRendering", "QuranReading", "HisnReading",
+                           "AdhkarReading", "ContentKit", "IslamicCore"]
         ),
     ]
 )

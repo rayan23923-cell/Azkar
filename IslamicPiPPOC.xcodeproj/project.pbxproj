@@ -16,6 +16,9 @@
 		A1000000000000000000008E /* QuranText in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000008D /* QuranText */; };
 		A10000000000000000000090 /* AdhkarReading in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000008F /* AdhkarReading */; };
 		A10000000000000000000092 /* GlobalSearch in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000091 /* GlobalSearch */; };
+		A10000000000000000000094 /* PiPCore in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000093 /* PiPCore */; };
+		A10000000000000000000096 /* PiPRendering in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000095 /* PiPRendering */; };
+		A10000000000000000000098 /* PiPProviders in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000097 /* PiPProviders */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +44,9 @@
 				A1000000000000000000008E /* QuranText in Frameworks */,
 				A1000000000000000000008C /* QuranReading in Frameworks */,
 				A1000000000000000000008A /* ContentKit in Frameworks */,
+				A10000000000000000000094 /* PiPCore in Frameworks */,
+				A10000000000000000000096 /* PiPRendering in Frameworks */,
+				A10000000000000000000098 /* PiPProviders in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +99,9 @@
 				A1000000000000000000008D /* QuranText */,
 				A1000000000000000000008B /* QuranReading */,
 				A10000000000000000000089 /* ContentKit */,
+				A10000000000000000000093 /* PiPCore */,
+				A10000000000000000000095 /* PiPRendering */,
+				A10000000000000000000097 /* PiPProviders */,
 			);
 			productName = IslamicPiPPOC;
 			productReference = A10000000000000000000001 /* IslamicPiPPOC.app */;
@@ -317,6 +326,18 @@
 		A10000000000000000000091 /* GlobalSearch */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = GlobalSearch;
+		};
+		A10000000000000000000093 /* PiPCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PiPCore;
+		};
+		A10000000000000000000095 /* PiPRendering */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PiPRendering;
+		};
+		A10000000000000000000097 /* PiPProviders */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PiPProviders;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

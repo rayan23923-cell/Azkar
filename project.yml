@@ -30,6 +30,12 @@ targets:
         product: QuranReading
       - package: IslamicCore
         product: ContentKit
+      - package: IslamicCore
+        product: PiPCore
+      - package: IslamicCore
+        product: PiPRendering
+      - package: IslamicCore
+        product: PiPProviders
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.IslamicPiPPOC

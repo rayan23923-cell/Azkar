@@ -7,7 +7,7 @@ import SwiftUI
 import AVFoundation
 
 struct ContentView: View {
-    @EnvironmentObject var engine: PiPEngine
+    @EnvironmentObject var engine: PiPTestEngine
     @State private var copied = false
 
     var body: some View {
@@ -52,7 +52,7 @@ struct ContentView: View {
                     Toggle("Auto-start PiP on background", isOn: $engine.autoStartEnabled)
                     Toggle("Audio (generated chime)", isOn: $engine.audioEnabled)
                     Picker("PiP controls", selection: $engine.controlsMode) {
-                        ForEach(PiPEngine.ControlsMode.allCases) { Text($0.rawValue).tag($0) }
+                        ForEach(PiPTestEngine.ControlsMode.allCases) { Text($0.rawValue).tag($0) }
                     }
                     .pickerStyle(.segmented)
                 }
