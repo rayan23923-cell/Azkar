@@ -17,6 +17,9 @@ jobs:
       - name: Bundled content matches upstream sources
         run: python3 tools/content/build_content.py --check
 
+      - name: Hisn correction manifest rules
+        run: python3 tools/content/test_hisn_corrections.py
+
       - name: swift test
         working-directory: Packages/IslamicCore
         run: |
