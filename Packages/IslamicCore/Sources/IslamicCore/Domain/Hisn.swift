@@ -138,6 +138,11 @@ public struct HisnItem: Identifiable, Hashable, Codable, Sendable {
     public let reviewFlags: [String]
     /// Correction manifest entries (tools/content/hisn.corrections.json) for this item.
     public let corrections: HisnItemCorrections
+    /// Exact spans of `arabicText` that are not recited (narrated virtue, the book's closing,
+    /// surah labels). The text itself is unchanged; these only mark it.
+    public let nonRecitationText: [HisnTextAnnotation]
+    /// Phase 2F editorial decisions (tools/content/hisn.editorial_review.json) on this item.
+    public let editorialReviews: [HisnEditorialReview]
     public let reviewStatus: ContentReviewStatus
 
     public init(id: String, chapterId: String, order: Int, bookItemNumber: Int?,
@@ -145,6 +150,7 @@ public struct HisnItem: Identifiable, Hashable, Codable, Sendable {
                 searchText: String, repetition: HisnRepetition, references: [HisnReference],
                 quranCitations: [HisnQuranCitation], quranStatus: HisnQuranStatus,
                 reviewFlags: [String], corrections: HisnItemCorrections = HisnItemCorrections(),
+                nonRecitationText: [HisnTextAnnotation] = [], editorialReviews: [HisnEditorialReview] = [],
                 reviewStatus: ContentReviewStatus) {
         self.id = id
         self.chapterId = chapterId
@@ -159,7 +165,55 @@ public struct HisnItem: Identifiable, Hashable, Codable, Sendable {
         self.quranStatus = quranStatus
         self.reviewFlags = reviewFlags
         self.corrections = corrections
+        self.nonRecitationText = nonRecitationText
+        self.editorialReviews = editorialReviews
         self.reviewStatus = reviewStatus
+    }
+}
+
+/// A verbatim span of an item's text that is kept for display but is not recited.
+public struct HisnTextAnnotation: Hashable, Codable, Sendable {
+    public enum Role: String, Codable, Sendable {
+        /// Narrated text about the dhikr, such as its virtue.
+        case narration = "NARRATION"
+        /// The book's closing, appended to its last item by the source.
+        case closing = "CLOSING"
+        /// A label the source adds, such as a surah name.
+        case label = "LABEL"
+        case instruction = "INSTRUCTION"
+    }
+
+    public let role: Role
+    /// Occurs exactly once in the item's `arabicText`.
+    public let text: String
+
+    public init(role: Role, text: String) {
+        self.role = role
+        self.text = text
+    }
+}
+
+/// An editorial decision recorded for an item. Not an independent scholarly review.
+public struct HisnEditorialReview: Hashable, Codable, Sendable {
+    public enum Decision: String, Codable, Sendable {
+        case acceptCorrection = "ACCEPT_CORRECTION"
+        case keepSource = "KEEP_SOURCE"
+        case keepNil = "KEEP_NIL"
+        case keepMetadata = "KEEP_METADATA"
+        /// Evidence was insufficient; the source is unchanged and the question stays open.
+        case deferred = "DEFER"
+    }
+
+    public let id: String
+    public let issueType: String
+    public let decision: Decision
+    public let changesApplied: Bool
+
+    public init(id: String, issueType: String, decision: Decision, changesApplied: Bool) {
+        self.id = id
+        self.issueType = issueType
+        self.decision = decision
+        self.changesApplied = changesApplied
     }
 }
 
@@ -287,6 +341,8 @@ public struct HisnProvenance: Hashable, Codable, Sendable {
         public let accepted: Int
         public let observationOnly: Int
         public let pendingDecision: Int
+        /// Proposals an editorial decision declined; not applied.
+        public let rejected: Int
         public let p0Accepted: Int
         public let p0Pending: Int
         public let canonicalBookChapters: Int
@@ -298,7 +354,20 @@ public struct HisnProvenance: Hashable, Codable, Sendable {
     public let primarySource: PrimarySource
     public let crossCheck: CrossCheck
     public let canonicalEdition: CanonicalEdition
+    /// Summary of the Phase 2F editorial review.
+    public struct EditorialReview: Hashable, Codable, Sendable {
+        public let manifest: String
+        public let sha256: String
+        public let total: Int
+        /// Count per decision (ACCEPT_CORRECTION, KEEP_SOURCE, KEEP_NIL, KEEP_METADATA, DEFER).
+        public let decisions: [String: Int]
+        public let changesApplied: Int
+        public let independentlyReviewed: Int
+        public let editorialReviewComplete: Bool
+    }
+
     public let corrections: Corrections
+    public let editorialReview: EditorialReview
 }
 
 /// Placeholder until the pre-release rights review fills it in.

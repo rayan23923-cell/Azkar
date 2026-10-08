@@ -18,17 +18,18 @@
     "url": "https://binwahaf.com/ar/book/854/"
    },
    "corrections": {
-    "accepted": 35,
+    "accepted": 36,
     "canonicalBookChapters": 132,
     "canonicalBookItems": 267,
     "displayItems": 302,
     "manifest": "tools/content/hisn.corrections.json",
     "observationOnly": 43,
-    "p0Accepted": 25,
-    "p0Pending": 15,
-    "pendingDecision": 4,
+    "p0Accepted": 26,
+    "p0Pending": 12,
+    "pendingDecision": 1,
     "presentationSections": 133,
-    "sha256": "8df14088ef713c15b2460ae1ba9d2262008615a46aae55305cc6f8c3a8043bc5",
+    "rejected": 2,
+    "sha256": "a5055f7631132413304674eb4c1bf960e7d559ee0bc32fd157ba816e8405e0a9",
     "total": 82
    },
    "crossCheck": {
@@ -39,6 +40,21 @@
      "https://shamela.ws/book/31307",
      "https://binwahaf.com/ar/audio-book-series/897/"
     ]
+   },
+   "editorialReview": {
+    "changesApplied": 0,
+    "decisions": {
+     "ACCEPT_CORRECTION": 0,
+     "DEFER": 7,
+     "KEEP_METADATA": 3,
+     "KEEP_NIL": 3,
+     "KEEP_SOURCE": 2
+    },
+    "editorialReviewComplete": false,
+    "independentlyReviewed": 0,
+    "manifest": "tools/content/hisn.editorial_review.json",
+    "sha256": "b68e64fc2035918e449ca20b16a39a591b14839ea645d466438ca3068c7bf8e6",
+    "total": 15
    },
    "primarySource": {
     "edition": "Printed edition published by دار السجلات, per the repository README; edition number not stated",
@@ -66,7 +82,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-001-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -100,7 +118,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-001-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -137,7 +157,21 @@
        "HISN-CORR-060"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "KEEP_METADATA",
+       "id": "HISN-REVIEW-010",
+       "issueType": "NON_DHIKR_TEXT"
+      }
+     ],
      "id": "hisn-001-03",
+     "nonRecitationText": [
+      {
+       "role": "NARRATION",
+       "text": "أَوْ دَعَا اسْتُجِيبَ لَهُ فَإِنْ تَوَضَّأَ وَصَلَّى قُبِلَتْ صَلَاتَهُ"
+      }
+     ],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -176,7 +210,9 @@
        "HISN-CORR-061"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-001-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [
       {
@@ -231,7 +267,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-002-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -272,7 +310,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-003-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -316,7 +356,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-004-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -350,7 +392,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-004-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -395,7 +439,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-005-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -438,7 +484,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-006-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -482,7 +530,9 @@
        "HISN-CORR-062"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-007-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -525,7 +575,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-008-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -570,7 +622,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-009-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -601,7 +655,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-009-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -634,7 +690,9 @@
        "HISN-CORR-063"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-009-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -677,7 +735,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-010-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -712,7 +772,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-010-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -757,7 +819,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-011-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -799,7 +863,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-012-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -831,7 +897,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-012-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -862,7 +930,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-012-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -893,7 +963,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-012-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -934,7 +1006,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-013-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -967,7 +1041,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-013-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1013,7 +1089,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-014-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1056,7 +1134,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-015-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1088,7 +1168,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-015-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1122,7 +1204,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-015-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1153,7 +1237,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-015-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1184,7 +1270,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-015-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1229,7 +1317,16 @@
        "HISN-CORR-048"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "DEFER",
+       "id": "HISN-REVIEW-001",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-016-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1261,7 +1358,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-016-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1293,7 +1392,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-016-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1324,7 +1425,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-016-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1357,7 +1460,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-016-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1397,7 +1502,16 @@
        "HISN-CORR-049"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "DEFER",
+       "id": "HISN-REVIEW-002",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-016-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1439,7 +1553,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-017-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1478,7 +1594,9 @@
        "HISN-CORR-064"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-017-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1510,7 +1628,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-017-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1544,7 +1664,16 @@
        "HISN-CORR-050"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "DEFER",
+       "id": "HISN-REVIEW-003",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-017-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1576,7 +1705,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-017-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1619,7 +1750,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-018-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1652,7 +1785,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-018-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1683,7 +1818,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-018-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1724,7 +1861,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-019-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1761,7 +1900,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-019-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1793,7 +1934,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-019-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1824,7 +1967,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-019-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1855,7 +2000,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-019-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1890,7 +2037,9 @@
        "HISN-CORR-065"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-019-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1921,7 +2070,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-019-07",
+     "nonRecitationText": [],
      "order": 7,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1962,7 +2113,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-020-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -1995,7 +2148,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-020-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2038,7 +2193,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-021-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [
       {
@@ -2082,7 +2239,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-021-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2126,7 +2285,9 @@
        "HISN-CORR-066"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-022-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2168,7 +2329,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-023-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2199,7 +2362,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-023-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2241,7 +2406,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2273,7 +2440,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2305,7 +2474,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2337,7 +2508,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2368,7 +2541,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2400,7 +2575,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2431,7 +2608,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-07",
+     "nonRecitationText": [],
      "order": 7,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2465,7 +2644,9 @@
        "HISN-CORR-067"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-024-08",
+     "nonRecitationText": [],
      "order": 8,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2497,7 +2678,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-09",
+     "nonRecitationText": [],
      "order": 9,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2529,7 +2712,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-024-10",
+     "nonRecitationText": [],
      "order": 10,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2562,7 +2747,9 @@
        "HISN-CORR-068"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-024-11",
+     "nonRecitationText": [],
      "order": 11,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2608,7 +2795,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-025-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2647,7 +2836,16 @@
        "HISN-CORR-051"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "KEEP_SOURCE",
+       "id": "HISN-REVIEW-004",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-025-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2683,7 +2881,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-025-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2716,7 +2916,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-025-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2751,7 +2953,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-025-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [
       {
@@ -2815,7 +3019,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-025-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [
       {
@@ -2858,7 +3064,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-025-07",
+     "nonRecitationText": [],
      "order": 7,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2892,7 +3100,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-025-08",
+     "nonRecitationText": [],
      "order": 8,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2933,7 +3143,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-026-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -2978,7 +3190,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3012,7 +3226,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [
       {
@@ -3056,7 +3272,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [
       {
@@ -3121,7 +3339,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3152,7 +3372,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3183,7 +3405,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3214,7 +3438,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-07",
+     "nonRecitationText": [],
      "order": 7,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3250,7 +3476,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-08",
+     "nonRecitationText": [],
      "order": 8,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3284,7 +3512,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-09",
+     "nonRecitationText": [],
      "order": 9,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3321,7 +3551,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-10",
+     "nonRecitationText": [],
      "order": 10,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3356,7 +3588,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-11",
+     "nonRecitationText": [],
      "order": 11,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3388,7 +3622,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-12",
+     "nonRecitationText": [],
      "order": 12,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3420,7 +3656,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-13",
+     "nonRecitationText": [],
      "order": 13,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3460,7 +3698,9 @@
        "HISN-CORR-069"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-027-14",
+     "nonRecitationText": [],
      "order": 14,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3499,7 +3739,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-15",
+     "nonRecitationText": [],
      "order": 15,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3532,7 +3774,9 @@
        "HISN-CORR-070"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-027-16",
+     "nonRecitationText": [],
      "order": 16,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3563,7 +3807,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-17",
+     "nonRecitationText": [],
      "order": 17,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3595,7 +3841,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-18",
+     "nonRecitationText": [],
      "order": 18,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3631,7 +3879,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-19",
+     "nonRecitationText": [],
      "order": 19,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3672,7 +3922,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-20",
+     "nonRecitationText": [],
      "order": 20,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3709,7 +3961,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-21",
+     "nonRecitationText": [],
      "order": 21,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3744,7 +3998,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-22",
+     "nonRecitationText": [],
      "order": 22,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3778,7 +4034,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-23",
+     "nonRecitationText": [],
      "order": 23,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3815,7 +4073,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-027-24",
+     "nonRecitationText": [],
      "order": 24,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3862,7 +4122,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -3896,7 +4158,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [
       {
@@ -3940,7 +4204,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [
       {
@@ -4009,7 +4275,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4044,7 +4312,9 @@
        "HISN-CORR-010"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-028-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4078,7 +4348,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4111,7 +4383,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-07",
+     "nonRecitationText": [],
      "order": 7,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4151,7 +4425,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-08",
+     "nonRecitationText": [],
      "order": 8,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4185,7 +4461,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-09",
+     "nonRecitationText": [],
      "order": 9,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4222,7 +4500,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-10",
+     "nonRecitationText": [],
      "order": 10,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4257,7 +4537,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-11",
+     "nonRecitationText": [],
      "order": 11,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4289,7 +4571,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-12",
+     "nonRecitationText": [],
      "order": 12,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4321,7 +4605,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-13",
+     "nonRecitationText": [],
      "order": 13,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4361,7 +4647,9 @@
        "HISN-CORR-071"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-028-14",
+     "nonRecitationText": [],
      "order": 14,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4400,7 +4688,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-15",
+     "nonRecitationText": [],
      "order": 15,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4436,7 +4726,9 @@
        "HISN-CORR-072"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-028-16",
+     "nonRecitationText": [],
      "order": 16,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4472,7 +4764,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-17",
+     "nonRecitationText": [],
      "order": 17,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4504,7 +4798,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-18",
+     "nonRecitationText": [],
      "order": 18,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4540,7 +4836,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-19",
+     "nonRecitationText": [],
      "order": 19,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4578,7 +4876,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-20",
+     "nonRecitationText": [],
      "order": 20,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4615,7 +4915,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-21",
+     "nonRecitationText": [],
      "order": 21,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4654,7 +4956,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-028-22",
+     "nonRecitationText": [],
      "order": 22,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4699,7 +5003,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [
       {
@@ -4764,7 +5070,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [
       {
@@ -4808,7 +5116,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [
       {
@@ -4853,7 +5163,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4885,7 +5197,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4914,12 +5228,21 @@
      "bookItemRelation": "DIRECT",
      "chapterId": "hisn-ch-029",
      "corrections": {
-      "applied": [],
-      "open": [
+      "applied": [
        "HISN-CORR-026"
-      ]
+      ],
+      "open": []
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "KEEP_NIL",
+       "id": "HISN-REVIEW-015",
+       "issueType": "REPETITION_COUNT"
+      }
+     ],
      "id": "hisn-029-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4953,7 +5276,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-07",
+     "nonRecitationText": [],
      "order": 7,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -4987,7 +5312,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-08",
+     "nonRecitationText": [],
      "order": 8,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5025,7 +5352,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-09",
+     "nonRecitationText": [],
      "order": 9,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5063,7 +5392,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-10",
+     "nonRecitationText": [],
      "order": 10,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5101,7 +5432,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-11",
+     "nonRecitationText": [],
      "order": 11,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5132,7 +5465,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-12",
+     "nonRecitationText": [],
      "order": 12,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5163,7 +5498,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-029-13",
+     "nonRecitationText": [],
      "order": 13,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5200,7 +5537,25 @@
        "HISN-CORR-059"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "KEEP_METADATA",
+       "id": "HISN-REVIEW-012",
+       "issueType": "NON_DHIKR_TEXT"
+      }
+     ],
      "id": "hisn-029-14",
+     "nonRecitationText": [
+      {
+       "role": "LABEL",
+       "text": "(سُورَةُ السَّجْدَة)"
+      },
+      {
+       "role": "LABEL",
+       "text": "(سُورَةُ المُلْكِ)"
+      }
+     ],
      "order": 14,
      "quranCitations": [
       {
@@ -5259,7 +5614,16 @@
        "HISN-CORR-052"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "DEFER",
+       "id": "HISN-REVIEW-005",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-029-15",
+     "nonRecitationText": [],
      "order": 15,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5301,7 +5665,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-030-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5344,7 +5710,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-031-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5386,7 +5754,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-032-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5422,7 +5792,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-032-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5459,7 +5831,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-032-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5498,7 +5872,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-032-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5534,7 +5910,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-032-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5577,7 +5955,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-033-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5612,7 +5992,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-033-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5644,7 +6026,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-033-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5685,7 +6069,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-034-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5730,7 +6116,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-035-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5761,7 +6149,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-035-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5802,7 +6192,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-036-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5834,7 +6226,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-036-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5866,7 +6260,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-036-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5898,7 +6294,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-036-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5939,7 +6337,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-037-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -5973,7 +6373,16 @@
        "HISN-CORR-053"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "DEFER",
+       "id": "HISN-REVIEW-006",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-037-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6005,7 +6414,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-037-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6048,7 +6459,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-038-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6079,7 +6492,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-038-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6122,7 +6537,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-039-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6163,7 +6580,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-040-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6206,7 +6625,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-041-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6243,7 +6664,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-041-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6279,7 +6702,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-041-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6312,7 +6737,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-041-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [
       {
@@ -6364,7 +6791,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-042-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6395,7 +6824,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-042-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6438,7 +6869,16 @@
        "HISN-CORR-054"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "KEEP_SOURCE",
+       "id": "HISN-REVIEW-007",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-043-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6483,7 +6923,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-044-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6525,7 +6967,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-045-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6569,7 +7013,9 @@
        "HISN-CORR-073"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-046-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6605,7 +7051,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-046-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6639,7 +7087,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-046-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6682,7 +7132,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-047-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6725,7 +7177,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-048-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6764,7 +7218,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-049-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6807,7 +7263,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-050-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6840,7 +7298,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-050-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6887,7 +7347,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-051-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6929,7 +7391,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-052-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6963,7 +7427,16 @@
        "HISN-CORR-055"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "DEFER",
+       "id": "HISN-REVIEW-008",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-052-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -6994,7 +7467,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-052-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7037,7 +7512,9 @@
        "HISN-CORR-074"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-053-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7078,7 +7555,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-054-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7119,7 +7598,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-055-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7160,7 +7641,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-056-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7191,7 +7674,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-056-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7222,7 +7707,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-056-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7253,7 +7740,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-056-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7294,7 +7783,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-057-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7327,7 +7818,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-057-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7356,7 +7849,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-057-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7398,7 +7893,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-058-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7430,7 +7927,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-058-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7469,7 +7968,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-059-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7511,7 +8012,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-060-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7553,7 +8056,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-061-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7594,7 +8099,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-062-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7627,7 +8134,9 @@
        "HISN-CORR-075"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-062-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7669,7 +8178,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-063-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7708,7 +8219,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-064-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7739,7 +8252,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-064-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7771,7 +8286,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-064-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7812,7 +8329,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-065-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7855,7 +8374,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-066-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7899,7 +8420,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-067-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7941,7 +8464,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-068-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -7983,7 +8508,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-069-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8014,7 +8541,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-069-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8053,7 +8582,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-070-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8085,7 +8616,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-070-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8126,7 +8659,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-071-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8158,7 +8693,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-071-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8200,7 +8737,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-072-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8243,7 +8782,9 @@
        "HISN-CORR-076"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-073-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8284,7 +8825,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-074-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8325,7 +8868,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-075-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8366,7 +8911,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-076-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8410,7 +8957,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-077-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8451,7 +9000,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-078-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8492,7 +9043,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-079-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8535,7 +9088,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-080-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8577,7 +9132,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-081-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8618,7 +9175,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-082-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8660,7 +9219,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-083-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8702,7 +9263,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-084-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8743,7 +9306,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-085-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8788,7 +9353,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-086-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8831,7 +9398,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-087-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8875,7 +9444,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-088-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8918,7 +9489,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-089-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8949,7 +9522,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-089-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -8988,7 +9563,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-090-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9033,7 +9610,9 @@
        "HISN-CORR-077"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-091-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9074,7 +9653,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-092-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9115,7 +9696,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-093-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9156,7 +9739,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-094-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9199,7 +9784,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-095-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9242,7 +9829,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-096-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [
       {
@@ -9297,7 +9886,9 @@
        "HISN-CORR-078"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-097-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [
       {
@@ -9349,7 +9940,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-098-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9394,7 +9987,9 @@
        "HISN-CORR-079"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-099-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9436,7 +10031,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-100-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9479,7 +10076,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-101-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9522,7 +10121,9 @@
        "HISN-CORR-080"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-102-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9554,7 +10155,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-102-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9595,7 +10198,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-103-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9636,7 +10241,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-104-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9677,7 +10284,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-105-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9718,7 +10327,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-106-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9760,7 +10371,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-107-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9802,7 +10415,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-108-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9833,7 +10448,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-108-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9865,7 +10482,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-108-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9896,7 +10515,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-108-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9928,7 +10549,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-108-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -9969,7 +10592,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-109-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10000,7 +10625,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-109-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10031,7 +10658,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-109-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10073,7 +10702,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-110-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10115,7 +10746,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-111-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10159,7 +10792,16 @@
        "HISN-CORR-056"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "DEFER",
+       "id": "HISN-REVIEW-009",
+       "issueType": "TEXT_DISCREPANCY"
+      }
+     ],
      "id": "hisn-112-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10201,7 +10843,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-113-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10243,7 +10887,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-114-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10284,7 +10930,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-115-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10325,7 +10973,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-116-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10367,7 +11017,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-117-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10408,7 +11060,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-118-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [
       {
@@ -10463,7 +11117,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-119-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [
       {
@@ -10519,7 +11175,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-120-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10562,7 +11220,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-121-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10603,7 +11263,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-122-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10645,7 +11307,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-123-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10679,7 +11343,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-123-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10724,7 +11390,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-124-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10767,7 +11435,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-125-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10813,7 +11483,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-126-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10857,7 +11529,9 @@
        "HISN-CORR-081"
       ]
      },
+     "editorialReviews": [],
      "id": "hisn-127-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10901,7 +11575,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-128-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10943,7 +11619,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-129-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -10985,7 +11663,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-130-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11014,11 +11694,18 @@
      "chapterId": "hisn-ch-130",
      "corrections": {
       "applied": [],
-      "open": [
-       "HISN-CORR-017"
-      ]
+      "open": []
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "KEEP_NIL",
+       "id": "HISN-REVIEW-013",
+       "issueType": "REPETITION_COUNT"
+      }
+     ],
      "id": "hisn-130-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11053,7 +11740,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-130-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11086,7 +11775,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-130-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11119,7 +11810,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-130-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11148,11 +11841,18 @@
      "chapterId": "hisn-ch-130",
      "corrections": {
       "applied": [],
-      "open": [
-       "HISN-CORR-018"
-      ]
+      "open": []
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "KEEP_NIL",
+       "id": "HISN-REVIEW-014",
+       "issueType": "REPETITION_COUNT"
+      }
+     ],
      "id": "hisn-130-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11197,7 +11897,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11233,7 +11935,9 @@
       ],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-02",
+     "nonRecitationText": [],
      "order": 2,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11267,7 +11971,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-03",
+     "nonRecitationText": [],
      "order": 3,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11299,7 +12005,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-04",
+     "nonRecitationText": [],
      "order": 4,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11330,7 +12038,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-05",
+     "nonRecitationText": [],
      "order": 5,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11361,7 +12071,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-06",
+     "nonRecitationText": [],
      "order": 6,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11393,7 +12105,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-07",
+     "nonRecitationText": [],
      "order": 7,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11425,7 +12139,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-08",
+     "nonRecitationText": [],
      "order": 8,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11456,7 +12172,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-09",
+     "nonRecitationText": [],
      "order": 9,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11488,7 +12206,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-10",
+     "nonRecitationText": [],
      "order": 10,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11519,7 +12239,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-11",
+     "nonRecitationText": [],
      "order": 11,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11551,7 +12273,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-131-12",
+     "nonRecitationText": [],
      "order": 12,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11595,7 +12319,9 @@
       "applied": [],
       "open": []
      },
+     "editorialReviews": [],
      "id": "hisn-132-01",
+     "nonRecitationText": [],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
@@ -11643,7 +12369,21 @@
        "HISN-CORR-058"
       ]
      },
+     "editorialReviews": [
+      {
+       "changesApplied": false,
+       "decision": "KEEP_METADATA",
+       "id": "HISN-REVIEW-011",
+       "issueType": "NON_DHIKR_TEXT"
+      }
+     ],
      "id": "hisn-133-01",
+     "nonRecitationText": [
+      {
+       "role": "CLOSING",
+       "text": "وَصَلَّى اللَّهُ وَسَلَّمَ وَبَارَكَ عَلَى نَبِيِّنَا مُحَمَّدٍ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ"
+      }
+     ],
      "order": 1,
      "quranCitations": [],
      "quranStatus": "NONE",
