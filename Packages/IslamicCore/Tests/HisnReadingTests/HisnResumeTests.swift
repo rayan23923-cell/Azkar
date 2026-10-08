@@ -23,7 +23,8 @@ final class HisnResumeTests: XCTestCase {
     }
 
     private func reader(_ chapterId: String, at index: Int = 0) async throws -> HisnReader {
-        let chapter = try XCTUnwrap(try await library().chapter(id: chapterId))
+        let loaded = try await library()
+        let chapter = try XCTUnwrap(loaded.chapter(id: chapterId))
         return try XCTUnwrap(HisnReader(chapter: chapter, itemIndex: index))
     }
 

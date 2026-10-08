@@ -14,7 +14,8 @@ final class HisnReaderTests: XCTestCase {
     }
 
     private func reader(_ chapterId: String, at index: Int = 0, completed: Int = 0) async throws -> HisnReader {
-        let chapter = try XCTUnwrap(try await library().chapter(id: chapterId), chapterId)
+        let loaded = try await library()
+        let chapter = try XCTUnwrap(loaded.chapter(id: chapterId), chapterId)
         return try XCTUnwrap(HisnReader(chapter: chapter, itemIndex: index, completedRepetitions: completed))
     }
 
@@ -109,7 +110,8 @@ final class HisnReaderTests: XCTestCase {
     }
 
     func testCompletionOffersRestartAndReturn() async throws {
-        let chapter = try XCTUnwrap(try await library().chapter(id: "hisn-ch-001"))
+        let loaded = try await library()
+        let chapter = try XCTUnwrap(loaded.chapter(id: "hisn-ch-001"))
         var reader = try XCTUnwrap(HisnReader(chapter: chapter, itemIndex: chapter.items.count - 1))
         reader.next()
         reader.previous()
@@ -123,7 +125,8 @@ final class HisnReaderTests: XCTestCase {
     }
 
     func testOutOfRangeItemIsRejected() async throws {
-        let chapter = try XCTUnwrap(try await library().chapter(id: "hisn-ch-001"))
+        let loaded = try await library()
+        let chapter = try XCTUnwrap(loaded.chapter(id: "hisn-ch-001"))
         XCTAssertNil(HisnReader(chapter: chapter, itemIndex: chapter.items.count))
         XCTAssertNil(HisnReader(chapter: chapter, itemIndex: -1))
     }
