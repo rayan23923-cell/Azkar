@@ -57,12 +57,20 @@ public protocol HisnPiPSurface: AnyObject {
     func setHeartbeat(_ running: Bool)
 }
 
+/// What the system PiP playback controls call: play/pause and skip. The platform surface talks
+/// to this protocol, so Hisn and any other content can drive the same proven surface.
+@MainActor
+public protocol PiPPlaybackControlling: AnyObject {
+    func setPlaying(_ playing: Bool)
+    func skip(by seconds: TimeInterval)
+}
+
 /// Owns the Hisn PiP lifecycle. It reads the reader (current item) and the audio player
 /// (state, time, duration); it never owns either. PiP system controls are mapped here:
 /// play/pause → the player, skip ±interval → a seek within the current recording (never the
 /// next dhikr). A recording ending in PiP does not count a repetition.
 @MainActor
-public final class HisnPiPCoordinator: ObservableObject {
+public final class HisnPiPCoordinator: ObservableObject, PiPPlaybackControlling {
     public enum Status: Equatable, Sendable {
         case inactive
         case starting

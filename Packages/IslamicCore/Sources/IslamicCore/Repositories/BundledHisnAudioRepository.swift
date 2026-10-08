@@ -18,6 +18,7 @@ public actor BundledHisnAudioRepository: HisnAudioRepository {
     private let audioDirectory: URL?
     private let knownItemIds: Set<String>
     private let allowedUsage: Set<HisnAudioAsset.Usage>
+    private let resource: String
     private var cache: [String: HisnAudioAsset]?
 
     /// - Parameters:
@@ -25,13 +26,17 @@ public actor BundledHisnAudioRepository: HisnAudioRepository {
     ///   - manifest: the manifest JSON; the bundled `hisn_audio.json` by default.
     ///   - audioDirectory: where the files are; the bundled `Content/HisnAudio` by default.
     ///   - allowedUsage: the app allows production assets only; tests opt in to `TEST_ONLY`.
+    ///   - resource / directoryName: the manifest and folder; the shared Quran and adhkar pack
+    ///     uses `content_audio` and `ContentAudio` with content references as item ids.
     public init(knownItemIds: Set<String>, manifest: BundledContentSource = .bundled,
-                audioDirectory: URL? = nil, allowedUsage: Set<HisnAudioAsset.Usage> = [.production]) {
+                audioDirectory: URL? = nil, allowedUsage: Set<HisnAudioAsset.Usage> = [.production],
+                resource: String = "hisn_audio", directoryName: String = "HisnAudio") {
         self.knownItemIds = knownItemIds
         self.manifestSource = manifest
         self.audioDirectory = audioDirectory ?? Bundle.module.url(forResource: "Content", withExtension: nil)?
-            .appendingPathComponent("HisnAudio", isDirectory: true)
+            .appendingPathComponent(directoryName, isDirectory: true)
         self.allowedUsage = allowedUsage
+        self.resource = resource
     }
 
     public func audio(for itemId: String) async throws -> HisnAudioAsset? {
@@ -52,12 +57,12 @@ public actor BundledHisnAudioRepository: HisnAudioRepository {
     /// The validated manifest (pack status and assets), for the release report.
     public func manifest() async throws -> HisnAudioManifest {
         _ = try assetsByItem()
-        return try manifestSource.decode(HisnAudioManifest.self, resource: "hisn_audio")
+        return try manifestSource.decode(HisnAudioManifest.self, resource: resource)
     }
 
     private func assetsByItem() throws -> [String: HisnAudioAsset] {
         if let cache { return cache }
-        let manifest = try manifestSource.decode(HisnAudioManifest.self, resource: "hisn_audio")
+        let manifest = try manifestSource.decode(HisnAudioManifest.self, resource: resource)
         let assets = try validateHisnAudio(manifest, knownItemIds: knownItemIds, allowedUsage: allowedUsage,
                                            fileURL: fileURL)
         cache = assets

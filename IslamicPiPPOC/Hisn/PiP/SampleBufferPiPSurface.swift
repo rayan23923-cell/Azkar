@@ -19,7 +19,7 @@ final class SampleBufferPiPSurface: NSObject, HisnPiPSurface {
     var onEvent: ((HisnPiPSurfaceEvent) -> Void)?
     var contentProvider: (() -> HisnPiPContent?)?
     /// Set by the coordinator's owner so the delegate can reach the PiP semantics.
-    weak var coordinator: HisnPiPCoordinator?
+    weak var coordinator: (any PiPPlaybackControlling)?
 
     private var pipController: AVPictureInPictureController?
     private var possibleObservation: NSKeyValueObservation?

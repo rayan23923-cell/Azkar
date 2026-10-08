@@ -11,6 +11,8 @@ import PackageDescription
 // QuranReading is the Quran reader state (library with juz/page lookup, position, search);
 // AdhkarReading is the adhkar and dua reader state (collections, counter, positions, search).
 // GlobalSearch searches every section together on top of their own engines.
+// ContentAudio is the listening queue and its PiP coordinator for the Quran, adhkar and duas,
+// on the Hisn audio player and PiP surface protocols; its pack (content_audio.json) is empty.
 // QuranText bundles the OFL Amiri Quran font and its Core Text layout checks.
 // HisnShareCard draws the share image with Core Text / Core Graphics (testable here).
 let package = Package(
@@ -26,6 +28,7 @@ let package = Package(
         .library(name: "QuranText", targets: ["QuranText"]),
         .library(name: "AdhkarReading", targets: ["AdhkarReading"]),
         .library(name: "GlobalSearch", targets: ["GlobalSearch"]),
+        .library(name: "ContentAudio", targets: ["ContentAudio"]),
     ],
     targets: [
         .target(
@@ -47,6 +50,10 @@ let package = Package(
         .target(
             name: "GlobalSearch",
             dependencies: ["IslamicCore", "ContentKit", "QuranReading", "HisnReading", "AdhkarReading"]
+        ),
+        .target(
+            name: "ContentAudio",
+            dependencies: ["IslamicCore", "ContentKit", "HisnReading"]
         ),
         .target(
             name: "QuranText",
@@ -87,6 +94,10 @@ let package = Package(
         .testTarget(
             name: "GlobalSearchTests",
             dependencies: ["GlobalSearch", "QuranReading", "HisnReading", "AdhkarReading", "ContentKit", "IslamicCore"]
+        ),
+        .testTarget(
+            name: "ContentAudioTests",
+            dependencies: ["ContentAudio", "HisnReading", "ContentKit", "IslamicCore"]
         ),
         .testTarget(
             name: "HisnAudioTests",
