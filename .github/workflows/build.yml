@@ -3,10 +3,34 @@ name: PiP azkar POC build
 # Compile check for the standalone PiPAzkarPOC project (no signing, no device).
 on:
   push:
-    branches: [main]
+    branches: [main, 'feature/**']
   workflow_dispatch:
 
 jobs:
+  core-tests:
+    name: IslamicCore tests
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bundled content matches upstream sources
+        run: python3 tools/content/build_content.py --check
+
+      - name: swift test
+        working-directory: Packages/IslamicCore
+        run: |
+          swift --version
+          swift test 2>&1 | tee ../../core-tests.log
+          grep -E "Executed [0-9]+ tests, with 0 failures" ../../core-tests.log
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-tests-log
+          path: core-tests.log
+          if-no-files-found: ignore
+
   build:
     runs-on: macos-26
     timeout-minutes: 30
