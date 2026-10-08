@@ -75,7 +75,7 @@ let package = Package(
         ),
         .testTarget(
             name: "HisnShareCardTests",
-            dependencies: ["HisnShareCard", "HisnReading", "IslamicCore"]
+            dependencies: ["HisnShareCard", "HisnReading", "IslamicCore", "QuranText"]
         ),
     ]
 )

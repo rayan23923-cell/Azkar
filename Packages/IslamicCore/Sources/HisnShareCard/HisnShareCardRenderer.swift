@@ -3,6 +3,29 @@ import CoreText
 import Foundation
 import HisnReading
 
+/// Any card: a header, a title and the body text, drawn as stored. Hisn uses «حصن المسلم» and the
+/// chapter title; the Quran passes «القرآن الكريم», the verse reference and the Quran font.
+public struct ShareCardContent: Sendable {
+    public let header: String
+    public let title: String
+    public let body: String
+    /// Font for the body; nil uses the system Arabic font in bold.
+    public let bodyFontName: String?
+    public let bodyLineHeight: CGFloat
+
+    public init(header: String, title: String, body: String, bodyFontName: String? = nil, bodyLineHeight: CGFloat = 1.45) {
+        self.header = header
+        self.title = title
+        self.body = body
+        self.bodyFontName = bodyFontName
+        self.bodyLineHeight = bodyLineHeight
+    }
+
+    public init(hisn content: HisnShareContent) {
+        self.init(header: "حصن المسلم", title: content.chapterTitle, body: content.text)
+    }
+}
+
 /// Draws a Hisn item as a share image with Core Text and Core Graphics only, so the same
 /// code runs in the app and in `swift test`.
 ///
@@ -49,13 +72,18 @@ public enum HisnShareCardRenderer {
     }
 
     public static func layout(_ content: HisnShareContent, appearance: Appearance) -> Layout {
+        layout(ShareCardContent(hisn: content), appearance: appearance)
+    }
+
+    public static func layout(_ content: ShareCardContent, appearance: Appearance) -> Layout {
         let colors = Colors(appearance)
         let textWidth = CGFloat(width) - 2 * margin
-        let header = "حصن المسلم"
+        let header = content.header
         let headerString = attributed(header, size: headerSize, bold: false, color: colors.accent, lineHeight: 1.2)
-        let titleString = attributed(content.chapterTitle, size: titleSize, bold: true, color: colors.secondary,
+        let titleString = attributed(content.title, size: titleSize, bold: true, color: colors.secondary,
                                      lineHeight: 1.3)
-        let bodyString = attributed(content.text, size: bodySize, bold: true, color: colors.primary, lineHeight: 1.45)
+        let bodyString = attributed(content.body, size: bodySize, bold: content.bodyFontName == nil, color: colors.primary,
+                                    lineHeight: content.bodyLineHeight, fontName: content.bodyFontName)
 
         var y = margin
         let headerHeight = measure(headerString, width: textWidth)
@@ -74,13 +102,22 @@ public enum HisnShareCardRenderer {
         let bodyTop = y + max(0, (height - natural) / 2)
         let blocks = [headerBlock, titleBlock, Block(string: NSAttributedString(string: ""), top: ruleY, height: 2),
                       Block(string: bodyString, top: bodyTop, height: bodyHeight)]
-        return Layout(header: header, title: content.chapterTitle, body: content.text, height: Int(height),
+        return Layout(header: header, title: content.title, body: content.body, height: Int(height),
                       blocks: blocks)
     }
 
     /// Nil when the text is empty or could not be laid out in full.
     public static func render(_ content: HisnShareContent, appearance: Appearance) -> Card? {
-        guard !content.text.isEmpty else { return nil }
+        render(ShareCardContent(hisn: content), appearance: appearance)
+    }
+
+    /// Nil when the body is empty, its font is missing, or it could not be laid out in full.
+    public static func render(_ content: ShareCardContent, appearance: Appearance) -> Card? {
+        guard !content.body.isEmpty else { return nil }
+        if let name = content.bodyFontName {
+            let font = CTFontCreateWithName(name as CFString, bodySize, nil)
+            guard (CTFontCopyPostScriptName(font) as String) == name else { return nil }
+        }
         let colors = Colors(appearance)
         let layout = layout(content, appearance: appearance)
         let height = layout.height
@@ -106,15 +143,16 @@ public enum HisnShareCardRenderer {
         }
         guard let bodyFrame, let image = context.makeImage() else { return nil }
         let drawn = CTFrameGetVisibleStringRange(bodyFrame).length
-        guard drawn == (content.text as NSString).length else { return nil }
+        guard drawn == (content.body as NSString).length else { return nil }
         return Card(image: image, layout: layout, bodyCharactersDrawn: drawn, bodyFrame: bodyFrame)
     }
 
     // MARK: Text
 
     private static func attributed(_ text: String, size: CGFloat, bold: Bool, color: CGColor,
-                                   lineHeight: CGFloat) -> NSAttributedString {
-        var font = CTFontCreateUIFontForLanguage(.system, size, "ar" as CFString)
+                                   lineHeight: CGFloat, fontName: String? = nil) -> NSAttributedString {
+        var font = fontName.map { CTFontCreateWithName($0 as CFString, size, nil) }
+            ?? CTFontCreateUIFontForLanguage(.system, size, "ar" as CFString)
             ?? CTFontCreateWithName("Helvetica" as CFString, size, nil)
         if bold, let boldFont = CTFontCreateCopyWithSymbolicTraits(font, size, nil, .traitBold, .traitBold) {
             font = boldFont
