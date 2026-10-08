@@ -60,4 +60,53 @@ public enum HisnAccessibility {
         let count = "عدد الأذكار \(entry.itemCount)"
         return isCurrent ? "موضع القراءة الحالي، \(count)" : count
     }
+
+    // MARK: Search
+
+    public static let searchField = "بحث في حصن المسلم"
+    public static let clearSearch = "مسح البحث"
+    public static let searchFilter = "نوع النتائج"
+
+    public static func filterTitle(_ filter: HisnSearchFilter) -> String {
+        switch filter {
+        case .all: return "الكل"
+        case .chapters: return "الفصول"
+        case .texts: return "النصوص"
+        }
+    }
+
+    /// The result count with Arabic number agreement.
+    public static func resultCount(_ count: Int) -> String {
+        switch count {
+        case 0: return "لا توجد نتائج"
+        case 1: return "نتيجة واحدة"
+        case 2: return "نتيجتان"
+        case 3...10: return "\(count) نتائج"
+        default: return "\(count) نتيجة"
+        }
+    }
+
+    /// The result type, then where it is: "فصل، أذكار الصباح" or
+    /// "ذكر، الذكر 2 من 31، أذكار الصباح".
+    public static func searchResultLabel(_ result: HisnSearchResult) -> String {
+        switch result.kind {
+        case .chapter:
+            return "فصل، \(result.chapterTitle)"
+        case .item:
+            let number = (result.itemIndex ?? 0) + 1
+            return "ذكر، الذكر \(number) من \(result.chapterItemCount)، \(result.chapterTitle)"
+        }
+    }
+
+    /// The text preview for an item; the item count for a chapter.
+    public static func searchResultValue(_ result: HisnSearchResult) -> String {
+        switch result.kind {
+        case .chapter: return "عدد الأذكار \(result.chapterItemCount)"
+        case .item: return result.matchedText
+        }
+    }
+
+    public static func searchResultHint(_ result: HisnSearchResult) -> String {
+        result.kind == .chapter ? "يفتح الفصل" : "يفتح الذكر في موضعه"
+    }
 }

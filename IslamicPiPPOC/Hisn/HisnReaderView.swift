@@ -9,21 +9,25 @@ struct HisnReaderView: View {
     @StateObject private var screen: HisnReaderScreenModel
     private let nextSection: HisnSectionEntry?
     private let openSection: (HisnSectionEntry) -> Void
+    private let highlightedItemId: String?
 
     /// - Parameters:
+    ///   - highlightedItemId: the item opened from a search result, marked briefly on arrival.
     ///   - nextSection: the section after this one, offered as «الفصل التالي» on completion.
     ///   - openSection: opens it (the reader never changes chapter by itself).
     init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository,
-         nextSection: HisnSectionEntry? = nil, openSection: @escaping (HisnSectionEntry) -> Void = { _ in }) {
+         highlightedItemId: String? = nil, nextSection: HisnSectionEntry? = nil,
+         openSection: @escaping (HisnSectionEntry) -> Void = { _ in }) {
         _screen = StateObject(wrappedValue: HisnReaderScreenModel(reader: reader, store: store,
                                                                   audioRepository: audioRepository))
         self.nextSection = nextSection
         self.openSection = openSection
+        self.highlightedItemId = highlightedItemId
     }
 
     var body: some View {
         HisnReaderContent(model: screen.controller, screen: screen, nextSection: nextSection,
-                          openSection: openSection)
+                          openSection: openSection, highlightedItemId: highlightedItemId)
     }
 }
 
@@ -32,12 +36,15 @@ private struct HisnReaderContent: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var sharePayload: HisnSharePayload?
     @State private var notice: String?
     @ObservedObject var model: HisnReaderController
     let screen: HisnReaderScreenModel
     let nextSection: HisnSectionEntry?
     let openSection: (HisnSectionEntry) -> Void
+    /// Cleared shortly after arrival; only ever marks the item it was opened on.
+    @State var highlightedItemId: String?
 
     var body: some View {
         Group {
@@ -165,6 +172,13 @@ private struct HisnReaderContent: View {
                         .lineSpacing(10)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
+                        .background {
+                            // Opened from a search result: a soft mark that fades by itself.
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.accentColor.opacity(highlightedItemId == reader.currentItem.id ? 0.14 : 0))
+                                .padding(-8)
+                        }
+                        .task(id: highlightedItemId) { await fadeHighlight() }
                     if !item.sources.isEmpty {
                         DisclosureGroup("المصدر") {
                             VStack(alignment: .leading, spacing: 6) {
@@ -184,6 +198,13 @@ private struct HisnReaderContent: View {
             .id(reader.currentItem.id)
             controls
         }
+    }
+
+    private func fadeHighlight() async {
+        guard highlightedItemId != nil else { return }
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        guard !Task.isCancelled else { return }
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.6)) { highlightedItemId = nil }
     }
 
     private var controls: some View {

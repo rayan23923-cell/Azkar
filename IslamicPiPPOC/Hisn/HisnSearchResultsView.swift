@@ -2,20 +2,59 @@ import SwiftUI
 import IslamicCore
 import HisnReading
 
-/// Offline search results: exact matches first, then partial ones. Each opens its item.
-struct HisnSearchResultsSection: View {
-    let results: [HisnSearchResult]
+/// The Arabic search field with its own clear button («مسح البحث»).
+struct HisnSearchField: View {
+    @Binding var text: String
 
     var body: some View {
-        if !results.isEmpty {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+            TextField("ابحث في الفصول والأذكار", text: $text)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .submitLabel(.search)
+                .accessibilityLabel(HisnAccessibility.searchField)
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                }
+                .buttonStyle(.borderless)
+                .foregroundStyle(.secondary)
+                .accessibilityLabel(HisnAccessibility.clearSearch)
+            }
+        }
+    }
+}
+
+/// Search results in rank order, with the count. Each row opens its chapter or item.
+struct HisnSearchResultsSection: View {
+    let results: [HisnSearchResult]
+    let route: (HisnSearchResult) -> HisnRoute?
+
+    var body: some View {
+        if results.isEmpty {
+            Section {
+                ContentUnavailableView {
+                    Label("لا توجد نتائج", systemImage: "magnifyingglass")
+                } description: {
+                    Text("جرّب كلمة أخرى أو جزءاً من نص الذكر.")
+                }
+            }
+        } else {
             Section {
                 ForEach(results) { result in
-                    NavigationLink(value: HisnRoute(chapterId: result.chapterId, itemIndex: result.itemIndex)) {
-                        HisnSearchResultRow(result: result)
+                    if let route = route(result) {
+                        NavigationLink(value: route) {
+                            HisnSearchResultRow(result: result)
+                        }
                     }
                 }
             } header: {
-                Text("النتائج: \(results.count)")
+                Text(HisnAccessibility.resultCount(results.count))
             }
         }
     }
@@ -28,14 +67,42 @@ private struct HisnSearchResultRow: View {
         VStack(alignment: .leading, spacing: 4) {
             switch result.kind {
             case .chapter:
-                Text(result.chapterTitle).font(.headline)
-                Text("باب").font(.caption).foregroundStyle(.secondary)
+                Label {
+                    Text(highlighted)
+                        .font(.headline)
+                } icon: {
+                    Image(systemName: "book")
+                        .foregroundStyle(.tint)
+                }
+                Text("فصل · عدد الأذكار \(result.chapterItemCount)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             case .item:
-                Text(result.itemText ?? "")
-                    .lineLimit(3)
-                Text(result.chapterTitle).font(.caption).foregroundStyle(.secondary)
+                Text(highlighted)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text("\(result.chapterTitle) · الذكر \((result.itemIndex ?? 0) + 1)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(HisnAccessibility.searchResultLabel(result))
+        .accessibilityValue(HisnAccessibility.searchResultValue(result))
+        .accessibilityHint(HisnAccessibility.searchResultHint(result))
+    }
+
+    /// The text as stored, with the matched whole words in the accent colour and bold. Whole
+    /// words only, so no word is split into differently styled pieces.
+    private var highlighted: AttributedString {
+        var text = AttributedString(result.matchedText)
+        let characters = text.characters
+        guard let range = result.highlight, range.lowerBound >= 0, range.upperBound <= characters.count else {
+            return text
+        }
+        let lower = characters.index(characters.startIndex, offsetBy: range.lowerBound)
+        let upper = characters.index(characters.startIndex, offsetBy: range.upperBound)
+        text[lower..<upper].foregroundColor = .accentColor
+        text[lower..<upper].inlinePresentationIntent = .stronglyEmphasized
+        return text
     }
 }

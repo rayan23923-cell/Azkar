@@ -8,6 +8,8 @@ struct HisnRoute: Hashable {
     let chapterId: String
     let itemIndex: Int
     var completedRepetitions = 0
+    /// Set when opened from an item search result: the reader marks this item briefly.
+    var highlightedItemId: String?
 }
 
 enum HisnSettings {
@@ -19,7 +21,7 @@ enum HisnSettings {
 final class HisnLibraryModel: ObservableObject {
     enum State {
         case loading
-        case loaded(HisnLibrary, HisnSearchIndex, HisnAudioRepository)
+        case loaded(HisnLibrary, HisnSearchEngine, HisnAudioRepository)
         case failed
     }
 
@@ -45,7 +47,8 @@ final class HisnLibraryModel: ObservableObject {
             #else
             let audio = BundledHisnAudioRepository(knownItemIds: itemIds)
             #endif
-            state = .loaded(HisnLibrary(book: book), HisnSearchIndex(book: book), audio)
+            // The search index is built once here and shared by every query.
+            state = .loaded(HisnLibrary(book: book), HisnSearchEngine(index: HisnSearchIndex(book: book)), audio)
             refreshResume()
         } catch {
             state = .failed
@@ -63,6 +66,17 @@ final class HisnLibraryModel: ObservableObject {
             return route(for: position)
         }
         return HisnRoute(chapterId: chapterId, itemIndex: 0)
+    }
+
+    /// A search result's place, or nil when it no longer points at a real chapter or item.
+    func route(for result: HisnSearchResult) -> HisnRoute? {
+        guard case .loaded(let library, _, _) = state,
+              let destination = HisnSearchDestination.resolve(result, in: library, cursor: resumePosition) else {
+            return nil
+        }
+        return HisnRoute(chapterId: destination.chapterId, itemIndex: destination.itemIndex,
+                         completedRepetitions: destination.completedRepetitions,
+                         highlightedItemId: destination.highlightedItemId)
     }
 
     func route(for position: HisnReadingPosition) -> HisnRoute {
