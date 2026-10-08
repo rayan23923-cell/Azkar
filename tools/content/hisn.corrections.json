@@ -12,7 +12,8 @@
   "ACCEPTED_TEXT_CORRECTION": "A text change the owner explicitly accepted (needs acceptedBy). Applied as an exact replacement.",
   "PENDING_DECISION": "Proposed with evidence; not applied until the owner accepts it.",
   "OBSERVED_DIFFERENCE": "A recorded discrepancy; never applied.",
-  "OBSERVATION": "A recorded finding the build checks for consistency; nothing to apply."
+  "OBSERVATION": "A recorded finding the build checks for consistency; nothing to apply.",
+  "REJECTED": "Proposal declined by a recorded editorial decision (rejectedBy names it); not applied."
  },
  "corrections": [
   {
@@ -527,8 +528,9 @@
     "category": "COUNT_INSIDE_HADITH"
    },
    "confidence": "MEDIUM",
-   "reviewStatus": "PENDING_DECISION",
-   "reviewPriority": "P0"
+   "reviewStatus": "REJECTED",
+   "reviewPriority": "P0",
+   "rejectedBy": "HISN-REVIEW-013"
   },
   {
    "id": "HISN-CORR-018",
@@ -554,8 +556,9 @@
     "category": "COUNT_INSIDE_HADITH"
    },
    "confidence": "MEDIUM",
-   "reviewStatus": "PENDING_DECISION",
-   "reviewPriority": "P0"
+   "reviewStatus": "REJECTED",
+   "reviewPriority": "P0",
+   "rejectedBy": "HISN-REVIEW-014"
   },
   {
    "id": "HISN-CORR-019",
@@ -775,9 +778,10 @@
     "bookCountPhrases": [],
     "category": "UNVERIFIED_SOURCE_COUNT"
    },
-   "confidence": "LOW",
-   "reviewStatus": "PENDING_DECISION",
-   "reviewPriority": "P0"
+   "confidence": "MEDIUM",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2F instructions (2026-10-08): KEEP_NIL; editorial decision HISN-REVIEW-015"
   },
   {
    "id": "HISN-CORR-027",
