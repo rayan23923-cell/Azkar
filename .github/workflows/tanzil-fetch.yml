@@ -1,0 +1,28 @@
+name: Fetch Tanzil source (temporary)
+
+# One-off: the build container cannot reach tanzil.net, so the runner downloads the
+# unmodified Tanzil files and uploads them as an artifact for review and bundling.
+on:
+  push:
+    branches: [feature/v1-phase-2-content]
+    paths: [.github/workflows/tanzil-fetch.yml]
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download
+        run: |
+          set -x
+          mkdir out && cd out
+          curl -fsSL -A "Mozilla/5.0" -o quran-uthmani.txt \
+            "https://tanzil.net/pub/download/index.php?marks=true&sajdah=true&rub=true&alef=true&tatweel=true&quranType=uthmani&outType=txt-2&agree=true" || true
+          curl -fsSL -A "Mozilla/5.0" -o quran-data.xml "https://tanzil.net/res/text/metadata/quran-data.xml" || true
+          curl -fsSL -A "Mozilla/5.0" -o quran-data.js "https://tanzil.net/res/text/metadata/quran-data.js" || true
+          ls -la
+          for f in *; do echo "== $f"; file "$f"; sha256sum "$f"; head -c 600 "$f"; echo; tail -c 1500 "$f"; echo; done
+          grep -vc '^#' quran-uthmani.txt || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tanzil-source
+          path: out/
