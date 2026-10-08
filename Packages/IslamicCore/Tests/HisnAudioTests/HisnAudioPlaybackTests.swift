@@ -77,6 +77,6 @@ final class HisnAudioPlaybackTests: XCTestCase {
             }
         }
         let sessionOwners = try sources("HisnAudioPlayback").filter { $0.1.contains("AVAudioSession.sharedInstance()") }
-        XCTAssertEqual(sessionOwners.map(\.0), ["HisnAudioSessionCoordinator.swift"], "one audio session owner")
+        XCTAssertEqual(sessionOwners.map(\.0), ["AudioSessionCoordinator.swift"], "one audio session owner")
     }
 }

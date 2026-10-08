@@ -71,7 +71,7 @@ extension HisnReaderController {
     static func make(reader: HisnReader, store: HisnReadingPositionStore,
                      audioRepository: HisnAudioRepository) -> HisnReaderController {
         let audio = HisnAudioPlayer(repository: audioRepository, engine: AVHisnAudioEngine(),
-                                    session: HisnAudioSessionCoordinator.shared)
+                                    session: AudioSessionCoordinator.shared)
         return HisnReaderController(reader: reader, store: store, audio: audio)
     }
 }

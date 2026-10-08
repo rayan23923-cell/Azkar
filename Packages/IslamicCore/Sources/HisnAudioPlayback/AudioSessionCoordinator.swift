@@ -2,20 +2,27 @@ import AVFoundation
 import Foundation
 import HisnReading
 
-/// The single owner of the audio session for Hisn playback. Views, view models and the player
-/// never touch `AVAudioSession`; they go through this object.
+/// The single owner of the app's audio session. The Hisn audio player and the PiP test engine
+/// both go through it; views, view models, players and PiP code never call
+/// `AVAudioSession.setCategory` / `setActive` themselves.
 ///
-/// - Activates only when playback starts (never at launch).
-/// - Uses `.playback` (plays with the silent switch on and in the background; the app already
-///   declares the `audio` background mode). If the session is already in `.playback` (for
-///   example set by the PiP test engine), its mode is left as it is.
-/// - Never deactivates the session in Phase 3B, so it cannot cut off other in-app audio.
-/// - Turns interruption, route-change and media-reset notifications into `HisnAudioSessionEvent`.
+/// Policy (one, for the whole app):
+/// - category `.playback`, mode `.moviePlayback`, no options: the configuration proven on a
+///   device with the sample-buffer PiP path (plays with the silent switch on, in the
+///   background, and lets AVKit start PiP);
+/// - the category is set only when it differs, so repeated calls do not reconfigure the session;
+/// - activated when playback or PiP preparation starts, never at launch;
+/// - never deactivated (deactivating could cut off PiP or the other in-app audio).
+///
+/// It also turns interruption, route-change and media-reset notifications into
+/// `HisnAudioSessionEvent`s for the Hisn player.
 @MainActor
-public final class HisnAudioSessionCoordinator: HisnAudioSessionControlling {
-    public static let shared = HisnAudioSessionCoordinator()
+public final class AudioSessionCoordinator: HisnAudioSessionControlling {
+    public static let shared = AudioSessionCoordinator()
 
     public var onEvent: ((HisnAudioSessionEvent) -> Void)?
+    /// How many times the category was actually set (for the test screen's log).
+    public private(set) var configurations = 0
     private var observers: [NSObjectProtocol] = []
 
     private init() {
@@ -25,16 +32,16 @@ public final class HisnAudioSessionCoordinator: HisnAudioSessionControlling {
         observers.append(center.addObserver(forName: AVAudioSession.interruptionNotification, object: session,
                                             queue: .main) { note in
             let event = Self.interruptionEvent(note.userInfo)
-            MainActor.assumeIsolated { if let event { HisnAudioSessionCoordinator.shared.onEvent?(event) } }
+            MainActor.assumeIsolated { if let event { AudioSessionCoordinator.shared.onEvent?(event) } }
         })
         observers.append(center.addObserver(forName: AVAudioSession.routeChangeNotification, object: session,
                                             queue: .main) { note in
             let event = Self.routeEvent(note.userInfo)
-            MainActor.assumeIsolated { HisnAudioSessionCoordinator.shared.onEvent?(event) }
+            MainActor.assumeIsolated { AudioSessionCoordinator.shared.onEvent?(event) }
         })
         observers.append(center.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: session,
                                             queue: .main) { _ in
-            MainActor.assumeIsolated { HisnAudioSessionCoordinator.shared.onEvent?(.mediaServicesReset) }
+            MainActor.assumeIsolated { AudioSessionCoordinator.shared.onEvent?(.mediaServicesReset) }
         })
         #endif
     }
@@ -42,8 +49,9 @@ public final class HisnAudioSessionCoordinator: HisnAudioSessionControlling {
     public func activateForPlayback() throws {
         #if os(iOS)
         let session = AVAudioSession.sharedInstance()
-        if session.category != .playback {
-            try session.setCategory(.playback, mode: .spokenAudio, options: [])
+        if session.category != .playback || session.mode != .moviePlayback || !session.categoryOptions.isEmpty {
+            try session.setCategory(.playback, mode: .moviePlayback, options: [])
+            configurations += 1
         }
         try session.setActive(true)
         #endif
