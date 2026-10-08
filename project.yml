@@ -16,6 +16,8 @@ targets:
         product: IslamicCore
       - package: IslamicCore
         product: HisnReading
+      - package: IslamicCore
+        product: HisnAudioPlayback
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.IslamicPiPPOC

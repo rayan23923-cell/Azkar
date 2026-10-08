@@ -6,11 +6,12 @@ import HisnReading
 /// previous / next. Ends in a completion state; never opens another chapter by itself.
 struct HisnReaderView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var model: HisnReaderModel
+    @StateObject private var model: HisnReaderController
     @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
 
-    init(reader: HisnReader, store: HisnReadingPositionStore) {
-        _model = StateObject(wrappedValue: HisnReaderModel(reader: reader, store: store))
+    init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository) {
+        _model = StateObject(wrappedValue: HisnReaderController.make(reader: reader, store: store,
+                                                                     audioRepository: audioRepository))
     }
 
     var body: some View {
@@ -25,6 +26,7 @@ struct HisnReaderView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sensoryFeedback(.impact(weight: .light), trigger: model.recitations) { _, _ in hapticsEnabled }
         .sensoryFeedback(.success, trigger: model.reader.isCompleted) { _, completed in hapticsEnabled && completed }
+        .onDisappear { model.close() }
     }
 
     // MARK: Reading
@@ -67,6 +69,9 @@ struct HisnReaderView: View {
     private var controls: some View {
         let reader = model.reader
         return VStack(spacing: 12) {
+            if let audio = model.audio {
+                HisnAudioControls(player: audio)
+            }
             counter
             HStack {
                 Button {

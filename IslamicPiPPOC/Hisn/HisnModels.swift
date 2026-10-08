@@ -1,6 +1,7 @@
 import SwiftUI
 import IslamicCore
 import HisnReading
+import HisnAudioPlayback
 
 /// Opens a chapter at a display item. Built from the index, a search result or the saved position.
 struct HisnRoute: Hashable {
@@ -18,7 +19,7 @@ enum HisnSettings {
 final class HisnLibraryModel: ObservableObject {
     enum State {
         case loading
-        case loaded(HisnLibrary, HisnSearchIndex)
+        case loaded(HisnLibrary, HisnSearchIndex, HisnAudioRepository)
         case failed
     }
 
@@ -37,7 +38,8 @@ final class HisnLibraryModel: ObservableObject {
         state = .loading
         do {
             let book = try await repository.loadBook()
-            state = .loaded(HisnLibrary(book: book), HisnSearchIndex(book: book))
+            let audio = BundledHisnAudioRepository(knownItemIds: Set(book.allItems.map(\.id)))
+            state = .loaded(HisnLibrary(book: book), HisnSearchIndex(book: book), audio)
             refreshResume()
         } catch {
             state = .failed
@@ -45,7 +47,7 @@ final class HisnLibraryModel: ObservableObject {
     }
 
     func refreshResume() {
-        guard case .loaded(let library, _) = state else { return }
+        guard case .loaded(let library, _, _) = state else { return }
         resumePosition = HisnResume.position(in: positionStore, library: library)
     }
 
@@ -63,42 +65,13 @@ final class HisnLibraryModel: ObservableObject {
     }
 }
 
-/// One open chapter. Every change goes through `HisnReader` and is saved for same-day resume.
-@MainActor
-final class HisnReaderModel: ObservableObject {
-    @Published private(set) var reader: HisnReader
-    /// Changes on every counted recitation; drives the optional haptic.
-    @Published private(set) var recitations = 0
-    private let store: HisnReadingPositionStore
-
-    init(reader: HisnReader, store: HisnReadingPositionStore) {
-        self.reader = reader
-        self.store = store
-        save()
-    }
-
-    func recite() {
-        reader.recite()
-        recitations += 1
-        save()
-    }
-
-    func next() {
-        reader.next()
-        save()
-    }
-
-    func previous() {
-        reader.previous()
-        save()
-    }
-
-    func restart() {
-        reader.restart()
-        save()
-    }
-
-    private func save() {
-        HisnResume.record(reader, in: store)
+extension HisnReaderController {
+    /// The reader for one chapter with the item's recording, played through the app's single
+    /// audio session owner.
+    static func make(reader: HisnReader, store: HisnReadingPositionStore,
+                     audioRepository: HisnAudioRepository) -> HisnReaderController {
+        let audio = HisnAudioPlayer(repository: audioRepository, engine: AVHisnAudioEngine(),
+                                    session: HisnAudioSessionCoordinator.shared)
+        return HisnReaderController(reader: reader, store: store, audio: audio)
     }
 }

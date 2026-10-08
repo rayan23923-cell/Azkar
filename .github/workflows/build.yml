@@ -23,6 +23,9 @@ jobs:
       - name: Hisn editorial review gate
         run: python3 tools/content/test_hisn_editorial_review.py
 
+      - name: Hisn audio test fixture is reproducible
+        run: python3 tools/content/make_hisn_audio_fixture.py --check
+
       - name: swift test
         working-directory: Packages/IslamicCore
         run: |

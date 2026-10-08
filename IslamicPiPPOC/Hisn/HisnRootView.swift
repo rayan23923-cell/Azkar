@@ -28,11 +28,11 @@ struct HisnRootView: View {
                     }
                 }
                 .navigationDestination(for: HisnRoute.self) { route in
-                    if case .loaded(let library, _) = model.state,
+                    if case .loaded(let library, _, let audio) = model.state,
                        let chapter = library.chapter(id: route.chapterId),
                        let reader = HisnReader(chapter: chapter, itemIndex: route.itemIndex,
                                                completedRepetitions: route.completedRepetitions) {
-                        HisnReaderView(reader: reader, store: model.positionStore)
+                        HisnReaderView(reader: reader, store: model.positionStore, audioRepository: audio)
                     } else {
                         HisnErrorView(message: "تعذّر فتح هذا الباب.", retry: nil)
                     }
@@ -57,7 +57,7 @@ struct HisnRootView: View {
             HisnErrorView(message: "تعذّر تحميل حصن المسلم من التطبيق.") {
                 Task { await model.load() }
             }
-        case .loaded(let library, let index):
+        case .loaded(let library, let index, _):
             HisnIndexView(library: library, index: index, model: model)
         }
     }

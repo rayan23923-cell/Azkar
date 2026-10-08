@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A10000000000000000000083 /* IslamicCore in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000081 /* IslamicCore */; };
 		A10000000000000000000084 /* HisnReading in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000082 /* HisnReading */; };
+		A10000000000000000000086 /* HisnAudioPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000085 /* HisnAudioPlayback */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 			files = (
 				A10000000000000000000083 /* IslamicCore in Frameworks */,
 				A10000000000000000000084 /* HisnReading in Frameworks */,
+				A10000000000000000000086 /* HisnAudioPlayback in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +74,7 @@
 			packageProductDependencies = (
 				A10000000000000000000081 /* IslamicCore */,
 				A10000000000000000000082 /* HisnReading */,
+				A10000000000000000000085 /* HisnAudioPlayback */,
 			);
 			productName = IslamicPiPPOC;
 			productReference = A10000000000000000000001 /* IslamicPiPPOC.app */;
@@ -260,6 +263,10 @@
 		A10000000000000000000082 /* HisnReading */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HisnReading;
+		};
+		A10000000000000000000085 /* HisnAudioPlayback */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HisnAudioPlayback;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
