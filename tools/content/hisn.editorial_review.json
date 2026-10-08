@@ -1,0 +1,531 @@
+{
+ "schemaVersion": 1,
+ "phase": "2F",
+ "source": {
+  "correctionsManifest": "tools/content/hisn.corrections.json",
+  "reconciliation": "tools/content/hisn.reconciliation.json",
+  "upstreamSha256": "b30a448ef40184b0422c40bd3c372bf2b25bfb5b0539fd3699e6b4fba9459d80"
+ },
+ "editorialReviewComplete": false,
+ "independentReview": {
+  "reviewer": null,
+  "note": "No independent human reviewer has signed off. Decisions here are the project's editorial decisions from the recorded evidence, not scholarly certification."
+ },
+ "decisions": {
+  "ACCEPT_CORRECTION": "Evidence explicitly establishes the canonical wording; applied only through an ACCEPTED_TEXT_CORRECTION entry.",
+  "KEEP_SOURCE": "Evidence shows the source wording is retained.",
+  "KEEP_NIL": "No whole-item count can be stated without inference; the structured count stays nil.",
+  "KEEP_METADATA": "The text is kept verbatim and the non-recited part is marked as metadata.",
+  "DEFER": "Evidence is insufficient; the source is kept unchanged and the question stays open."
+ },
+ "reviews": [
+  {
+   "id": "HISN-REVIEW-001",
+   "sourceItemId": "hisn-016-01",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Should «بالماء والثلج» (source) be replaced by «بالثلج والماء» (book)?",
+   "sourceText": "اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ المَشْرِقِ وَالمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنْ خَطَايَايَ كَمَا يُنَقَّى الثَّوْبُ الأَبْيَضُ مِنَ الدَّنَسِ اللَّهُمَّ اغْسِلْنِي مِنْ خَطَايَايَ بِالمَاءِ وَالثَّلْجِ وَالبَرَدِ",
+   "bookText": "((اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ الْمَشْرِقِ وَالْمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنْ خَطَايَايَ كَمَا يُنَقَّى الثَّوْبُ الْأَبْيَضُ مِنَ الدَّنَسِ، اللَّهُمَّ اغْسِلْني مِنْ خَطَايَايَ، بِالثَّلْجِ وَالْماءِ وَالْبَرَدِ)).",
+   "correctionIds": [
+    "HISN-CORR-048"
+   ],
+   "decision": "DEFER",
+   "decisionConfidence": "INSUFFICIENT",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/26 (book item 27); tools/content/hisn.reconciliation.json bookItems[27]",
+     "finding": "The book reads «اغْسِلْني مِنْ خَطَايَايَ، بِالثَّلْجِ وَالْماءِ وَالْبَرَدِ»; footnote cites al-Bukhari 744 and Muslim 598 without commenting on the wording."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «دُعَاءُ الاسْتِفْتَاحِ», item 1 (hisn-016-01)",
+     "finding": "The source reads «بِالمَاءِ وَالثَّلْجِ وَالبَرَدِ»; same references (البخاري 1/ 181 ومسلم 1/ 419)."
+    },
+    {
+     "source": "Tier 2: author's official PDF (https://binwahaf.com/ar/book/854/, sha256 50d53982…cbb9)",
+     "reference": "https://cdn.binwahaf.com/uploads/2025/12/حصن-المسلم-من-أذكاء-الكتاب-والسنة.pdf",
+     "finding": "Not compared. The PDF's text layer uses a custom font encoding and cannot be read as text (Phase 2B), and cdn.binwahaf.com was refused by this session's network policy on 2026-10-08 (HTTP 403), so the page could not be rendered and checked. The wording difference therefore rests on one witness against another."
+    }
+   ],
+   "rationale": "Word order only; both witnesses cite the same narrations. The cross-check print and the source disagree, and nothing already in the project says which wording the author intends: the source states it follows a printed edition (دار السجلات) that may differ from the Safeer print, and the author's own PDF could not be compared. Choosing either wording would be a guess, so the source text is kept unchanged and the decision is deferred until the author's edition (or an independent reviewer) settles it.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED"
+  },
+  {
+   "id": "HISN-REVIEW-002",
+   "sourceItemId": "hisn-016-06",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Are «وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّي» and «وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ» part of the recited text, to be inserted?",
+   "sourceText": "اللَّهُمَّ لَكَ الحَمْدُ أَنْتَ نُورُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الحَمْدُ أَنْتَ قَيِّمُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الحَمْدُ أَنْتَ رَبُّ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الحَمْدُ لَكَ مُلْكُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الحَمْدُ أَنْتَ مَلِكُ السَّمَوَاتِ وَالأَرْضِ، وَلَكَ الحَمْدُ أَنْتَ الحَقُّ، وَوَعْدُكَ الحَقُّ، وَقَوْلُكَ الحَقُّ، وَلِقَاؤُكَ الحَقُّ، وَالجَنَّةُ حَقٌّ، وَالنَّارُ حَقٌّ، وَالنَّبِيُّونَ حَقٌّ، وَمُحَمَّدٌ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَقٌّ وَالسَّاعَةُ حَقٌّ اللَّهُمَّ لَكَ أَسْلَمْتُ، وَعَلَيْكَ تَوَكَّلْتُ، وَبِكَ آمَنْتُ، وَإِلَيْكَ أَنَبْتُ، وَبِكَ خَاصَمْتُ، وَإِلَيْكَ حَاكَمْتُ، فَاغْفِرْ لِي مَا قَدَّمْتُ وَمَا أَخَّرْتُ، وَمَا أَسْرَرْتُ، وَمَا أَعْلَنْتُ أَنْتَ المُقَدِّمُ، وَأَنْتَ المُؤَخِّرُ لَا إِلَهَ إِلَّا أَنْتَ، أَنْتَ إِلَهِي لَا إِلَهَ إِلَّا أَنْتَ",
+   "bookText": "((اللَّهُمَّ لَكَ الْحَمْدُ (٣)، أَنْتَ نُورُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الْحَمْدُ أَنْتَ قَيِّمُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، [وَلَكَ الْحَمْدُ أَنْتَ رَبُّ السَّمَواتِ وَالأَرْضِ وَمَنْ فِيهِنَّ] [وَلَكَ الْحَمْدُ لَكَ مُلْكُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ] [وَلَكَ الْحَمْدُ أَنْتَ مَلِكُ السَّمَوَاتِ وَالأَرْضِ] [وَلَكَ الْحَمْدُ] [أَنْتَ الْحَقُّ، وَوَعْدُكَ الْحَقُّ، وَقَوْلُكَ الْحَقُّ، وَلِقاؤُكَ الْحَقُّ، وَالْجَنَّةُ حَقٌّ، وَالنَّارُ حَقٌّ، وَالنَّبِيُّونَ حَقٌّ، وَمحَمَّدٌ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - حَقٌّ، وَالسّاعَةُ حَقٌّ] [اللَّهُمَّ لَكَ أَسْلَمتُ، وَعَلَيْكَ تَوَكَّلْتُ، وَبِكَ آمَنْتُ، وَإِلَيْكَ أَنَبْتُ، وَبِكَ خاصَمْتُ، وَإِلَيْكَ حاكَمْتُ. فَاغْفِرْ لِي مَا قَدَّمْتُ، وَمَا أَخَّرْتُ، وَمَا أَسْرَرْتُ، وَمَا أَعْلَنْتُ] [وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّي] [أَنْتَ المُقَدِّمُ، وَأَنْتَ المُؤَخِّرُ لاَ إِلَهَ إِلاَّ أَنْتَ] [أَنْتَ إِلَهِي لاَ إِلَهَ إِلاَّ أَنْتَ] [وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ])).",
+   "correctionIds": [
+    "HISN-CORR-049"
+   ],
+   "decision": "DEFER",
+   "decisionConfidence": "INSUFFICIENT",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/31 (book item 32); tools/content/hisn.reconciliation.json bookItems[32]",
+     "finding": "Both phrases appear in square brackets, as do eight other segments of this item that the source does contain. The footnote lists al-Bukhari 1120, 6317, 7385, 7442, 7499 and Muslim 769 (\"مختصراً بنحوه\") but, unlike items 36 and 67, does not say what the brackets mark."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «دُعَاءُ الاسْتِفْتَاحِ», item 6 (hisn-016-06)",
+     "finding": "Neither phrase is present; every other bracketed segment is."
+    },
+    {
+     "source": "Tier 2: author's official PDF (https://binwahaf.com/ar/book/854/, sha256 50d53982…cbb9)",
+     "reference": "https://cdn.binwahaf.com/uploads/2025/12/حصن-المسلم-من-أذكاء-الكتاب-والسنة.pdf",
+     "finding": "Not compared. The PDF's text layer uses a custom font encoding and cannot be read as text (Phase 2B), and cdn.binwahaf.com was refused by this session's network policy on 2026-10-08 (HTTP 403), so the page could not be rendered and checked. The wording difference therefore rests on one witness against another."
+    }
+   ],
+   "rationale": "The book does not state whether these bracketed phrases are additions from other narrations or part of the base text, so there is no explicit evidence that they belong to the recited text. Nothing is inserted. The cross-check print and the source disagree, and nothing already in the project says which wording the author intends: the source states it follows a printed edition (دار السجلات) that may differ from the Safeer print, and the author's own PDF could not be compared. Choosing either wording would be a guess, so the source text is kept unchanged and the decision is deferred until the author's edition (or an independent reviewer) settles it.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED"
+  },
+  {
+   "id": "HISN-REVIEW-003",
+   "sourceItemId": "hisn-017-04",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Should «وَمَا اسْتَقَلَّ بِهِ قَدَمِي» (source) become «وَمَا استَقَلَّتْ بِهِ قَدَمِي» (book)?",
+   "sourceText": "اللَّهُمَّ لَكَ رَكَعْتُ، وَبِكَ آمَنْتُ، وَلَكَ أَسْلَمْتُ، خَشَعَ لَكَ سَمْعِي وَبَصَرِي وَمُخِّي وَعَظْمِي وَعَصَبِي، وَمَا اسْتَقَلَّ بِهِ قَدَمِي",
+   "bookText": "((اللَّهُمَّ لَكَ رَكَعْتُ، وَبِكَ آمَنْتُ، وَلَكَ أَسْلَمْتُ، خَشَعَ لَكَ سَمْعِي، وَبَصَرِي، وَمُخِّي، وَعَظْمِي، وَعَصَبِي، [وَمَا استَقَلَّتْ بِهِ قَدَمِي])).",
+   "correctionIds": [
+    "HISN-CORR-050"
+   ],
+   "decision": "DEFER",
+   "decisionConfidence": "INSUFFICIENT",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/32 (book item 36); tools/content/hisn.reconciliation.json bookItems[36]",
+     "finding": "The phrase is in square brackets and the footnote says explicitly: «وما بين المعقوفين لفظ ابن خزيمة، برقم ٦٠٧، وابن حبان، برقم ١٩٠١». The bracketed wording is therefore the narration of Ibn Khuzaymah and Ibn Hibban."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «دُعَاءُ الرُّكُوعِ», item 4 (hisn-017-04)",
+     "finding": "The source has the phrase unbracketed with «اسْتَقَلَّ» (no feminine ت); its reference names Muslim and the four Sunan except Ibn Majah, not Ibn Khuzaymah or Ibn Hibban."
+    },
+    {
+     "source": "Tier 2: author's official PDF (https://binwahaf.com/ar/book/854/, sha256 50d53982…cbb9)",
+     "reference": "https://cdn.binwahaf.com/uploads/2025/12/حصن-المسلم-من-أذكاء-الكتاب-والسنة.pdf",
+     "finding": "Not compared. The PDF's text layer uses a custom font encoding and cannot be read as text (Phase 2B), and cdn.binwahaf.com was refused by this session's network policy on 2026-10-08 (HTTP 403), so the page could not be rendered and checked. The wording difference therefore rests on one witness against another."
+    }
+   ],
+   "rationale": "The difference is one letter inside a phrase the book attributes to specific narrations. Whether the source's form is another narration's wording or a transcription slip is not established by the evidence, and grammar is not a ground for correction. The cross-check print and the source disagree, and nothing already in the project says which wording the author intends: the source states it follows a printed edition (دار السجلات) that may differ from the Safeer print, and the author's own PDF could not be compared. Choosing either wording would be a guess, so the source text is kept unchanged and the decision is deferred until the author's edition (or an independent reviewer) settles it.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED"
+  },
+  {
+   "id": "HISN-REVIEW-004",
+   "sourceItemId": "hisn-025-02",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Is the book's «[ثلاثاً]» recited text, a whole-item repetition count, an annotation or metadata?",
+   "sourceText": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ وَلَا مُعْطِيَ لِمَا مَنَعْتَ وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ",
+   "bookText": "((لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ [ثلاثاً]، اللَّهُمَّ لاَ مَانِعَ لِمَا أَعْطَيْتَ، وَلاَ مُعْطِيَ لِمَا مَنَعْتَ، وَلاَ يَنْفَعُ ذَا الْجَدِّ مِنْكَ الجَدُّ)).",
+   "correctionIds": [
+    "HISN-CORR-051"
+   ],
+   "decision": "KEEP_SOURCE",
+   "decisionConfidence": "HIGH",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/46 (book item 67); tools/content/hisn.reconciliation.json bookItems[67]",
+     "finding": "«[ثلاثاً]» follows «وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ» only, before «اللَّهُمَّ لاَ مَانِعَ …». The footnote says explicitly: «وما بين المعقوفين زيادة من البخاري، برقم ٦٤٧٣» — an addition from another narration instructing the tahlil (first sentence) three times."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «الأَذْكَارُ بَعْدَ السَّلَامِ مِنَ الصَّلَاةِ», item 2 (hisn-025-02)",
+     "finding": "The source omits the bracketed word; Count is 1. Phase 2E kept the structured count nil (HISN-CORR-021) because the instruction covers one phrase, not the whole item."
+    }
+   ],
+   "rationale": "Explicit evidence: «ثلاثاً» is a repetition instruction from an additional narration and covers only the tahlil. It is not recited wording, so it is not inserted into the Arabic, and it is not a whole-item count, so the count stays nil. The source text is retained; the instruction stays recorded in the correction manifest (HISN-CORR-051) for a later phrase-level representation.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED",
+   "instructionScope": "PHRASE: لَا إِلَهَ إِلَّا اللَّهُ … وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ"
+  },
+  {
+   "id": "HISN-REVIEW-005",
+   "sourceItemId": "hisn-029-15",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Should «رَهْبَةً وَرَغْبَةً» (source) become «رَغْبَةً وَرَهْبَةً» (book)?",
+   "sourceText": "اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَهْبَةً وَرَغْبَةً إِلَيْكَ، لَا مَلْجَأَ وَلَا مَنْجَا مِنْكَ إِلَّا إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الذِي أَنْزَلْتَ وَبِنَبِيِّكَ الذِي أَرْسَلْتَ",
+   "bookText": "((اللَّهُمَّ (٣) أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لاَ مَلْجَأَ وَلاَ مَنْجَا مِنْكَ إِلاَّ إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ، وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ)).",
+   "correctionIds": [
+    "HISN-CORR-052"
+   ],
+   "decision": "DEFER",
+   "decisionConfidence": "INSUFFICIENT",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/76 (book item 111); tools/content/hisn.reconciliation.json bookItems[111]",
+     "finding": "The book reads «رَغْبَةً وَرَهْبَةً إِلَيْكَ»; footnote cites al-Bukhari 6313 and Muslim 2710."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «أَذْكَارُ النَّوْمِ», item 15 (hisn-029-15)",
+     "finding": "The source reads «رَهْبَةً وَرَغْبَةً إِلَيْكَ»; same references."
+    },
+    {
+     "source": "Tier 2: author's official PDF (https://binwahaf.com/ar/book/854/, sha256 50d53982…cbb9)",
+     "reference": "https://cdn.binwahaf.com/uploads/2025/12/حصن-المسلم-من-أذكاء-الكتاب-والسنة.pdf",
+     "finding": "Not compared. The PDF's text layer uses a custom font encoding and cannot be read as text (Phase 2B), and cdn.binwahaf.com was refused by this session's network policy on 2026-10-08 (HTTP 403), so the page could not be rendered and checked. The wording difference therefore rests on one witness against another."
+    }
+   ],
+   "rationale": "Word order only. The cross-check print and the source disagree, and nothing already in the project says which wording the author intends: the source states it follows a printed edition (دار السجلات) that may differ from the Safeer print, and the author's own PDF could not be compared. Choosing either wording would be a guess, so the source text is kept unchanged and the decision is deferred until the author's edition (or an independent reviewer) settles it.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED"
+  },
+  {
+   "id": "HISN-REVIEW-006",
+   "sourceItemId": "hisn-037-02",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Should «بِكَ أَجُولُ» (source) become «بِكَ أَحُولُ» (book)?",
+   "sourceText": "اللَّهُمَّ أَنْتَ عَضُدِي، وَأَنْتَ نَصِيرِي، بِكَ أَجُولُ، وَبِكَ أَصُولُ، وَبِكَ أُقَاتِلُ",
+   "bookText": "((اللَّهُمَّ أَنْتَ عَضُدِي، وَأَنْتَ نَصِيرِي، بِكَ أَحُولُ وَبِكَ أَصُولُ، وَبِكَ أُقاتِلُ)).",
+   "correctionIds": [
+    "HISN-CORR-053"
+   ],
+   "decision": "DEFER",
+   "decisionConfidence": "INSUFFICIENT",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/84 (book item 127); tools/content/hisn.reconciliation.json bookItems[127]",
+     "finding": "The book reads «بِكَ أَحُولُ» (ح); footnote cites Abu Dawud 2632 and al-Tirmidhi 3584."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «دُعَاءُ لِقَاءِ العَدُّوِّ وَذِي السُّلْطَانِ», item 2 (hisn-037-02)",
+     "finding": "The source reads «بِكَ أَجُولُ» (ج); same references."
+    },
+    {
+     "source": "Tier 2: author's official PDF (https://binwahaf.com/ar/book/854/, sha256 50d53982…cbb9)",
+     "reference": "https://cdn.binwahaf.com/uploads/2025/12/حصن-المسلم-من-أذكاء-الكتاب-والسنة.pdf",
+     "finding": "Not compared. The PDF's text layer uses a custom font encoding and cannot be read as text (Phase 2B), and cdn.binwahaf.com was refused by this session's network policy on 2026-10-08 (HTTP 403), so the page could not be rendered and checked. The wording difference therefore rests on one witness against another."
+    }
+   ],
+   "rationale": "A substantive one-letter difference (two different verbs). Plausibility is not evidence. The cross-check print and the source disagree, and nothing already in the project says which wording the author intends: the source states it follows a printed edition (دار السجلات) that may differ from the Safeer print, and the author's own PDF could not be compared. Choosing either wording would be a guess, so the source text is kept unchanged and the decision is deferred until the author's edition (or an independent reviewer) settles it.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED"
+  },
+  {
+   "id": "HISN-REVIEW-007",
+   "sourceItemId": "hisn-043-01",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Do the wording, the direction and the repetition annotation differ in a way that needs a correction?",
+   "sourceText": "يَقُولُ: (أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ)، وَيَتْفُلْ عَلَى يَسَارِهِ",
+   "bookText": "((أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ، وَاتْفُلْ عَلَى يَسَارِكَ -ثلاثاً-)).",
+   "correctionIds": [
+    "HISN-CORR-054"
+   ],
+   "decision": "KEEP_SOURCE",
+   "decisionConfidence": "HIGH",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/88 (book item 138); tools/content/hisn.reconciliation.json bookItems[138]",
+     "finding": "Book: «أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ، وَاتْفُلْ عَلَى يَسَارِكَ -ثلاثاً», the Prophet's instruction addressed to the asker; footnote: Muslim 2203, hadith of Uthman ibn Abi al-As."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «دُعَاءُ الوَسْوَسَةِ فِي الصَّلَاةِ وَالقِرَاءَةِ», item 1 (hisn-043-01)",
+     "finding": "Source: «يَقُولُ: (أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ)، وَيَتْفُلْ عَلَى يَسَارِهِ», Count 3; the item already carries count 3 (book and source agree since Phase 2C)."
+    }
+   ],
+   "rationale": "Assessed separately. (1) Recited wording: the words said, «أعوذ بالله من الشيطان الرجيم», are the same letters in both. (2) Direction: both say the left side (يسارك / يساره). (3) Repetition: the book's «ثلاثاً» agrees with the source count 3 already applied. What differs is only how the accompanying action is phrased: second-person imperative in the book, third-person description introduced by «يقول:» in the source. That is instruction text, not recitation, so no correction is needed and the source is retained.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED",
+   "subFindings": {
+    "wording": "SAME_RECITED_WORDS",
+    "direction": "SAME (left)",
+    "repetition": "SAME (3, applied)",
+    "instructionPhrasing": "DIFFERENT_PERSON (not recited)"
+   }
+  },
+  {
+   "id": "HISN-REVIEW-008",
+   "sourceItemId": "hisn-052-02",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Is the extra «لَ» in «إِنَّ لِلْمَوْتِ لَسَكَرَاتٌ» (source) supported, or should it read «سَكَرَاتٌ» (book)?",
+   "sourceText": "جَعَلَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ عِنْدَ مَوْتِهِ يُدْخِلُ يَدَيْهِ فِي المَاءِ فَيَمْسَحُ بِهِمَا وَجْهَهُ وَيَقُولُ: لَا إِلَهَ إِلَّا اللَّهُ إِنَّ لِلْمَوْتِ لَسَكَرَاتٌ",
+   "bookText": "((جَعَلَ النَّبِيُّ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - عِنْدَ مَوْتِهِ يُدْخِلُ يَدَيْهِ فِي الْمَاءِ فَيَمْسَحُ بِهِمَا وَجْهَهُ، وَيَقُولُ: لاَ إِلَهَ إِلاَّ اللَّهُ إِنَّ لِلْمَوْتِ سَكَرَاتٍ)).",
+   "correctionIds": [
+    "HISN-CORR-055"
+   ],
+   "decision": "DEFER",
+   "decisionConfidence": "INSUFFICIENT",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/94 (book item 151); tools/content/hisn.reconciliation.json bookItems[151]",
+     "finding": "The book reads «إِنَّ لِلْمَوْتِ سَكَرَاتٍ»; footnote cites al-Bukhari 4449 («وفي الحديث ذكر السواك»)."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «دُعَاءُ المَرِيضِ الذِي يَئِسَ مِنْ حَيَاتِهِ», item 2 (hisn-052-02)",
+     "finding": "The source reads «إِنَّ لِلْمَوْتِ لَسَكَرَاتٌ»; same reference (البخاري مع الفتح 8/ 144)."
+    },
+    {
+     "source": "Tier 2: author's official PDF (https://binwahaf.com/ar/book/854/, sha256 50d53982…cbb9)",
+     "reference": "https://cdn.binwahaf.com/uploads/2025/12/حصن-المسلم-من-أذكاء-الكتاب-والسنة.pdf",
+     "finding": "Not compared. The PDF's text layer uses a custom font encoding and cannot be read as text (Phase 2B), and cdn.binwahaf.com was refused by this session's network policy on 2026-10-08 (HTTP 403), so the page could not be rendered and checked. The wording difference therefore rests on one witness against another."
+    }
+   ],
+   "rationale": "Only the cited hadith collection could settle this, and it is not in the project's evidence. The cross-check print and the source disagree, and nothing already in the project says which wording the author intends: the source states it follows a printed edition (دار السجلات) that may differ from the Safeer print, and the author's own PDF could not be compared. Choosing either wording would be a guess, so the source text is kept unchanged and the decision is deferred until the author's edition (or an independent reviewer) settles it.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED"
+  },
+  {
+   "id": "HISN-REVIEW-009",
+   "sourceItemId": "hisn-112-01",
+   "issueType": "TEXT_DISCREPANCY",
+   "question": "Should «فَتَعَوَّذُوا بِاللَّهِ مِنْهُمْ» (source) become «مِنْهُنَّ» (book)?",
+   "sourceText": "إِذَا سَمِعْتُمْ نُبَاحَ الكِلَابِ وَنَهِيقَ الحَمِيرِ بِاللَّيْلِ فَتَعَوَّذُوا بِاللَّهِ مِنْهُمْ، فَإِنَّهُنَّ يَرَيْنَ مَا لَا تَرَوْنَ",
+   "bookText": "((إِذَا سَمِعْتُمْ نُبَاحَ الْكِلاَبِ وَنَهِيقَ الْحَمِيرِ بِاللَّيْلِ فَتَعَوَّذُوا بِاللَّهِ مِنْهُنَّ؛ فَإِنَّهُنَّ يَرَيْنَ مَا لاَ تَرَوْنَ)).",
+   "correctionIds": [
+    "HISN-CORR-056"
+   ],
+   "decision": "DEFER",
+   "decisionConfidence": "INSUFFICIENT",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/131 (book item 229); tools/content/hisn.reconciliation.json bookItems[229]",
+     "finding": "The book reads «فَتَعَوَّذُوا بِاللَّهِ مِنْهُنَّ؛ فَإِنَّهُنَّ يَرَيْنَ …»; footnote cites Abu Dawud 5105 and Ahmad 14283."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «الدُّعَاءُ عِنْدَ سَمَاعِ نُبَاحِ الكِلَابِ بِاللَّيْلِ», item 1 (hisn-112-01)",
+     "finding": "The source reads «مِنْهُمْ، فَإِنَّهُنَّ يَرَيْنَ …»; same references."
+    },
+    {
+     "source": "Tier 2: author's official PDF (https://binwahaf.com/ar/book/854/, sha256 50d53982…cbb9)",
+     "reference": "https://cdn.binwahaf.com/uploads/2025/12/حصن-المسلم-من-أذكاء-الكتاب-والسنة.pdf",
+     "finding": "Not compared. The PDF's text layer uses a custom font encoding and cannot be read as text (Phase 2B), and cdn.binwahaf.com was refused by this session's network policy on 2026-10-08 (HTTP 403), so the page could not be rendered and checked. The wording difference therefore rests on one witness against another."
+    }
+   ],
+   "rationale": "Substantive pronoun difference. Agreement with the following «فإنهن» is a grammatical argument, not evidence of the narrated wording. The cross-check print and the source disagree, and nothing already in the project says which wording the author intends: the source states it follows a printed edition (دار السجلات) that may differ from the Safeer print, and the author's own PDF could not be compared. Choosing either wording would be a guess, so the source text is kept unchanged and the decision is deferred until the author's edition (or an independent reviewer) settles it.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED"
+  },
+  {
+   "id": "HISN-REVIEW-010",
+   "sourceItemId": "hisn-001-03",
+   "issueType": "NON_DHIKR_TEXT",
+   "question": "Is the trailing «أو دعا استجيب له…» part of the recitation, and how should it be represented?",
+   "sourceText": "(لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، سُبْحَانَ اللَّهِ، وَالحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا اللَّه، وَاللَّه أَكْبَرُ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ العَلِّي العَظِيمِ، رَبِّ اغْفِرْ لِي). أَوْ دَعَا اسْتُجِيبَ لَهُ فَإِنْ تَوَضَّأَ وَصَلَّى قُبِلَتْ صَلَاتَهُ",
+   "bookText": "((لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَريكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، سُبْحَانَ اللَّهِ، وَالْحَمْدُ للَّهِ، وَلاَ إِلَهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكبَرُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ الْعَلِيِّ الْعَظِيمِ، رَبِّ اغْفرْ لِي)).",
+   "correctionIds": [
+    "HISN-CORR-057"
+   ],
+   "decision": "KEEP_METADATA",
+   "decisionConfidence": "HIGH",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/12 (book item 2); tools/content/hisn.reconciliation.json bookItems[2]",
+     "finding": "The book's item 2 ends at «رَبِّ اغْفرْ لِي»; the virtue «من قال ذلك غُفِرَ له، فإن دعا استجيب له، فإن قام فتوضأ ثم صلى قُبلت صلاته» is in its footnote, not the recited text."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «أَذْكَارُ الِاسْتِيقَاظِ مِنَ النَّوْمِ», item 3 (hisn-001-03)",
+     "finding": "The source closes the dhikr with a closing parenthesis and continues outside the parentheses: «أَوْ دَعَا اسْتُجِيبَ لَهُ فَإِنْ تَوَضَّأَ وَصَلَّى قُبِلَتْ صَلَاتَهُ»."
+    }
+   ],
+   "rationale": "Explicit evidence: the passage is the virtue (fadl) narrated about the dhikr, printed by the book as a footnote. It stays in the item verbatim and is marked as narration metadata so a recitation flow can leave it out later; nothing is deleted and no boundary is guessed (the marked text is the exact passage outside the source's own parentheses).",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED",
+   "metadata": [
+    {
+     "role": "NARRATION",
+     "text": "أَوْ دَعَا اسْتُجِيبَ لَهُ فَإِنْ تَوَضَّأَ وَصَلَّى قُبِلَتْ صَلَاتَهُ"
+    }
+   ]
+  },
+  {
+   "id": "HISN-REVIEW-011",
+   "sourceItemId": "hisn-133-01",
+   "issueType": "NON_DHIKR_TEXT",
+   "question": "Is «وصلى الله وسلم وبارك على نبينا محمد…» part of item 267, closing book material, or display-only text?",
+   "sourceText": "إِذَا كَانَ جُنْحُ اللَّيْلِ - أَوْ أَمْسَيْتُمْ - فَكُفُّوا صِبْيَانَكُمْ؛ فَإِنَّ الشَّيَاطِينَ تَنْتَشِرُ حِينَئِذٍ، فَإِذَا ذَهَبَ سَاعَةٌ مِنَ اللَّيْلِ فَخَلُّوهُمْ، وَأَغْلِقُوا الأَبْوَابَ وَاذْكُرُوا اِسْمَ اللَّهِ، فَإِنَّ الشَّيْطَانَ لَا يَفْتَحُ بَابًا مُغْلَقًا، وَأَوْكُوا قِرَبَكُمْ وَاذْكُرُوا اِسْمَ اللَّهِ، وَخَمِّرُوا آنِيَتَكُمْ وَاذْكُرُوا اِسْمَ اللَّهِ، وَلَوْ أَنْ تَعْرُضُوا عَلَيْهَا شَيْئًا، وَأَطْفِئُوا مَصَابِيحَكُمْ\r\nوَصَلَّى اللَّهُ وَسَلَّمَ وَبَارَكَ عَلَى نَبِيِّنَا مُحَمَّدٍ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ",
+   "bookText": "قَالَ النَّبِيُّ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - ((إِذَا كَانَ جُنْحُ اللَّيْلِ - أَوْ أَمْسَيْتُم - فَكُفُّوا صِبْيانَكُم، فَإِنَّ الشَّيَاطِينَ تَنْتَشِرُ حِينَئِذٍ، فَإِذَا ذَهَبَ سَاعَةٌ مِنَ اللَّيلِ فَخَلُّوهُمْ، وَأَغْلِقُوا الأَبْوَابَ وَاذْكُرُوا اسْمَ اللَّهِ؛ فَإِنَّ الشَّيطَانَ لاَ يَفْتَحُ بَاباً مُغلَقاً، وَأَوْكُوا قِرَبَكُمْ، وَاذْكُرُوا اسْمَ اللَّهِ، وَخَمِّرُوا آنِيَتَكُم، وَاذْكُرُوا اسْمَ اللَّهِ، وَلَوْ أَنْ تَعْرُضُوا عَلَيْهَا شَيْئاً، وَأَطْفِئُوا مَصَابِيحَكُمْ)).",
+   "correctionIds": [
+    "HISN-CORR-058"
+   ],
+   "decision": "KEEP_METADATA",
+   "decisionConfidence": "HIGH",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/151 (book item 267); tools/content/hisn.reconciliation.json bookItems[267]",
+     "finding": "On the last page the book prints item 267 inside ((…)) ending «وَأَطْفِئُوا مَصَابِيحَكُمْ)) (١», then on its own line «وَصَلَّى اللَّهُ وَسَلَّمَ وَبَارَكَ عَلَى نَبِيِّنَا مُحَمَّدٍ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ» after the footnote marker: the book's closing, not part of the hadith."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «مِنْ أَنْوَاعِ الخَيْرِ وَالآدَابِ الجَامِعَةِ», item 1 (hisn-133-01)",
+     "finding": "The source appends the same sentence to item 267 after a line break («\\r\\n»)."
+    }
+   ],
+   "rationale": "Explicit evidence: the sentence is the book's closing doxology. It stays in the item verbatim and is marked CLOSING so it is not presented as part of hadith 267's recitation.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED",
+   "metadata": [
+    {
+     "role": "CLOSING",
+     "text": "وَصَلَّى اللَّهُ وَسَلَّمَ وَبَارَكَ عَلَى نَبِيِّنَا مُحَمَّدٍ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ"
+    }
+   ]
+  },
+  {
+   "id": "HISN-REVIEW-012",
+   "sourceItemId": "hisn-029-14",
+   "issueType": "NON_DHIKR_TEXT",
+   "question": "Are «(سُورَةُ السَّجْدَة)» and «(سُورَةُ المُلْكِ)» recited content, instructions, or presentation metadata?",
+   "sourceText": "يَقْرَأُ {ألم * تَنْزِيل ...} (سُورَةُ السَّجْدَة)\r\nوَ{تَبَارَكَ الذِي بِيَدِهِ المُلْكُ ...} (سُورَةُ المُلْكِ)",
+   "bookText": "((يَقْرَأُ {الم} تَنْزِيلَ السَّجْدَةِ، وَتَبَارَكَ الَّذي بِيَدِهِ الْمُلْكُ)).",
+   "correctionIds": [
+    "HISN-CORR-059"
+   ],
+   "decision": "KEEP_METADATA",
+   "decisionConfidence": "HIGH",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/75 (book item 110); tools/content/hisn.reconciliation.json bookItems[110]",
+     "finding": "The book's item 110 reads «يَقْرَأُ {الم} تَنْزِيلَ السَّجْدَةِ، وَتَبَارَكَ الَّذي بِيَدِهِ الْمُلْكُ» with no parenthesised labels."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «أَذْكَارُ النَّوْمِ», item 14 (hisn-029-14)",
+     "finding": "The source adds the labels in parentheses after each quoted opening. Phase 2E cites 32:1–2 and 67:1 with recitesWholeSurah = true (HISN-CORR-029)."
+    }
+   ],
+   "rationale": "Explicit evidence: the labels are not in the book and are not Quran text; they name the surahs whose recitation the item instructs, which the Quran citations already carry. They stay in the text verbatim and are marked LABEL. No surah text is added or duplicated.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED",
+   "metadata": [
+    {
+     "role": "LABEL",
+     "text": "(سُورَةُ السَّجْدَة)"
+    },
+    {
+     "role": "LABEL",
+     "text": "(سُورَةُ المُلْكِ)"
+    }
+   ]
+  },
+  {
+   "id": "HISN-REVIEW-013",
+   "sourceItemId": "hisn-130-02",
+   "issueType": "REPETITION_COUNT",
+   "question": "Is 1 a whole-item repeat count, or does «مِائَةَ مَرَّةٍ» belong to the narrated text?",
+   "sourceText": "وَقَالَ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ: (يَا أَيُّهَا النَّاسُ تُوبُوا إِلَى اللَّهِ فَإِنِّي أَتُوبُ فِي اليَوْمِ إِلَيْهِ مِائَةَ مَرَّةٍ)",
+   "bookText": "وَقَالَ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ -: ((يَا أَيُّهَا النَّاسُ تُوبُوا إِلَى اللَّهِ فَإِنِّي أَتُوبُ فِي الْيَوْمِ إِلَيْهِ مِائَةَ مَرَّةٍ)).",
+   "correctionIds": [
+    "HISN-CORR-017"
+   ],
+   "decision": "KEEP_NIL",
+   "decisionConfidence": "HIGH",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/142 (book item 249); tools/content/hisn.reconciliation.json bookItems[249]",
+     "finding": "Book item 249 is introduced «وَقَالَ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ -:» and «مِائَةَ مَرَّةٍ» sits inside his quoted words ((…)), describing what he did each day; the book gives no instruction to repeat the item."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «الاسْتِغْفَارُ وَالتَّوْبَةُ», item 2 (hisn-130-02)",
+     "finding": "Source Count is 1 and the text is the same hadith with «مِائَةَ مَرَّةٍ» inside the quotation."
+    }
+   ],
+   "rationale": "«مائة مرة» is a count inside a narration, not a repeat count for the item, so 100 is rejected. The book also gives no whole-item count, so 1 would be an inferred value, not a stated one. The structured count stays nil (a session reads nil as one pass and the text keeps its wording); the Phase 2E proposal of 1 is rejected.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED",
+   "repetition": {
+    "count": null
+   }
+  },
+  {
+   "id": "HISN-REVIEW-014",
+   "sourceItemId": "hisn-130-06",
+   "issueType": "REPETITION_COUNT",
+   "question": "Is 1 a whole-item repeat count, or does «مِائَةَ مَرَّةٍ» belong to the narrated text?",
+   "sourceText": "وَقَالَ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ: (إِنَّهُ لَيُغَانُ عَلَى قَلْبِي وَإِنِّي لَأَسْتَغْفِرُ اللَّهَ فِي اليَوْمِ مِائَةَ مَرَّةٍ)",
+   "bookText": "وَقَالَ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ -: ((إِنَّهُ لَيُغَانُ عَلَى قَلْبِي وَإِنِّي لأَسْتَغْفِرُ اللَّهَ فِي الْيَوْمِ مِائَةَ مَرَّةٍ)).",
+   "correctionIds": [
+    "HISN-CORR-018"
+   ],
+   "decision": "KEEP_NIL",
+   "decisionConfidence": "HIGH",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/144 (book item 253); tools/content/hisn.reconciliation.json bookItems[253]",
+     "finding": "Book item 253 is introduced «وَقَالَ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ -:» and «مِائَةَ مَرَّةٍ» sits inside his quoted words ((…)), describing what he did each day; the book gives no instruction to repeat the item."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «الاسْتِغْفَارُ وَالتَّوْبَةُ», item 6 (hisn-130-06)",
+     "finding": "Source Count is 1 and the text is the same hadith with «مِائَةَ مَرَّةٍ» inside the quotation."
+    }
+   ],
+   "rationale": "«مائة مرة» is a count inside a narration, not a repeat count for the item, so 100 is rejected. The book also gives no whole-item count, so 1 would be an inferred value, not a stated one. The structured count stays nil (a session reads nil as one pass and the text keeps its wording); the Phase 2E proposal of 1 is rejected.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED",
+   "repetition": {
+    "count": null
+   }
+  },
+  {
+   "id": "HISN-REVIEW-015",
+   "sourceItemId": "hisn-029-06",
+   "issueType": "REPETITION_COUNT",
+   "question": "Is the source count 3 supported?",
+   "sourceText": "اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ",
+   "bookText": "((اللَّهُمَّ قِنِي (٢) عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ)).",
+   "correctionIds": [
+    "HISN-CORR-026"
+   ],
+   "decision": "KEEP_NIL",
+   "decisionConfidence": "MEDIUM",
+   "evidence": [
+    {
+     "source": "Tier 1: Shamela transcription of the Safeer / Al-Juraisy print (book 31307), retrieved 2026-10-08 in Phase 2B",
+     "reference": "https://shamela.ws/book/31307/72 (book item 104); tools/content/hisn.reconciliation.json bookItems[104]",
+     "finding": "Book item 104 «اللَّهُمَّ قِنِي (٢) عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ»; footnote (٢) quotes only the hadith opening «كان - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - إذا أراد أن يرقد وضع يده اليمنى تحت خدِّه، ثم يقول: ... )) الحديث» and footnote (٣) cites Abu Dawud 5045 and al-Tirmidhi 3398. No count is stated."
+    },
+    {
+     "source": "Tier 3: vendored upstream asellam/HisnElMuslim hisn.json (sha256 b30a448e…9d80)",
+     "reference": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json, chapter «أَذْكَارُ النَّوْمِ», item 6 (hisn-029-06)",
+     "finding": "Source Count is 3, with no wording in the item or its reference stating it."
+    }
+   ],
+   "rationale": "No explicit evidence supports 3 and none contradicts it; the hadith collections cited are not in the project's evidence. The count is not inferred and stays nil.",
+   "changesApplied": false,
+   "independentReviewer": null,
+   "reviewStatus": "EDITORIAL_DECISION_RECORDED",
+   "repetition": {
+    "count": null
+   }
+  }
+ ]
+}

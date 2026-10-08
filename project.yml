@@ -1,18 +1,50 @@
 # Fallback only: if the .xcodeproj does not open, run `brew install xcodegen && xcodegen` here.
 name: IslamicPiPPOC
+packages:
+  IslamicCore:
+    path: Packages/IslamicCore
 options:
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "17.0"
 targets:
   IslamicPiPPOC:
     type: application
     platform: iOS
     sources: [IslamicPiPPOC]
+    dependencies:
+      - package: IslamicCore
+        product: IslamicCore
+      - package: IslamicCore
+        product: HisnReading
+      - package: IslamicCore
+        product: HisnAudioPlayback
+      - package: IslamicCore
+        product: HisnShareCard
+      - package: IslamicCore
+        product: GlobalSearch
+      - package: IslamicCore
+        product: AdhkarReading
+      - package: IslamicCore
+        product: QuranText
+      - package: IslamicCore
+        product: QuranReading
+      - package: IslamicCore
+        product: ContentKit
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.IslamicPiPPOC
         INFOPLIST_FILE: Info.plist
+      configs:
+        # Debug keeps background audio for the PiP test screen and the fixture IPA; the
+        # Release (App Store) build has no background mode until licensed audio ships.
+        Debug:
+          INFOPLIST_FILE: Info-Debug.plist
         GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "أذكار"
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        MARKETING_VERSION: "1.0"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         SWIFT_VERSION: "5.0"

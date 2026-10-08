@@ -1,0 +1,2420 @@
+{
+ "schemaVersion": 1,
+ "source": {
+  "phase": "2E",
+  "reconciliation": "tools/content/hisn.reconciliation.json",
+  "reconciliationReport": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md",
+  "upstreamFile": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json",
+  "upstreamSha256": "b30a448ef40184b0422c40bd3c372bf2b25bfb5b0539fd3699e6b4fba9459d80"
+ },
+ "reviewStatuses": {
+  "ACCEPTED": "Decision accepted for implementation and applied by build_content.py. Not an editorial review of the religious content.",
+  "ACCEPTED_TEXT_CORRECTION": "A text change the owner explicitly accepted (needs acceptedBy). Applied as an exact replacement.",
+  "PENDING_DECISION": "Proposed with evidence; not applied until the owner accepts it.",
+  "OBSERVED_DIFFERENCE": "A recorded discrepancy; never applied.",
+  "OBSERVATION": "A recorded finding the build checks for consistency; nothing to apply.",
+  "REJECTED": "Proposal declined by a recorded editorial decision (rejectedBy names it); not applied."
+ },
+ "corrections": [
+  {
+   "id": "HISN-CORR-001",
+   "sourceItemId": "hisn-001-03",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-001-03"
+   },
+   "before": {
+    "bookItemNumber": null
+   },
+   "after": {
+    "bookItemNumber": 2
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-001-03]",
+    "reason": "Same wording as book item 2 (book dhikr fully inside the source, reference identical); the source lists it after book item 3, so the Phase 2C monotonic matcher skipped it.",
+    "similarity": 0.89,
+    "sourceInBook": 0.801,
+    "bookInSource": 1.0,
+    "referenceSimilarity": 0.965,
+    "bookText": "((لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَريكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، سُبْحَانَ اللَّهِ، وَالْحَمْدُ للَّهِ، وَلاَ إِلَهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكبَرُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ الْعَلِيِّ الْعَظِيمِ، رَبِّ اغْفرْ لِي)).",
+    "bookFootnotes": [
+     "من قال ذلك غُفِرَ له، فإن دعا استجيب له، فإن قام فتوضأ ثم صلى قُبلت صلاته، البخاري مع الفتح، ٣/ ٣٩، برقم ١١٥٤، وغيره، واللفظ لابن ماجه، انظر: صحيح ابن ماجه، ٢/ ٣٣٥."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-002",
+   "sourceItemId": "hisn-004-02",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-004-02"
+   },
+   "before": {
+    "bookItemNumber": null
+   },
+   "after": {
+    "bookItemNumber": 7
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-004-02]",
+    "reason": "Letter-identical to book item 7 with the same footnote; the source lists it after book item 8.",
+    "similarity": 1.0,
+    "sourceInBook": 1.0,
+    "bookInSource": 1.0,
+    "referenceSimilarity": 1.0,
+    "bookText": "((تُبْلِي وَيُخْلِفُ اللَّهُ تَعَالَى)).",
+    "bookFootnotes": [
+     "أخرجه أبو داود، ٤/ ٤١، برقم ٤٠٢٠، وانظر: صحيح أبي داود ٢/ ٧٦٠."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-003",
+   "sourceItemId": "hisn-010-02",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-010-02"
+   },
+   "before": {
+    "bookItemNumber": null
+   },
+   "after": {
+    "bookItemNumber": 16
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-010-02]",
+    "reason": "Letter-identical to book item 16 with the same footnote; the source lists it after book item 17.",
+    "similarity": 1.0,
+    "sourceInBook": 1.0,
+    "bookInSource": 1.0,
+    "referenceSimilarity": 1.0,
+    "bookText": "((بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلَاَ حَوْلَ وَلَا قُوَّةَ إِلاَّ بِاللَّهِ)).",
+    "bookFootnotes": [
+     "أبو داود، ٤/ ٣٢٥، برقم ٥٠٩٥، والترمذي، ٥/ ٤٩٠، برقم ٣٤٢٦، وانظر: صحيح الترمذي ٣/ ١٥١."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-004",
+   "sourceItemId": "hisn-027-20",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-027-20"
+   },
+   "before": {
+    "bookItemNumber": 92
+   },
+   "after": {
+    "bookItemNumber": 93
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-027-20]",
+    "reason": "Same wording as book items 92 and 93; the reference (Bukhari 4/95, the hundred-times virtue) and source count 100 identify book 93 «(مائة مرة إذا أصبح)». Phase 2C gave it 92.",
+    "similarity": 1.0,
+    "sourceInBook": 1.0,
+    "bookInSource": 1.0,
+    "referenceSimilarity": 1.0,
+    "bookText": "((لاَ إِلَهَ إِلاَّ اللَّهُ، وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ)) (مائةَ مرَّةٍ إذا أصبحَ).",
+    "bookFootnotes": [
+     "من قالها مائة مرة في يوم كانت له عدل عشر رقاب، وكُتِبَ له مائة حسنة، ومُحيت عنه مائة سيئة، وكانت له حرزاً من الشيطان يومه ذلك حتى يمسي، ولم يأت أحد بأفضل مما جاء به إلا أحد عمل أكثر من ذلك. البخاري، ٤/ ٩٥، برقم ٣٢٩٣، ومسلم، ٤/ ٢٠٧١، برقم ٢٦٩١."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-005",
+   "sourceItemId": "hisn-028-16",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-028-16"
+   },
+   "before": {
+    "bookItemNumber": null
+   },
+   "after": {
+    "bookItemNumber": 89
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-028-16]",
+    "reason": "Evening wording of book item 89, given by the book in its footnote «وإذا أمسى قال: اللهم إني أسألك خير هذه الليلة…»; reference identical.",
+    "similarity": 0.879,
+    "sourceInBook": 0.847,
+    "bookInSource": 0.913,
+    "referenceSimilarity": 0.984,
+    "bookText": "((أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ (٢)، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ:فَتْحَهُ، وَنَصْرَهُ، وَنورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ)).",
+    "bookFootnotes": [
+     "وإذا أمسى قال: اللَّهم إني أسألك خير هذه الليلة: فتحها، ونصرها، ونورها، وبركتها، وهداها، وأعوذ بك من شر ما فيها، وشر ما بعدها.",
+     "أبو داود، ٤/ ٣٢٢، برقم ٥٠٨٤، وحسن إسناده شعيب وعبد القادر الأرناؤوط في تحقيق زاد المعاد، ٢/ ٣٧٣."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-006",
+   "sourceItemId": "hisn-029-14",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-029-14"
+   },
+   "before": {
+    "bookItemNumber": null
+   },
+   "after": {
+    "bookItemNumber": 110
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-029-14]",
+    "reason": "Book item 110 «يقرأ {الم} تنزيل السجدة، وتبارك الذي بيده الملك»; the book wording is fully inside the source, which adds the labels «(سورة السجدة)», «(سورة الملك)».",
+    "similarity": 0.851,
+    "sourceInBook": 0.74,
+    "bookInSource": 1.0,
+    "referenceSimilarity": 1.0,
+    "bookText": "((يَقْرَأُ {الم} تَنْزِيلَ السَّجْدَةِ، وَتَبَارَكَ الَّذي بِيَدِهِ الْمُلْكُ)).",
+    "bookFootnotes": [
+     "الترمذي، برقم ٣٤٠٤، والنسائي في عمل اليوم والليلة، برقم ٧٠٧، وانظر: صحيح الجامع ٤/ ٢٥٥."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-007",
+   "sourceItemId": "hisn-041-02",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-041-02"
+   },
+   "before": {
+    "bookItemNumber": null
+   },
+   "after": {
+    "bookItemNumber": 133
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-041-02]",
+    "reason": "Second half of book item 133 «ينتهي عما وسوس فيه» (source has «شك»); same footnote. Short text: matched with 79% letters and identical reference.",
+    "similarity": 0.564,
+    "sourceInBook": 0.846,
+    "bookInSource": 0.423,
+    "referenceSimilarity": 1.0,
+    "bookText": "((يَسْتَعِيذُ بِاللَّهِ)).\n((يَنْتَهِي عَمَّا وَسْوَسَ فِيهِ)).",
+    "bookFootnotes": [
+     "البخاري مع الفتح، ٦/ ٣٣٦، برقم ٣٢٧٦، ومسلم، ١/ ١٢٠، برقم ١٣٤.",
+     "البخاري مع الفتح، ٦/ ٣٣٦، برقم ٣٢٧٦، ومسلم، ١/ ١٢٠، برقم ١٣٤.",
+     "البخاري مع الفتح، ٦/ ٣٣٦، برقم ٣٢٧٦، ومسلم، ١/ ١٢٠، برقم ١٣٤."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-008",
+   "sourceItemId": "hisn-046-02",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-046-02"
+   },
+   "before": {
+    "bookItemNumber": 141
+   },
+   "after": {
+    "bookItemNumber": 142
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-046-02]",
+    "reason": "Letter-identical to book item 142 «الأذان»; Phase 2C wrongly matched this short text to 141 by letter overlap.",
+    "similarity": 1.0,
+    "sourceInBook": 1.0,
+    "bookInSource": 1.0,
+    "referenceSimilarity": 1.0,
+    "bookText": "((الْأَذَانُ)).",
+    "bookFootnotes": [
+     "مسلم، ١/ ٢٩١، برقم ٣٨٩، والبخاري، ١/ ١٥١، برقم ٦٠٨."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-009",
+   "sourceItemId": "hisn-133-01",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-133-01"
+   },
+   "before": {
+    "bookItemNumber": null
+   },
+   "after": {
+    "bookItemNumber": 267
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5–6; tools/content/hisn.reconciliation.json items[hisn-133-01]",
+    "reason": "Book item 267 «إذا كان جنح الليل…»; the book wording is fully inside the source, which appends the book's closing doxology.",
+    "similarity": 0.899,
+    "sourceInBook": 0.816,
+    "bookInSource": 1.0,
+    "referenceSimilarity": 1.0,
+    "bookText": "قَالَ النَّبِيُّ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - ((إِذَا كَانَ جُنْحُ اللَّيْلِ - أَوْ أَمْسَيْتُم - فَكُفُّوا صِبْيانَكُم، فَإِنَّ الشَّيَاطِينَ تَنْتَشِرُ حِينَئِذٍ، فَإِذَا ذَهَبَ سَاعَةٌ مِنَ اللَّيلِ فَخَلُّوهُمْ، وَأَغْلِقُوا الأَبْوَابَ وَاذْكُرُوا اسْمَ اللَّهِ؛ فَإِنَّ الشَّيطَانَ لاَ يَفْتَحُ بَاباً مُغلَقاً، وَأَوْكُوا قِرَبَكُمْ، وَاذْكُرُوا اسْمَ اللَّهِ، وَخَمِّرُوا آنِيَتَكُم، وَاذْكُرُوا اسْمَ اللَّهِ، وَلَوْ أَنْ تَعْرُضُوا عَلَيْهَا شَيْئاً، وَأَطْفِئُوا مَصَابِيحَكُمْ)).",
+    "bookFootnotes": [
+     "البخاري مع الفتح، ١٠/ ٨٨، برقم ٥٦٢٣، ومسلم، ٣/ ١٥٩٥، برقم ٢٠١٢."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-010",
+   "sourceItemId": "hisn-028-05",
+   "type": "BOOK_ITEM_NUMBER",
+   "target": {
+    "sourceItemId": "hisn-028-05"
+   },
+   "before": {
+    "bookItemNumber": null
+   },
+   "after": {
+    "bookItemNumber": 78
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §6; tools/content/hisn.reconciliation.json items[hisn-028-05].foundOutsideNumberedText",
+    "reason": "Evening wording of book item 78 from the book footnote (٢) «وإذا أمسى قال: اللهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير». The footnote is attached to item 78 in the transcription but was lost by the Phase 2C extractor, so the link rests on page layout; not applied until the owner accepts it.",
+    "footnote": "(٢) وإذا أمسى قال: اللَّهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.",
+    "footnotePage": 58
+   },
+   "confidence": "MEDIUM",
+   "reviewStatus": "PENDING_DECISION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-011",
+   "sourceItemId": null,
+   "type": "CANONICAL_ORDER",
+   "target": {
+    "sourceItemIds": [
+     "hisn-001-02",
+     "hisn-001-03"
+    ]
+   },
+   "before": {
+    "displayOrder": [
+     "hisn-001-02",
+     "hisn-001-03"
+    ]
+   },
+   "after": {
+    "canonicalOrder": [
+     "hisn-001-03",
+     "hisn-001-02"
+    ]
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5, §13; tools/content/hisn.reconciliation.json items[hisn-001-02], items[hisn-001-03] (ORDER_DIFFERENCE)",
+    "reason": "Book numbers 3 and 2: the source lists them in the opposite order to the book. Upstream order is kept for display; canonical order follows the book numbers."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-012",
+   "sourceItemId": null,
+   "type": "CANONICAL_ORDER",
+   "target": {
+    "sourceItemIds": [
+     "hisn-004-01",
+     "hisn-004-02"
+    ]
+   },
+   "before": {
+    "displayOrder": [
+     "hisn-004-01",
+     "hisn-004-02"
+    ]
+   },
+   "after": {
+    "canonicalOrder": [
+     "hisn-004-02",
+     "hisn-004-01"
+    ]
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5, §13; tools/content/hisn.reconciliation.json items[hisn-004-01], items[hisn-004-02] (ORDER_DIFFERENCE)",
+    "reason": "Book numbers 8 and 7: the source lists them in the opposite order to the book. Upstream order is kept for display; canonical order follows the book numbers."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-013",
+   "sourceItemId": null,
+   "type": "CANONICAL_ORDER",
+   "target": {
+    "sourceItemIds": [
+     "hisn-010-01",
+     "hisn-010-02"
+    ]
+   },
+   "before": {
+    "displayOrder": [
+     "hisn-010-01",
+     "hisn-010-02"
+    ]
+   },
+   "after": {
+    "canonicalOrder": [
+     "hisn-010-02",
+     "hisn-010-01"
+    ]
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5, §13; tools/content/hisn.reconciliation.json items[hisn-010-01], items[hisn-010-02] (ORDER_DIFFERENCE)",
+    "reason": "Book numbers 17 and 16: the source lists them in the opposite order to the book. Upstream order is kept for display; canonical order follows the book numbers."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-014",
+   "sourceItemId": "hisn-027-20",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-027-20"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": 100
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-027-20].repetition",
+    "reason": "Book item 93 states «(مائةَ مرَّةٍ إذا أصبح)»; source count 100 agrees once the Phase 2C mismatch to 92 is corrected.",
+    "sourceCount": 100,
+    "bookCountPhrases": [
+     "مائةَ مرَّةٍ"
+    ],
+    "category": "RESOLVED_BY_REMATCH"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-015",
+   "sourceItemId": "hisn-032-03",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-032-03"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": 1
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-032-03].repetition",
+    "reason": "Part 3 of book item 114 «لا يحدث بها أحداً»: the book's «(ثلاثاً)» and «(ثلاث مرات)» belong to parts 1 and 2; this part states no count. Source count 1.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "ثلاثاً",
+     "ثَلاَثَ مَرَّاتٍ"
+    ],
+    "category": "RESOLVED_BY_SPLIT"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-016",
+   "sourceItemId": "hisn-032-04",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-032-04"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": 1
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-032-04].repetition",
+    "reason": "Part 4 of book item 114 «يتحول عن جنبه الذي كان عليه» states no count; the book's counts belong to parts 1 and 2. Source count 1.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "ثلاثاً",
+     "ثَلاَثَ مَرَّاتٍ"
+    ],
+    "category": "RESOLVED_BY_SPLIT"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-017",
+   "sourceItemId": "hisn-130-02",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-130-02"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": 1
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-130-02].repetition",
+    "reason": "«مِائَةَ مَرَّةٍ» is part of the hadith wording (what the Prophet did), not an instruction to repeat the item. Medium confidence: needs the owner's acceptance.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "مِائَةَ مَرَّةٍ"
+    ],
+    "category": "COUNT_INSIDE_HADITH"
+   },
+   "confidence": "MEDIUM",
+   "reviewStatus": "REJECTED",
+   "reviewPriority": "P0",
+   "rejectedBy": "HISN-REVIEW-013"
+  },
+  {
+   "id": "HISN-CORR-018",
+   "sourceItemId": "hisn-130-06",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-130-06"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": 1
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-130-06].repetition",
+    "reason": "«مِائَةَ مَرَّةٍ» is part of the hadith wording, not an instruction to repeat the item. Medium confidence: needs the owner's acceptance.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "مِائَةَ مَرَّةٍ"
+    ],
+    "category": "COUNT_INSIDE_HADITH"
+   },
+   "confidence": "MEDIUM",
+   "reviewStatus": "REJECTED",
+   "reviewPriority": "P0",
+   "rejectedBy": "HISN-REVIEW-014"
+  },
+  {
+   "id": "HISN-CORR-019",
+   "sourceItemId": "hisn-016-05",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-016-05"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": null
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-016-05].repetition",
+    "reason": "The book's ثلاثاً follows the takbir/tahmid/tasbih block only; the isti'adha after it is said once. No single count fits the whole item. The count stays nil; no whole-item count is manufactured.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "ثَلاثاً"
+    ],
+    "category": "PHRASE_LEVEL"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-020",
+   "sourceItemId": "hisn-025-01",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-025-01"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": null
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-025-01].repetition",
+    "reason": "(ثلاثاً) applies to أستغفر الله only; the du'a after it is said once. The source keeps the instruction inline. The count stays nil; no whole-item count is manufactured.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "ثَلاَثَاً"
+    ],
+    "category": "PHRASE_LEVEL"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-021",
+   "sourceItemId": "hisn-025-02",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-025-02"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": null
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-025-02].repetition",
+    "reason": "The book has [ثلاثاً] (an addition from al-Bukhari, per its footnote) after the tahlil only. The source text leaves the bracketed addition out entirely. The count stays nil; no whole-item count is manufactured.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "ثلاثاً"
+    ],
+    "category": "PHRASE_LEVEL_AND_SOURCE_OMISSION"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-022",
+   "sourceItemId": "hisn-025-04",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-025-04"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": null
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-025-04].repetition",
+    "reason": "33 applies to each of the three tasbih phrases; the closing tahlil is said once (the source says (مرة واحدة)). No single count fits the whole item. The count stays nil; no whole-item count is manufactured.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "ثلاثاً وثلاثين"
+    ],
+    "category": "PHRASE_LEVEL"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-023",
+   "sourceItemId": "hisn-119-01",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-119-01"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": null
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-119-01].repetition",
+    "reason": "A narration of the Prophet's practice at Safa: the tahlil is said three times with du'a between. The item as a whole is not recited a fixed number of times. The count stays nil; no whole-item count is manufactured.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "ثَلاَثَ مَرَّاتٍ"
+    ],
+    "category": "NARRATIVE"
+   },
+   "confidence": "MEDIUM",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-024",
+   "sourceItemId": "hisn-125-01",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-125-01"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": null
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-125-01].repetition",
+    "reason": "بسم الله three times and the ta'awwudh seven times, both stated inline. No single count fits the whole item. The count stays nil; no whole-item count is manufactured.",
+    "sourceCount": 1,
+    "bookCountPhrases": [
+     "ثَلاَثاً",
+     "سَبْعَ مَرَّاتٍ"
+    ],
+    "category": "PHRASE_LEVEL"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-025",
+   "sourceItemId": "hisn-131-02",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-131-02"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": null
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-131-02].repetition",
+    "reason": "«عشر مرار» is inside the hadith text. Source count 10 treats it as an instruction for the embedded tahlil, while the neighbouring hadith items use 1. Keep nil until a reviewer decides. The count stays nil; no whole-item count is manufactured.",
+    "sourceCount": 10,
+    "bookCountPhrases": [
+     "عَشْرَ مِرَارٍ"
+    ],
+    "category": "COUNT_INSIDE_HADITH"
+   },
+   "confidence": "MEDIUM",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-026",
+   "sourceItemId": "hisn-029-06",
+   "type": "REPETITION_COUNT",
+   "target": {
+    "sourceItemId": "hisn-029-06"
+   },
+   "before": {
+    "count": null
+   },
+   "after": {
+    "count": null
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §8; tools/content/hisn.reconciliation.json items[hisn-029-06].repetition",
+    "reason": "Source says 3. The book text (item 104) states no count and its footnote quotes only the hadith opening. Not verifiable from the cross-check; needs the printed edition or the hadith source. Kept nil until a printed edition or hadith source settles it; not guessed.",
+    "sourceCount": 3,
+    "bookCountPhrases": [],
+    "category": "UNVERIFIED_SOURCE_COUNT"
+   },
+   "confidence": "MEDIUM",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2F instructions (2026-10-08): KEEP_NIL; editorial decision HISN-REVIEW-015"
+  },
+  {
+   "id": "HISN-CORR-027",
+   "sourceItemId": "hisn-001-04",
+   "type": "QURAN_CITATION",
+   "target": {
+    "sourceItemId": "hisn-001-04"
+   },
+   "before": {
+    "quranStatus": "RESOLVED",
+    "quranCitations": [
+     {
+      "coversWholeVerses": false,
+      "match": "FUZZY",
+      "reference": {
+       "fromAyah": 190,
+       "surah": 3,
+       "toAyah": 200
+      }
+     }
+    ]
+   },
+   "after": {
+    "quranStatus": "RESOLVED",
+    "quranCitations": [
+     {
+      "reference": {
+       "surah": 3,
+       "fromAyah": 190,
+       "toAyah": 200
+      },
+      "coversWholeVerses": true,
+      "match": "EXACT",
+      "recitesWholeSurah": false
+     }
+    ]
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §9; tools/content/hisn.reconciliation.json items[hisn-001-04].quranPassages",
+    "reason": "All eleven verses 3:190–200 are present; word by word the only differences from Tanzil are spelling (Uthmani ٱلَّيْل / اللَّيْل in 190, مَأْوَىٰهُمْ / مَأْوَاهُمْ in 197). Source wording is not replaced.",
+    "passages": [
+     "إِنَّ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِأُولِي الْأَلْبَابِ (190) الَّذِينَ يَذْكُرُونَ اللَّهَ قِيَامًا وَقُعُودًا وَعَلَى جُنُوبِهِمْ وَيَتَفَكَّرُونَ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ رَبَّنَا مَا خَلَقْتَ هَذَا بَاطِلًا سُبْحَانَكَ فَقِنَا عَذَابَ النَّارِ (191) رَبَّنَا إِنَّكَ مَنْ تُدْخِلِ النَّارَ فَقَدْ أَخْزَيْتَهُ وَمَا لِلظَّالِمِينَ مِنْ أَنْصَارٍ (192) رَبَّنَا إِنَّنَا سَمِعْنَا مُنَادِيًا يُنَادِي لِلْإِيمَانِ أَنْ آمِنُوا بِرَبِّكُمْ فَآمَنَّا رَبَّنَا فَاغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَيِّئَاتِنَا وَتَوَفَّنَا مَعَ الْأَبْرَارِ (193) رَبَّنَا وَآتِنَا مَا وَعَدْتَنَا عَلَى رُسُلِكَ وَلَا تُخْزِنَا يَوْمَ الْقِيَامَةِ إِنَّكَ لَا تُخْلِفُ الْمِيعَادَ (194) فَاسْتَجَابَ لَهُمْ رَبُّهُمْ أَنِّي لَا أُضِيعُ عَمَلَ عَامِلٍ مِنْكُمْ مِنْ ذَكَرٍ أَوْ أُنْثَى بَعْضُكُمْ مِنْ بَعْضٍ فَالَّذِينَ هَاجَرُوا وَأُخْرِجُوا مِنْ دِيَارِهِمْ وَأُوذُوا فِي سَبِيلِي وَقَاتَلُوا وَقُتِلُوا لَأُكَفِّرَنَّ عَنْهُمْ سَيِّئَاتِهِمْ وَلَأُدْخِلَنَّهُمْ جَنَّاتٍ تَجْرِي مِنْ تَحْتِهَا الْأَنْهَارُ ثَوَابًا مِنْ عِنْدِ اللَّهِ وَاللَّهُ عِنْدَهُ حُسْنُ الثَّوَابِ (195) لَا يَغُرَّنَّكَ تَقَلُّبُ الَّذِينَ كَفَرُوا فِي الْبِلَادِ (196) مَتَاعٌ قَلِيلٌ ثُمَّ مَأْوَاهُمْ جَهَنَّمُ وَبِئْسَ الْمِهَادُ (197) لَكِنِ الَّذِينَ اتَّقَوْا رَبَّهُمْ لَهُمْ جَنَّاتٌ تَجْرِي مِنْ تَحْتِهَا الْأَنْهَارُ خَالِدِينَ فِيهَا نُزُلًا مِنْ عِنْدِ اللَّهِ وَمَا عِنْدَ اللَّهِ خَيْرٌ لِلْأَبْرَارِ (198) وَإِنَّ مِنْ أَهْلِ الْكِتَابِ لَمَنْ يُؤْمِنُ بِاللَّهِ وَمَا أُنْزِلَ إِلَيْكُمْ وَمَا أُنْزِلَ إِلَيْهِمْ خَاشِعِينَ لِلَّهِ لَا يَشْتَرُونَ بِآيَاتِ اللَّهِ ثَمَنًا قَلِيلًا أُولَئِكَ لَهُمْ أَجْرُهُمْ عِنْدَ رَبِّهِمْ إِنَّ اللَّهَ سَرِيعُ الْحِسَابِ (199) يَا أَيُّهَا الَّذِينَ آمَنُوا اصْبِرُوا وَصَابِرُوا وَرَابِطُوا وَاتَّقُوا اللَّهَ لَعَلَّكُمْ تُفْلِحُونَ (200)"
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-028",
+   "sourceItemId": "hisn-029-03",
+   "type": "QURAN_CITATION",
+   "target": {
+    "sourceItemId": "hisn-029-03"
+   },
+   "before": {
+    "quranStatus": "RESOLVED",
+    "quranCitations": [
+     {
+      "coversWholeVerses": false,
+      "match": "FUZZY",
+      "reference": {
+       "fromAyah": 285,
+       "surah": 2,
+       "toAyah": 286
+      }
+     }
+    ]
+   },
+   "after": {
+    "quranStatus": "RESOLVED",
+    "quranCitations": [
+     {
+      "reference": {
+       "surah": 2,
+       "fromAyah": 285,
+       "toAyah": 286
+      },
+      "coversWholeVerses": true,
+      "match": "EXACT",
+      "recitesWholeSurah": false
+     }
+    ]
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §9; tools/content/hisn.reconciliation.json items[hisn-029-03].quranPassages",
+    "reason": "Both verses 2:285–286 are complete; the only difference from Tanzil is spelling (مَوْلَىٰنَا / مَوْلَانَا). Source wording is not replaced.",
+    "passages": [
+     "آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ كُلٌّ آمَنَ بِاللّهِ وَمَلآئِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لاَ نُفَرِّقُ بَيْنَ أَحَدٍ مِّن رُّسُلِهِ وَقَالُواْ سَمِعْنَا وَأَطَعْنَا غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ * لاَ يُكَلِّفُ اللّهُ نَفْسًا إِلاَّ وُسْعَهَا لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ رَبَّنَا لاَ تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا رَبَّنَا وَلاَ تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِن قَبْلِنَا رَبَّنَا وَلاَ تُحَمِّلْنَا مَا لاَ طَاقَةَ لَنَا بِهِ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا أَنتَ مَوْلاَنَا فَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ"
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-029",
+   "sourceItemId": "hisn-029-14",
+   "type": "QURAN_CITATION",
+   "target": {
+    "sourceItemId": "hisn-029-14"
+   },
+   "before": {
+    "quranStatus": "PARTIAL",
+    "quranCitations": [
+     {
+      "coversWholeVerses": false,
+      "match": "EXACT",
+      "reference": {
+       "fromAyah": 1,
+       "surah": 67,
+       "toAyah": 1
+      }
+     }
+    ]
+   },
+   "after": {
+    "quranStatus": "RESOLVED",
+    "quranCitations": [
+     {
+      "reference": {
+       "surah": 32,
+       "fromAyah": 1,
+       "toAyah": 2
+      },
+      "coversWholeVerses": false,
+      "match": "EXACT",
+      "recitesWholeSurah": true
+     },
+     {
+      "reference": {
+       "surah": 67,
+       "fromAyah": 1,
+       "toAyah": 1
+      },
+      "coversWholeVerses": false,
+      "match": "EXACT",
+      "recitesWholeSurah": true
+     }
+    ]
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §9; tools/content/hisn.reconciliation.json items[hisn-029-14].quranPassages",
+    "reason": "«ألم * تنزيل …» occurs once in the Quran (32:1–2) and the source labels it (سورة السجدة); «تبارك الذي بيده الملك …» is 67:1. Both are incipits («…»): the item instructs reciting the whole of al-Sajdah and al-Mulk. Only the incipit verses are cited; no surah text is added.",
+    "passages": [
+     "ألم * تَنْزِيل ...",
+     "تَبَارَكَ الذِي بِيَدِهِ المُلْكُ ..."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P0",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-030",
+   "sourceItemId": null,
+   "type": "PRESENTATION_SECTION",
+   "target": {
+    "chapterId": "hisn-ch-027"
+   },
+   "before": {
+    "presentationSection": null
+   },
+   "after": {
+    "bookChapterNumber": 27,
+    "presentationSection": "MORNING",
+    "label": "27A"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §3, §12",
+    "reason": "Book chapter 27 «أذكار الصباح والمساء» is presented as two sections. The book supports the split: items 93–95 are marked «إذا أصبح», item 97 «إذا أمسى», and evening wording is given in footnotes «وإذا أمسى قال: …». Section 27A (أذكار الصباح) is not a canonical chapter."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-031",
+   "sourceItemId": null,
+   "type": "PRESENTATION_SECTION",
+   "target": {
+    "chapterId": "hisn-ch-028"
+   },
+   "before": {
+    "presentationSection": null
+   },
+   "after": {
+    "bookChapterNumber": 27,
+    "presentationSection": "EVENING",
+    "label": "27B"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §3, §12",
+    "reason": "Book chapter 27 «أذكار الصباح والمساء» is presented as two sections. The book supports the split: items 93–95 are marked «إذا أصبح», item 97 «إذا أمسى», and evening wording is given in footnotes «وإذا أمسى قال: …». Section 27B (أذكار المساء) is not a canonical chapter."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-032",
+   "sourceItemId": "hisn-027-01",
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemId": "hisn-027-01"
+   },
+   "before": {
+    "bookItemRelation": null
+   },
+   "after": {
+    "bookItemRelation": "CHAPTER_INTRODUCTION"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §6; tools/content/hisn.reconciliation.json items[hisn-027-01].foundOutsideNumberedText",
+    "reason": "The book prints «الحمد لله وحده، والصلاة والسلام على من لا نبي بعده» as the unnumbered opening line of chapter 27 (with the Anas footnote the source keeps as its reference). It is not a numbered book item.",
+    "sourceExcerpt": "الحَمْدُ لِلَّهِ وَحْدَهُ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى مَنْ لَا نَبِيَّ بَعْدَهُ"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-033",
+   "sourceItemId": "hisn-028-01",
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemId": "hisn-028-01"
+   },
+   "before": {
+    "bookItemRelation": null
+   },
+   "after": {
+    "bookItemRelation": "CHAPTER_INTRODUCTION"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §6; tools/content/hisn.reconciliation.json items[hisn-028-01].foundOutsideNumberedText",
+    "reason": "The book prints «الحمد لله وحده، والصلاة والسلام على من لا نبي بعده» as the unnumbered opening line of chapter 27 (with the Anas footnote the source keeps as its reference). It is not a numbered book item.",
+    "sourceExcerpt": "الحَمْدُ لِلَّهِ وَحْدَهُ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى مَنْ لَا نَبِيَّ بَعْدَهُ"
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-034",
+   "sourceItemId": "hisn-028-04",
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemId": "hisn-028-04"
+   },
+   "before": {
+    "bookItemRelation": null
+   },
+   "after": {
+    "bookItemRelation": "EVENING_VARIANT"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §3, §6; tools/content/hisn.reconciliation.json items[hisn-028-04]",
+    "reason": "Evening wording the book gives in a footnote «وإذا أمسى قال: …» for the morning item; the source evening section carries it as its own display item.",
+    "footnote": "(٢) وإذا أمسى قال: رب أسألك خير ما في هذه الليلة، وخير ما بعدها، وأعوذ بك من شر ما في هذه الليلة، وشر ما بعدها.",
+    "footnotePage": 57
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-035",
+   "sourceItemId": "hisn-028-05",
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemId": "hisn-028-05"
+   },
+   "before": {
+    "bookItemRelation": null
+   },
+   "after": {
+    "bookItemRelation": "EVENING_VARIANT"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §3, §6; tools/content/hisn.reconciliation.json items[hisn-028-05]",
+    "reason": "Evening wording the book gives in a footnote «وإذا أمسى قال: …» for the morning item; the source evening section carries it as its own display item.",
+    "footnote": "(٢) وإذا أمسى قال: اللَّهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.",
+    "footnotePage": 58
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-036",
+   "sourceItemId": "hisn-028-07",
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemId": "hisn-028-07"
+   },
+   "before": {
+    "bookItemRelation": null
+   },
+   "after": {
+    "bookItemRelation": "EVENING_VARIANT"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §3, §6; tools/content/hisn.reconciliation.json items[hisn-028-07]",
+    "reason": "Evening wording the book gives in a footnote «وإذا أمسى قال: …» for the morning item; the source evening section carries it as its own display item.",
+    "footnote": "(٢) وإذا أمسى قال: اللَّهم إني أمسيت.",
+    "footnotePage": 59
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-037",
+   "sourceItemId": "hisn-028-08",
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemId": "hisn-028-08"
+   },
+   "before": {
+    "bookItemRelation": null
+   },
+   "after": {
+    "bookItemRelation": "EVENING_VARIANT"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §3, §6; tools/content/hisn.reconciliation.json items[hisn-028-08]",
+    "reason": "Evening wording the book gives in a footnote «وإذا أمسى قال: …» for the morning item; the source evening section carries it as its own display item.",
+    "footnote": "(١) وإذا أمسى قال: اللَّهم ما أمسى بي ...",
+    "footnotePage": 60
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-038",
+   "sourceItemId": "hisn-028-16",
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemId": "hisn-028-16"
+   },
+   "before": {
+    "bookItemRelation": null
+   },
+   "after": {
+    "bookItemRelation": "EVENING_VARIANT"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §3, §6; tools/content/hisn.reconciliation.json items[hisn-028-16]",
+    "reason": "Evening wording the book gives in a footnote «وإذا أمسى قال: …» for the morning item; the source evening section carries it as its own display item.",
+    "footnote": "(٣) وإذا أمسى قال: اللَّهم إني أسألك خير هذه الليلة: فتحها، ونصرها، ونورها، وبركتها، وهداها، وأعوذ بك من شر ما فيها، وشر ما بعدها.",
+    "footnotePage": 64
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-039",
+   "sourceItemId": "hisn-028-17",
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemId": "hisn-028-17"
+   },
+   "before": {
+    "bookItemRelation": null
+   },
+   "after": {
+    "bookItemRelation": "EVENING_VARIANT"
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §3, §6; tools/content/hisn.reconciliation.json items[hisn-028-17]",
+    "reason": "Evening wording the book gives in a footnote «وإذا أمسى قال: …» for the morning item; the source evening section carries it as its own display item.",
+    "footnote": "(٢) وإذا أمسى قال: أمسينا على فطرة الإسلام.",
+    "footnotePage": 65
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "ACCEPTED",
+   "reviewPriority": "P1",
+   "acceptedBy": "Project owner, Phase 2E instructions (2026-10-08)"
+  },
+  {
+   "id": "HISN-CORR-040",
+   "sourceItemId": null,
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemIds": [
+     "hisn-012-01",
+     "hisn-012-02",
+     "hisn-012-03",
+     "hisn-012-04"
+    ]
+   },
+   "before": null,
+   "after": {
+    "bookItemRelation": "SPLIT_PART",
+    "bookItemNumber": 19
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §7; tools/content/hisn.reconciliation.json bookItems[19]",
+    "reason": "Book item 19 is presented as 4 display items. The split parts keep the book number; whether each split is editorially acceptable is a P1 review.",
+    "bookText": "((اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُوراً، وَفِي لِسَانِي نُوراً، وَفِي سَمْعِي نُوراً، وَفِي بَصَرِي نُوراً، وَمِنْ فَوْقِي نُوراً، وَمِنْ تَحْتِي نُوراً، وَعَنْ يَمِينِي نُوراً، وَعَنْ شِمَالِي نُوراً، وَمِنْ أَمَامِي نُوراً، وَمِنْ خَلْفِي نُوراً، وَاجْعَلْ فِي نَفْسِي نُوراً، وَأَعْظِمْ لِي نُوراً، وَعَظِّم لِي نُوراً، وَاجْعَلْ لِي نُوراً، وَاجْعَلْنِي نُوراً، اللَّهُمَّ أَعْطِنِي نُوراً، وَاجْعَلْ فِي عَصَبِي نُوراً، وَفِي لَحْمِي نُوراً، وَفِي دَمِي نُوراً، وَفِي شَعْرِي نُوراً، وَفِي بَشَرِي نُوراً)). (([اللَّهُمَّ اجْعَلْ لِي نُوراً فِي قَبْرِي ... وَنُوراً فِي عِظَامِي])) [((وَزِدْنِي نُوراً، وَزِدْنِي نُوراً، وَزِدْنِي نُوراً))] [((وَهَبْ لِي نُوراً عَلَى نُورٍ))]."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-041",
+   "sourceItemId": null,
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemIds": [
+     "hisn-013-01",
+     "hisn-013-02"
+    ]
+   },
+   "before": null,
+   "after": {
+    "bookItemRelation": "SPLIT_PART",
+    "bookItemNumber": 20
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §7; tools/content/hisn.reconciliation.json bookItems[20]",
+    "reason": "Book item 20 is presented as 2 display items. The split parts keep the book number; whether each split is editorially acceptable is a P1 review.",
+    "bookText": "((يَبْدَأُ بِرِجْلِهِ الْيُمْنَى))، وَيَقُولُ: ((أَعُوذُ بِاللَّهِ العَظِيمِ، وَبِوَجْهِهِ الْكَرِيمِ، وَسُلْطَانِهِ الْقَدِيمِ، مِنَ الشَّيْطَانِ الرَّجِيمِ)) [بِسْمِ اللَّهِ، وَالصَّلَاةُ] [وَالسَّلَامُ عَلَى رَسُولِ اللَّهِ] ((اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ))."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-042",
+   "sourceItemId": null,
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemIds": [
+     "hisn-029-08",
+     "hisn-029-09",
+     "hisn-029-10"
+    ]
+   },
+   "before": null,
+   "after": {
+    "bookItemRelation": "SPLIT_PART",
+    "bookItemNumber": 106
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §7; tools/content/hisn.reconciliation.json bookItems[106]",
+    "reason": "Book item 106 is presented as 3 display items. The split parts keep the book number; whether each split is editorially acceptable is a P1 review.",
+    "bookText": "((سُبْحَانَ اللَّهِ (ثلاثاً وثلاثين) وَالْحَمْدُ لِلَّهِ (ثلاثاً وثلاثين) وَاللَّهُ أَكْبَرُ (أربعاً وثلاثينَ)))."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-043",
+   "sourceItemId": null,
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemIds": [
+     "hisn-032-01",
+     "hisn-032-02",
+     "hisn-032-03",
+     "hisn-032-04"
+    ]
+   },
+   "before": null,
+   "after": {
+    "bookItemRelation": "SPLIT_PART",
+    "bookItemNumber": 114
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §7; tools/content/hisn.reconciliation.json bookItems[114]",
+    "reason": "Book item 114 is presented as 4 display items. The split parts keep the book number; whether each split is editorially acceptable is a P1 review.",
+    "bookText": "((يَنْفُثُ عَنْ يَسَارِهِ)) (ثلاثاً).\n((يَسْتَعِيذُ بِاللَّهِ مِنَ الشَّيطَانِ وَمِنْ شَرِّ مَا رَأَى)) (ثَلاَثَ مَرَّاتٍ). ((لاَ يُحَدِّثْ بِهَا أَحَداً)).\n((يَتَحَوَّلُ عَنْ جَنْبِهِ الَّذِي كَانَ عَلَيْهِ))."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-044",
+   "sourceItemId": null,
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemIds": [
+     "hisn-041-01",
+     "hisn-041-02"
+    ]
+   },
+   "before": null,
+   "after": {
+    "bookItemRelation": "SPLIT_PART",
+    "bookItemNumber": 133
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §7; tools/content/hisn.reconciliation.json bookItems[133]",
+    "reason": "Book item 133 is presented as 2 display items. The split parts keep the book number; whether each split is editorially acceptable is a P1 review.",
+    "bookText": "((يَسْتَعِيذُ بِاللَّهِ)).\n((يَنْتَهِي عَمَّا وَسْوَسَ فِيهِ))."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-045",
+   "sourceItemId": null,
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemIds": [
+     "hisn-057-01",
+     "hisn-057-02"
+    ]
+   },
+   "before": null,
+   "after": {
+    "bookItemRelation": "SPLIT_PART",
+    "bookItemNumber": 160
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §7; tools/content/hisn.reconciliation.json bookItems[160]",
+    "reason": "Book item 160 is presented as 2 display items. The split parts keep the book number; whether each split is editorially acceptable is a P1 review.",
+    "bookText": "((اللَّهُمَّ أَعِذْهُ مِنْ عَذَابِ القَبْرِ)).\nوإن قال: ((اللَّهُمَّ اجْعَلْهُ فَرَطاً وَذُخْراً لِوَالِدَيْهِ، وَشَفِيعاً مُجَاباً، اللَّهُمَّ ثَقِّلْ بِهِ مَوَازِينَهُمَا، وَأَعْظِمْ بِهِ أُجورَهُمَا، وَأَلْحِقْهُ بِصَالِحِ الْمُؤْمِنِينَ، وَاجْعَلْهُ فِي كَفَالَةِ إِبْرَاهِيمَ، وَقِهِ بِرَحْمَتِكَ عَذَابَ الْجَحِيمِ، وَأَبْدِلْهُ دَاراً خَيْراً مِنْ دَارِهِ، وَأَهْلاً خَيْراً مِنْ أَهْلِهِ، اللَّهُمَّ اغْفِرْ لِأَسْلاَفِنَا، وَأَفْرَاطِنَا، وَمَنْ سَبَقَنَا بِالْإِيمَانِ)) فَحَسَنٌ."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-046",
+   "sourceItemId": null,
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemIds": [
+     "hisn-058-01",
+     "hisn-058-02"
+    ]
+   },
+   "before": null,
+   "after": {
+    "bookItemRelation": "SPLIT_PART",
+    "bookItemNumber": 162
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §7; tools/content/hisn.reconciliation.json bookItems[162]",
+    "reason": "Book item 162 is presented as 2 display items. The split parts keep the book number; whether each split is editorially acceptable is a P1 review.",
+    "bookText": "((إِنَّ للَّهِ مَا أَخَذَ، وَلَهُ مَا أَعْطَى، وَكُلُّ شَيْءٍ عِنْدَهُ بِأَجَلٍ مُسَمَّى ... فَلْتَصْبِرْ وَلْتَحْتَسِبْ)).\nوَإِنْ قَالَ: ((أَعْظَمَ اللَّهُ أَجْرَكَ، وَأَحْسَنَ عَزَاءَكَ، وَغَفَرَ لِمَيِّتِكَ)) فَحَسَنٌ."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-047",
+   "sourceItemId": null,
+   "type": "BOOK_ITEM_RELATION",
+   "target": {
+    "sourceItemIds": [
+     "hisn-089-01",
+     "hisn-089-02"
+    ]
+   },
+   "before": null,
+   "after": {
+    "bookItemRelation": "SPLIT_PART",
+    "bookItemNumber": 199
+   },
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §7; tools/content/hisn.reconciliation.json bookItems[199]",
+    "reason": "Book item 199 is presented as 2 display items. The split parts keep the book number; whether each split is editorially acceptable is a P1 review.",
+    "bookText": "((مَنْ حَفِظَ عَشْرَ آيَاتٍ مِنْ أَوَّلِ سُورَةِ الْكَهْفِ عُصِمَ مِنَ الدَّجَّالِ))، وَالْاسْتِعَاذَةُ بِاللَّهِ مِنْ فِتْنَتِهِ عَقِبَ التَّشَهُّدِ الْأَخِيرِ مِنْ كُلِّ صَلاَةٍ."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-048",
+   "sourceItemId": "hisn-016-01",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-016-01"
+   },
+   "before": {
+    "arabicText": "اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ المَشْرِقِ وَالمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنْ خَطَايَايَ كَمَا يُنَقَّى الثَّوْبُ الأَبْيَضُ مِنَ الدَّنَسِ اللَّهُمَّ اغْسِلْنِي مِنْ خَطَايَايَ بِالمَاءِ وَالثَّلْجِ وَالبَرَدِ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-016-01].dhikrWordingDifferences",
+    "reason": "Book «بالثلج والماء», source «بالماء والثلج» (word order).",
+    "kinds": [
+     "WORDING"
+    ],
+    "bookItemNumber": 27,
+    "bookText": "((اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ الْمَشْرِقِ وَالْمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنْ خَطَايَايَ كَمَا يُنَقَّى الثَّوْبُ الْأَبْيَضُ مِنَ الدَّنَسِ، اللَّهُمَّ اغْسِلْني مِنْ خَطَايَايَ، بِالثَّلْجِ وَالْماءِ وَالْبَرَدِ)).",
+    "wordDifferences": [
+     {
+      "op": "replace",
+      "book": "بالثلج والماء",
+      "source": "بالماء والثلج"
+     }
+    ],
+    "bracketedAdditionsMissing": []
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-049",
+   "sourceItemId": "hisn-016-06",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-016-06"
+   },
+   "before": {
+    "arabicText": "اللَّهُمَّ لَكَ الحَمْدُ أَنْتَ نُورُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الحَمْدُ أَنْتَ قَيِّمُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الحَمْدُ أَنْتَ رَبُّ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الحَمْدُ لَكَ مُلْكُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الحَمْدُ أَنْتَ مَلِكُ السَّمَوَاتِ وَالأَرْضِ، وَلَكَ الحَمْدُ أَنْتَ الحَقُّ، وَوَعْدُكَ الحَقُّ، وَقَوْلُكَ الحَقُّ، وَلِقَاؤُكَ الحَقُّ، وَالجَنَّةُ حَقٌّ، وَالنَّارُ حَقٌّ، وَالنَّبِيُّونَ حَقٌّ، وَمُحَمَّدٌ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَقٌّ وَالسَّاعَةُ حَقٌّ اللَّهُمَّ لَكَ أَسْلَمْتُ، وَعَلَيْكَ تَوَكَّلْتُ، وَبِكَ آمَنْتُ، وَإِلَيْكَ أَنَبْتُ، وَبِكَ خَاصَمْتُ، وَإِلَيْكَ حَاكَمْتُ، فَاغْفِرْ لِي مَا قَدَّمْتُ وَمَا أَخَّرْتُ، وَمَا أَسْرَرْتُ، وَمَا أَعْلَنْتُ أَنْتَ المُقَدِّمُ، وَأَنْتَ المُؤَخِّرُ لَا إِلَهَ إِلَّا أَنْتَ، أَنْتَ إِلَهِي لَا إِلَهَ إِلَّا أَنْتَ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-016-06].dhikrWordingDifferences",
+    "reason": "The book's bracketed additions «[وما أنت أعلم به مني]» and «[ولا حول ولا قوة إلا بالله]» are not in the source.",
+    "kinds": [
+     "WORDING",
+     "BRACKETED_ADDITION_OMITTED"
+    ],
+    "bookItemNumber": 32,
+    "bookText": "((اللَّهُمَّ لَكَ الْحَمْدُ (٣)، أَنْتَ نُورُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، وَلَكَ الْحَمْدُ أَنْتَ قَيِّمُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ، [وَلَكَ الْحَمْدُ أَنْتَ رَبُّ السَّمَواتِ وَالأَرْضِ وَمَنْ فِيهِنَّ] [وَلَكَ الْحَمْدُ لَكَ مُلْكُ السَّمَوَاتِ وَالأَرْضِ وَمَنْ فِيهِنَّ] [وَلَكَ الْحَمْدُ أَنْتَ مَلِكُ السَّمَوَاتِ وَالأَرْضِ] [وَلَكَ الْحَمْدُ] [أَنْتَ الْحَقُّ، وَوَعْدُكَ الْحَقُّ، وَقَوْلُكَ الْحَقُّ، وَلِقاؤُكَ الْحَقُّ، وَالْجَنَّةُ حَقٌّ، وَالنَّارُ حَقٌّ، وَالنَّبِيُّونَ حَقٌّ، وَمحَمَّدٌ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - حَقٌّ، وَالسّاعَةُ حَقٌّ] [اللَّهُمَّ لَكَ أَسْلَمتُ، وَعَلَيْكَ تَوَكَّلْتُ، وَبِكَ آمَنْتُ، وَإِلَيْكَ أَنَبْتُ، وَبِكَ خاصَمْتُ، وَإِلَيْكَ حاكَمْتُ. فَاغْفِرْ لِي مَا قَدَّمْتُ، وَمَا أَخَّرْتُ، وَمَا أَسْرَرْتُ، وَمَا أَعْلَنْتُ] [وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّي] [أَنْتَ المُقَدِّمُ، وَأَنْتَ المُؤَخِّرُ لاَ إِلَهَ إِلاَّ أَنْتَ] [أَنْتَ إِلَهِي لاَ إِلَهَ إِلاَّ أَنْتَ] [وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ])).",
+    "wordDifferences": [
+     {
+      "op": "delete",
+      "book": "وما انت اعلم به مني",
+      "source": ""
+     },
+     {
+      "op": "delete",
+      "book": "ولا حول ولا قوة الا بالله",
+      "source": ""
+     }
+    ],
+    "bracketedAdditionsMissing": [
+     "وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّي",
+     "وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ"
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-050",
+   "sourceItemId": "hisn-017-04",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-017-04"
+   },
+   "before": {
+    "arabicText": "اللَّهُمَّ لَكَ رَكَعْتُ، وَبِكَ آمَنْتُ، وَلَكَ أَسْلَمْتُ، خَشَعَ لَكَ سَمْعِي وَبَصَرِي وَمُخِّي وَعَظْمِي وَعَصَبِي، وَمَا اسْتَقَلَّ بِهِ قَدَمِي"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-017-04].dhikrWordingDifferences",
+    "reason": "Book bracketed addition «[وما استقلّت به قدمي]», source «وما استقلّ به قدمي».",
+    "kinds": [
+     "WORDING",
+     "BRACKETED_ADDITION_OMITTED"
+    ],
+    "bookItemNumber": 36,
+    "bookText": "((اللَّهُمَّ لَكَ رَكَعْتُ، وَبِكَ آمَنْتُ، وَلَكَ أَسْلَمْتُ، خَشَعَ لَكَ سَمْعِي، وَبَصَرِي، وَمُخِّي، وَعَظْمِي، وَعَصَبِي، [وَمَا استَقَلَّتْ بِهِ قَدَمِي])).",
+    "wordDifferences": [
+     {
+      "op": "replace",
+      "book": "استقلت",
+      "source": "استقل"
+     }
+    ],
+    "bracketedAdditionsMissing": [
+     "وَمَا استَقَلَّتْ بِهِ قَدَمِي"
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-051",
+   "sourceItemId": "hisn-025-02",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-025-02"
+   },
+   "before": {
+    "arabicText": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ وَلَا مُعْطِيَ لِمَا مَنَعْتَ وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-025-02].dhikrWordingDifferences",
+    "reason": "The book's «[ثلاثاً]» after the tahlil (an addition from al-Bukhari per its footnote) is not in the source. Inline source wording stays untouched.",
+    "kinds": [
+     "BRACKETED_ADDITION_OMITTED"
+    ],
+    "bookItemNumber": 67,
+    "bookText": "((لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ [ثلاثاً]، اللَّهُمَّ لاَ مَانِعَ لِمَا أَعْطَيْتَ، وَلاَ مُعْطِيَ لِمَا مَنَعْتَ، وَلاَ يَنْفَعُ ذَا الْجَدِّ مِنْكَ الجَدُّ)).",
+    "wordDifferences": [
+     {
+      "op": "delete",
+      "book": "ثلاثا",
+      "source": ""
+     }
+    ],
+    "bracketedAdditionsMissing": [
+     "ثلاثاً"
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-052",
+   "sourceItemId": "hisn-029-15",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-029-15"
+   },
+   "before": {
+    "arabicText": "اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَهْبَةً وَرَغْبَةً إِلَيْكَ، لَا مَلْجَأَ وَلَا مَنْجَا مِنْكَ إِلَّا إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الذِي أَنْزَلْتَ وَبِنَبِيِّكَ الذِي أَرْسَلْتَ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-029-15].dhikrWordingDifferences",
+    "reason": "Book «رغبةً ورهبةً», source «رهبةً ورغبةً» (word order).",
+    "kinds": [
+     "WORDING"
+    ],
+    "bookItemNumber": 111,
+    "bookText": "((اللَّهُمَّ (٣) أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لاَ مَلْجَأَ وَلاَ مَنْجَا مِنْكَ إِلاَّ إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ، وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ)).",
+    "wordDifferences": [
+     {
+      "op": "replace",
+      "book": "رغبة ورهبة",
+      "source": "رهبة ورغبة"
+     }
+    ],
+    "bracketedAdditionsMissing": []
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-053",
+   "sourceItemId": "hisn-037-02",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-037-02"
+   },
+   "before": {
+    "arabicText": "اللَّهُمَّ أَنْتَ عَضُدِي، وَأَنْتَ نَصِيرِي، بِكَ أَجُولُ، وَبِكَ أَصُولُ، وَبِكَ أُقَاتِلُ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-037-02].dhikrWordingDifferences",
+    "reason": "Book «بك أحول», source «بك أجول».",
+    "kinds": [
+     "WORDING"
+    ],
+    "bookItemNumber": 127,
+    "bookText": "((اللَّهُمَّ أَنْتَ عَضُدِي، وَأَنْتَ نَصِيرِي، بِكَ أَحُولُ وَبِكَ أَصُولُ، وَبِكَ أُقاتِلُ)).",
+    "wordDifferences": [
+     {
+      "op": "replace",
+      "book": "احول",
+      "source": "اجول"
+     }
+    ],
+    "bracketedAdditionsMissing": []
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-054",
+   "sourceItemId": "hisn-043-01",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-043-01"
+   },
+   "before": {
+    "arabicText": "يَقُولُ: (أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ)، وَيَتْفُلْ عَلَى يَسَارِهِ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-043-01].dhikrWordingDifferences",
+    "reason": "Book «واتفل على يسارك -ثلاثاً-» (imperative, with the count), source «ويتفل على يساره» (third person, no count).",
+    "kinds": [
+     "WORDING"
+    ],
+    "bookItemNumber": 138,
+    "bookText": "((أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ، وَاتْفُلْ عَلَى يَسَارِكَ -ثلاثاً-)).",
+    "wordDifferences": [
+     {
+      "op": "replace",
+      "book": "واتفل",
+      "source": "ويتفل"
+     },
+     {
+      "op": "replace",
+      "book": "يسارك ثلاثا",
+      "source": "يساره"
+     }
+    ],
+    "bracketedAdditionsMissing": []
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-055",
+   "sourceItemId": "hisn-052-02",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-052-02"
+   },
+   "before": {
+    "arabicText": "جَعَلَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ عِنْدَ مَوْتِهِ يُدْخِلُ يَدَيْهِ فِي المَاءِ فَيَمْسَحُ بِهِمَا وَجْهَهُ وَيَقُولُ: لَا إِلَهَ إِلَّا اللَّهُ إِنَّ لِلْمَوْتِ لَسَكَرَاتٌ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-052-02].dhikrWordingDifferences",
+    "reason": "Book «إن للموت سكرات», source «إن للموت لسكرات».",
+    "kinds": [
+     "WORDING"
+    ],
+    "bookItemNumber": 151,
+    "bookText": "((جَعَلَ النَّبِيُّ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - عِنْدَ مَوْتِهِ يُدْخِلُ يَدَيْهِ فِي الْمَاءِ فَيَمْسَحُ بِهِمَا وَجْهَهُ، وَيَقُولُ: لاَ إِلَهَ إِلاَّ اللَّهُ إِنَّ لِلْمَوْتِ سَكَرَاتٍ)).",
+    "wordDifferences": [
+     {
+      "op": "replace",
+      "book": "سكرات",
+      "source": "لسكرات"
+     }
+    ],
+    "bracketedAdditionsMissing": []
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-056",
+   "sourceItemId": "hisn-112-01",
+   "type": "TEXT_DISCREPANCY",
+   "target": {
+    "sourceItemId": "hisn-112-01"
+   },
+   "before": {
+    "arabicText": "إِذَا سَمِعْتُمْ نُبَاحَ الكِلَابِ وَنَهِيقَ الحَمِيرِ بِاللَّيْلِ فَتَعَوَّذُوا بِاللَّهِ مِنْهُمْ، فَإِنَّهُنَّ يَرَيْنَ مَا لَا تَرَوْنَ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §13; tools/content/hisn.reconciliation.json items[hisn-112-01].dhikrWordingDifferences",
+    "reason": "Book «فتعوذوا بالله منهنّ», source «منهم».",
+    "kinds": [
+     "WORDING"
+    ],
+    "bookItemNumber": 229,
+    "bookText": "((إِذَا سَمِعْتُمْ نُبَاحَ الْكِلاَبِ وَنَهِيقَ الْحَمِيرِ بِاللَّيْلِ فَتَعَوَّذُوا بِاللَّهِ مِنْهُنَّ؛ فَإِنَّهُنَّ يَرَيْنَ مَا لاَ تَرَوْنَ)).",
+    "wordDifferences": [
+     {
+      "op": "replace",
+      "book": "منهن",
+      "source": "منهم"
+     }
+    ],
+    "bracketedAdditionsMissing": []
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-057",
+   "sourceItemId": "hisn-001-03",
+   "type": "NON_DHIKR_TEXT",
+   "target": {
+    "sourceItemId": "hisn-001-03"
+   },
+   "before": {
+    "arabicText": "(لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، سُبْحَانَ اللَّهِ، وَالحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا اللَّه، وَاللَّه أَكْبَرُ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ العَلِّي العَظِيمِ، رَبِّ اغْفِرْ لِي). أَوْ دَعَا اسْتُجِيبَ لَهُ فَإِنْ تَوَضَّأَ وَصَلَّى قُبِلَتْ صَلَاتَهُ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5, §13; tools/content/hisn.reconciliation.json items[hisn-001-03].wordDifferences",
+    "reason": "Virtue text from the book's footnote («فإن دعا استجيب له، فإن قام فتوضأ ثم صلى قبلت صلاته») is inside the source item after the dhikr. Not deleted.",
+    "sourceExcerpt": "أَوْ دَعَا اسْتُجِيبَ لَهُ فَإِنْ تَوَضَّأَ وَصَلَّى قُبِلَتْ صَلَاتَهُ",
+    "bookText": "((لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَريكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، سُبْحَانَ اللَّهِ، وَالْحَمْدُ للَّهِ، وَلاَ إِلَهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكبَرُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ الْعَلِيِّ الْعَظِيمِ، رَبِّ اغْفرْ لِي))."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-058",
+   "sourceItemId": "hisn-133-01",
+   "type": "NON_DHIKR_TEXT",
+   "target": {
+    "sourceItemId": "hisn-133-01"
+   },
+   "before": {
+    "arabicText": "إِذَا كَانَ جُنْحُ اللَّيْلِ - أَوْ أَمْسَيْتُمْ - فَكُفُّوا صِبْيَانَكُمْ؛ فَإِنَّ الشَّيَاطِينَ تَنْتَشِرُ حِينَئِذٍ، فَإِذَا ذَهَبَ سَاعَةٌ مِنَ اللَّيْلِ فَخَلُّوهُمْ، وَأَغْلِقُوا الأَبْوَابَ وَاذْكُرُوا اِسْمَ اللَّهِ، فَإِنَّ الشَّيْطَانَ لَا يَفْتَحُ بَابًا مُغْلَقًا، وَأَوْكُوا قِرَبَكُمْ وَاذْكُرُوا اِسْمَ اللَّهِ، وَخَمِّرُوا آنِيَتَكُمْ وَاذْكُرُوا اِسْمَ اللَّهِ، وَلَوْ أَنْ تَعْرُضُوا عَلَيْهَا شَيْئًا، وَأَطْفِئُوا مَصَابِيحَكُمْ\r\nوَصَلَّى اللَّهُ وَسَلَّمَ وَبَارَكَ عَلَى نَبِيِّنَا مُحَمَّدٍ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5, §13; tools/content/hisn.reconciliation.json items[hisn-133-01].wordDifferences",
+    "reason": "The book's closing doxology (printed after the last chapter, not part of hadith 267) is appended to the last source item. Not deleted.",
+    "sourceExcerpt": "وَصَلَّى اللَّهُ وَسَلَّمَ وَبَارَكَ عَلَى نَبِيِّنَا مُحَمَّدٍ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ",
+    "bookText": "قَالَ النَّبِيُّ - صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - ((إِذَا كَانَ جُنْحُ اللَّيْلِ - أَوْ أَمْسَيْتُم - فَكُفُّوا صِبْيانَكُم، فَإِنَّ الشَّيَاطِينَ تَنْتَشِرُ حِينَئِذٍ، فَإِذَا ذَهَبَ سَاعَةٌ مِنَ اللَّيلِ فَخَلُّوهُمْ، وَأَغْلِقُوا الأَبْوَابَ وَاذْكُرُوا اسْمَ اللَّهِ؛ فَإِنَّ الشَّيطَانَ لاَ يَفْتَحُ بَاباً مُغلَقاً، وَأَوْكُوا قِرَبَكُمْ، وَاذْكُرُوا اسْمَ اللَّهِ، وَخَمِّرُوا آنِيَتَكُم، وَاذْكُرُوا اسْمَ اللَّهِ، وَلَوْ أَنْ تَعْرُضُوا عَلَيْهَا شَيْئاً، وَأَطْفِئُوا مَصَابِيحَكُمْ))."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-059",
+   "sourceItemId": "hisn-029-14",
+   "type": "NON_DHIKR_TEXT",
+   "target": {
+    "sourceItemId": "hisn-029-14"
+   },
+   "before": {
+    "arabicText": "يَقْرَأُ {ألم * تَنْزِيل ...} (سُورَةُ السَّجْدَة)\r\nوَ{تَبَارَكَ الذِي بِيَدِهِ المُلْكُ ...} (سُورَةُ المُلْكِ)"
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §5, §13; tools/content/hisn.reconciliation.json items[hisn-029-14].wordDifferences",
+    "reason": "Surah label added by the source; instructional metadata, not recitation text. A second label «(سُورَةُ المُلْكِ)» follows. Not removed.",
+    "sourceExcerpt": "(سُورَةُ السَّجْدَة)",
+    "bookText": "((يَقْرَأُ {الم} تَنْزِيلَ السَّجْدَةِ، وَتَبَارَكَ الَّذي بِيَدِهِ الْمُلْكُ))."
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P0"
+  },
+  {
+   "id": "HISN-CORR-060",
+   "sourceItemId": "hisn-001-03",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-001-03"
+   },
+   "before": {
+    "volumePages": [
+     "3/144"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-001-03].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "3/39"
+    ],
+    "bookFootnotes": [
+     "من قال ذلك غُفِرَ له، فإن دعا استجيب له، فإن قام فتوضأ ثم صلى قُبلت صلاته، البخاري مع الفتح، ٣/ ٣٩، برقم ١١٥٤، وغيره، واللفظ لابن ماجه، انظر: صحيح ابن ماجه، ٢/ ٣٣٥."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-061",
+   "sourceItemId": "hisn-001-04",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-001-04"
+   },
+   "before": {
+    "volumePages": [
+     "8/238"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-001-04].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "8/337"
+    ],
+    "bookFootnotes": [
+     "الآيات من سورة آل عمران، ١٩٠ - ٢٠٠، البخاري مع الفتح، ٨/ ٣٣٧، برقم ٤٥٦٩، ومسلم، ١/ ٥٣٠، برقم ٢٥٦."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-062",
+   "sourceItemId": "hisn-007-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-007-01"
+   },
+   "before": {
+    "volumePages": [
+     "2/387"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-007-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "1/19"
+    ],
+    "bookFootnotes": [
+     "أخرجه أصحاب السنن إلا النسائي فأخرجه في عمل اليوم والليلة، برقم ٧٩، أبو داود، برقم ٣٠، والترمذي، برقم ٧، وابن ماجه، برقم ٣٠٠، وصححه الألباني في صحيح سنن أبي داود، ١/ ١٩."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-063",
+   "sourceItemId": "hisn-009-03",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-009-03"
+   },
+   "before": {
+    "volumePages": [
+     "2/94"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-009-03].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "3/94"
+    ],
+    "bookFootnotes": [
+     "النسائي في عمل اليوم والليلة، ص١٧٣، وانظر: إرواء الغليل ١/ ١٣٥، و٣/ ٩٤."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-064",
+   "sourceItemId": "hisn-017-02",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-017-02"
+   },
+   "before": {
+    "volumePages": [
+     "1/199"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-017-02].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "1/99"
+    ],
+    "bookFootnotes": [
+     "البخاري، ١/ ٩٩، برقم، ٧٩٤، ومسلم، ١/ ٣٥٠، برقم ٤٨٤."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-065",
+   "sourceItemId": "hisn-019-06",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-019-06"
+   },
+   "before": {
+    "volumePages": [
+     "1/350"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-019-06].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "1/230"
+    ],
+    "bookFootnotes": [
+     "مسلم، ١/ ٢٣٠، برقم ٤٨٣."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-066",
+   "sourceItemId": "hisn-022-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-022-01"
+   },
+   "before": {
+    "volumePages": [
+     "1/13"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-022-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "2/311"
+    ],
+    "bookFootnotes": [
+     "البخاري مع الفتح، ٢/ ٣١١، برقم ٨٣١، ومسلم، ١/ ٣٠١، برقم ٤٠٢."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-067",
+   "sourceItemId": "hisn-024-08",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-024-08"
+   },
+   "before": {
+    "volumePages": [
+     "4/54"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-024-08].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "3/54"
+    ],
+    "bookFootnotes": [
+     "النسائي، ٣/ ٥٤، ٥٥، برقم ١٣٠٤، وأحمد، ٤/ ٣٦٤، برقم، ٢١٦٦٦، وصححه الألباني في صحيح النسائي، ١/ ٢٨١."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-068",
+   "sourceItemId": "hisn-024-11",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-024-11"
+   },
+   "before": {
+    "volumePages": [
+     "5/360"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-024-11].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "1/280"
+    ],
+    "bookFootnotes": [
+     "أبو داود، ٢/ ٦٢، برقم ١٤٩٣، والترمذي، ٥/ ٥١٥، برقم ٣٤٧٥، وابن ماجه، ٢/ ١٢٦٧، برقم ٣٨٥٧، والنسائي، برقم ١٣٠٠ بلفظه، وأحمد، برقم ١٨٩٧٤، وصححه الألباني في صحيح النسائي، ١/ ٢٨٠، وانظر: صحيح ابن ماجه، ٢/ ٣٢٩، وصحيح الترمذي، ٣/ ١٦٣."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-069",
+   "sourceItemId": "hisn-027-14",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-027-14"
+   },
+   "before": {
+    "volumePages": [
+     "4/418"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-027-14].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "4/318"
+    ],
+    "bookFootnotes": [
+     "من قالها ثلاثاً حين يصبح وثلاثاً حين يمسي كان حقاً على اللَّه أن يرضيه يوم القيامة. أحمد، ٤/ ٣٣٧، برقم ١٨٩٦٧، والنسائي في عمل اليوم والليلة، برقم ٤، وابن السني، برقم ٦٨، وأبو داود، ٤/ ٣١٨، برقم ١٥٣١، والترمذي، ٥/ ٤٦٥، برقم، ٣٣٨٩، وحسّنه ابن باز - رحمه الله - في تحفة الأخيار ص٣٩."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-070",
+   "sourceItemId": "hisn-027-16",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-027-16"
+   },
+   "before": {
+    "volumePages": [
+     "2/273"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-027-16].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "2/373"
+    ],
+    "bookFootnotes": [
+     "وإذا أمسى قال: اللَّهم إني أسألك خير هذه الليلة: فتحها، ونصرها، ونورها، وبركتها، وهداها، وأعوذ بك من شر ما فيها، وشر ما بعدها.",
+     "أبو داود، ٤/ ٣٢٢، برقم ٥٠٨٤، وحسن إسناده شعيب وعبد القادر الأرناؤوط في تحقيق زاد المعاد، ٢/ ٣٧٣."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-071",
+   "sourceItemId": "hisn-028-14",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-028-14"
+   },
+   "before": {
+    "volumePages": [
+     "4/418"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-028-14].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "4/318"
+    ],
+    "bookFootnotes": [
+     "من قالها ثلاثاً حين يصبح وثلاثاً حين يمسي كان حقاً على اللَّه أن يرضيه يوم القيامة. أحمد، ٤/ ٣٣٧، برقم ١٨٩٦٧، والنسائي في عمل اليوم والليلة، برقم ٤، وابن السني، برقم ٦٨، وأبو داود، ٤/ ٣١٨، برقم ١٥٣١، والترمذي، ٥/ ٤٦٥، برقم، ٣٣٨٩، وحسّنه ابن باز - رحمه الله - في تحفة الأخيار ص٣٩."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-072",
+   "sourceItemId": "hisn-028-16",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-028-16"
+   },
+   "before": {
+    "volumePages": [
+     "2/273"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-028-16].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "2/373"
+    ],
+    "bookFootnotes": [
+     "وإذا أمسى قال: اللَّهم إني أسألك خير هذه الليلة: فتحها، ونصرها، ونورها، وبركتها، وهداها، وأعوذ بك من شر ما فيها، وشر ما بعدها.",
+     "أبو داود، ٤/ ٣٢٢، برقم ٥٠٨٤، وحسن إسناده شعيب وعبد القادر الأرناؤوط في تحقيق زاد المعاد، ٢/ ٣٧٣."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-073",
+   "sourceItemId": "hisn-046-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-046-01"
+   },
+   "before": {
+    "volumePages": [
+     "1/206",
+     "1/77"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-046-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "1/203",
+     "1/265"
+    ],
+    "bookFootnotes": [
+     "أبو داود، ١/ ٢٠٣، برقم، وابن ماجه، ١/ ٢٦٥، برقم ٨٠٧، وتقدم تخريجه برقم ٣١، وانظر: سورة المؤمنون، الآيتان: ٩٧ - ٩٨."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-074",
+   "sourceItemId": "hisn-053-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-053-01"
+   },
+   "before": {
+    "volumePages": [
+     "5/342"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-053-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "5/432"
+    ],
+    "bookFootnotes": [
+     "أبو داود، ٣/ ١٩٠، برقم ٣١١٦، وانظر: صحيح الجامع، ٥/ ٤٣٢."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-075",
+   "sourceItemId": "hisn-062-02",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-062-02"
+   },
+   "before": {
+    "volumePages": [
+     "2/616"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-062-02].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "2/666"
+    ],
+    "bookFootnotes": [
+     "مسلم، واللفظ له، ٢/ ٦٦٦، برقم ٨٩٩، والبخاري، ٤/ ٧٦ برقم ٣٢٠٦، ورقم ٤٨٢٩."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-076",
+   "sourceItemId": "hisn-073-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-073-01"
+   },
+   "before": {
+    "volumePages": [
+     "3/126"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-073-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "3/1626"
+    ],
+    "bookFootnotes": [
+     "مسلم، ٣/ ١٦٢٦، برقم ٢٠٥٥."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-077",
+   "sourceItemId": "hisn-091-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-091-01"
+   },
+   "before": {
+    "volumePages": [
+     "4/88"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-091-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "4/288"
+    ],
+    "bookFootnotes": [
+     "البخاري مع الفتح، ٤/ ٢٨٨، برقم ٢٠٤٩."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-078",
+   "sourceItemId": "hisn-097-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-097-01"
+   },
+   "before": {
+    "volumePages": [
+     "2/998"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-097-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "2/978"
+    ],
+    "bookFootnotes": [
+     "مسلم، ٢/ ٩٧٨، برقم ١٣٤٢."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-079",
+   "sourceItemId": "hisn-099-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-099-01"
+   },
+   "before": {
+    "volumePages": [
+     "5/491"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-099-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "5/291"
+    ],
+    "bookFootnotes": [
+     "الترمذي، برقم ٣٤٢٨، وابن ماجه، ٥/ ٢٩١، برقم ٣٨٦٠، والحاكم، ١/ ٥٣٨، وحسنه الألباني في صحيح ابن ماجه، ٢/ ٢١، وفي صحيح الترمذي، ٣/ ١٥٢."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-080",
+   "sourceItemId": "hisn-102-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-102-01"
+   },
+   "before": {
+    "volumePages": [
+     "2/155"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-102-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "3/419"
+    ],
+    "bookFootnotes": [
+     "أحمد، ٢/ ٧، برقم ٤٥٢٤، والترمذي، ٥/ ٤٩٩، برقم،٣٤٤٣، وصححه الألباني في صحيح سنن الترمذي، ٣/ ٤١٩."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-081",
+   "sourceItemId": "hisn-127-01",
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "sourceItemId": "hisn-127-01"
+   },
+   "before": {
+    "volumePages": [
+     "6/181"
+    ]
+   },
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[hisn-127-01].referenceComparison",
+    "reason": "Volume/page in the source reference differs from the book footnote. Not changed: no bibliographic data is imported in this phase.",
+    "bookVolumePages": [
+     "6/381"
+    ],
+    "bookFootnotes": [
+     "البخاري مع الفتح، ٦/ ٣٨١، برقم ٣٣٤٦، ومسلم، ٤/ ٢٢٠٨، برقم ٢٨٨٠."
+    ]
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVED_DIFFERENCE",
+   "reviewPriority": "P1"
+  },
+  {
+   "id": "HISN-CORR-082",
+   "sourceItemId": null,
+   "type": "REFERENCE_METADATA",
+   "target": {
+    "scope": "BOOK"
+   },
+   "before": null,
+   "after": null,
+   "evidence": {
+    "source": "Phase 2D reconciliation",
+    "reference": "docs/phases/PHASE_2D_HISN_RECONCILIATION.md §10; tools/content/hisn.reconciliation.json items[].referenceComparison.missingInSource",
+    "reason": "Takhrij detail the book footnotes carry and the source lacks: hadith numbers (277 items), volume/page (50 items, 22 conflicting), collection names (22 items), grading statements (13 items). Per-item lists are in the reconciliation table; nothing is fabricated or imported here.",
+    "itemsMissingHadithNumbers": 277,
+    "itemsWithVolumePageMismatch": 22
+   },
+   "confidence": "HIGH",
+   "reviewStatus": "OBSERVATION",
+   "reviewPriority": "P1"
+  }
+ ]
+}

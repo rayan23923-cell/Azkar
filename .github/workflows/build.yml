@@ -3,10 +3,46 @@ name: PiP azkar POC build
 # Compile check for the standalone PiPAzkarPOC project (no signing, no device).
 on:
   push:
-    branches: [main]
+    branches: [main, 'feature/**']
   workflow_dispatch:
 
 jobs:
+  core-tests:
+    name: IslamicCore tests
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bundled content matches upstream sources
+        run: python3 tools/content/build_content.py --check
+
+      - name: Hisn correction manifest rules
+        run: python3 tools/content/test_hisn_corrections.py
+
+      - name: Hisn editorial review gate
+        run: python3 tools/content/test_hisn_editorial_review.py
+
+      - name: Hisn audio test fixture is reproducible
+        run: python3 tools/content/make_hisn_audio_fixture.py --check
+
+      - name: Bundled audio packs are intact (release status is reported)
+        run: python3 tools/content/check_audio_packs.py
+
+      - name: swift test
+        working-directory: Packages/IslamicCore
+        run: |
+          set -o pipefail
+          swift --version
+          swift test 2>&1 | tee ../../core-tests.log
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-tests-log
+          path: core-tests.log
+          if-no-files-found: ignore
+
   build:
     runs-on: macos-26
     timeout-minutes: 30
@@ -55,6 +91,89 @@ jobs:
         with:
           name: IslamicPiPPOC-unsigned-ipa
           path: build/ipa/IslamicPiPPOC.ipa
+
+      - name: Production app has no test audio
+        run: |
+          APP=build/DerivedData/Build/Products/Debug-iphoneos/IslamicPiPPOC.app
+          if find "$APP" -iname 'test-*' -o -name 'HisnAudioFixture' -o -name '*.device-test.json' | grep .; then
+            echo "test audio found in the production app"; exit 1
+          fi
+          # Debug builds keep the code in IslamicPiPPOC.debug.dylib, so search every file.
+          if grep -rlaF 'HisnAudioFixture' "$APP"; then
+            echo "fixture code found in the production app"; exit 1
+          fi
+
+      # Release configuration, as App Store builds use, unsigned (signing is the owner's).
+      - name: Release build (unsigned) and bundle checks
+        run: |
+          set -o pipefail
+          xcodebuild build -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build/ReleaseDerivedData \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee release-build.log | grep -E 'error|warning:|BUILD' || true
+          grep -q 'BUILD SUCCEEDED' release-build.log
+          APP=build/ReleaseDerivedData/Build/Products/Release-iphoneos/IslamicPiPPOC.app
+          plutil -p "$APP/Info.plist"
+          test -f "$APP/PrivacyInfo.xcprivacy"
+          plutil -lint "$APP/PrivacyInfo.xcprivacy"
+          test -f "$APP/Assets.car"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName" "$APP/Info.plist"
+          if grep -rlaF 'HisnAudioFixture' "$APP"; then echo "fixture code in the Release app"; exit 1; fi
+          if find "$APP" -iname 'test-*' -o -name '*.device-test.json' | grep .; then echo "test audio in the Release app"; exit 1; fi
+          # No permission usage strings: the app asks only for notifications, which need none.
+          if plutil -p "$APP/Info.plist" | grep -E 'NS[A-Za-z]+UsageDescription'; then echo "unexpected usage description"; exit 1; fi
+          # No background mode while no production audio ships (App Review 2.5.4).
+          if plutil -p "$APP/Info.plist" | grep -q UIBackgroundModes; then echo "background mode in the Release app"; exit 1; fi
+          # The PiP test screen and its engine are Debug-only.
+          if grep -rlaF 'PiPEngine' "$APP"; then echo "PiP test engine in the Release app"; exit 1; fi
+          find "$APP" -name '*.ttf' -o -name '*.json' | sed "s|$APP/||" | sort
+          du -sh "$APP"
+
+      - name: Release archive (unsigned) and IPA from the archive
+        run: |
+          set -o pipefail
+          xcodebuild archive -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -archivePath build/IslamicPiPPOC.xcarchive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee archive.log | grep -E 'error|warning:|ARCHIVE' || true
+          grep -q 'ARCHIVE SUCCEEDED' archive.log
+          /usr/libexec/PlistBuddy -c "Print :ApplicationProperties" build/IslamicPiPPOC.xcarchive/Info.plist
+          mkdir -p build/release-ipa/Payload
+          cp -R build/IslamicPiPPOC.xcarchive/Products/Applications/IslamicPiPPOC.app build/release-ipa/Payload/
+          (cd build/release-ipa && zip -qry IslamicPiPPOC-release-unsigned.ipa Payload)
+          ls -lh build/release-ipa/IslamicPiPPOC-release-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED
+          path: build/release-ipa/IslamicPiPPOC-release-unsigned.ipa
+
+      # Device-test build for Phase 3C (not for release): compiled with HISN_AUDIO_FIXTURE, it
+      # carries the TEST_ONLY synthetic tone and its manifest so Hisn audio and PiP can be
+      # tried on a device before any production recording exists.
+      - name: Package unsigned fixture IPA (device testing only)
+        run: |
+          set -o pipefail
+          xcodebuild build -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
+            -configuration Debug -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build/FixtureDerivedData \
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS='DEBUG HISN_AUDIO_FIXTURE' \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | tail -3
+          APP=build/FixtureDerivedData/Build/Products/Debug-iphoneos/IslamicPiPPOC.app
+          FIX=Packages/IslamicCore/Tests/HisnAudioTests/Fixtures
+          grep -rlaF 'HisnAudioFixture' "$APP"   # the fixture code is compiled in
+          mkdir -p "$APP/HisnAudioFixture"
+          cp "$FIX/hisn_audio.device-test.json" "$FIX/HisnAudio/test-tone-30s.wav" "$APP/HisnAudioFixture/"
+          mkdir -p build/fixture-ipa/Payload && cp -R "$APP" build/fixture-ipa/Payload/
+          (cd build/fixture-ipa && zip -qry IslamicPiPPOC-hisn-audio-fixture.ipa Payload)
+          ls -lh build/fixture-ipa/IslamicPiPPOC-hisn-audio-fixture.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IslamicPiPPOC-hisn-audio-fixture-unsigned-ipa-NOT-FOR-RELEASE
+          path: build/fixture-ipa/IslamicPiPPOC-hisn-audio-fixture.ipa
 
       - uses: actions/upload-artifact@v4
         if: always()

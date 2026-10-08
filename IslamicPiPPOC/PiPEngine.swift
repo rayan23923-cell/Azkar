@@ -1,5 +1,11 @@
+// The PiP technical test screen and its engine (the original proof of concept). Debug builds
+// only: Release builds do not compile them, so no test screen, synthetic chime or second
+// audio-session owner exists in the App Store app.
+#if DEBUG
+
 import AVFoundation
 import AVKit
+import HisnAudioPlayback
 import UIKit
 
 /// Owns the AVSampleBufferDisplayLayer, the AVPictureInPictureController that
@@ -100,14 +106,14 @@ final class PiPEngine: NSObject, ObservableObject {
 
     // MARK: Prepare / start / stop
 
-    /// Configures the audio session (required by AVKit for PiP), builds the PiP
+    /// Activates the audio session (required by AVKit for PiP), builds the PiP
     /// controller with a sample-buffer content source, enables automatic start,
     /// and starts "playback" (the 5 s text rotation).
     func prepare() {
         do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, mode: .moviePlayback, options: [])
-            try session.setActive(true)
+            // Phase 3C: the app's single audio-session owner applies the same
+            // .playback/.moviePlayback policy this engine used to set itself.
+            try MainActor.assumeIsolated { try AudioSessionCoordinator.shared.activateForPlayback() }
             log("AVAudioSession .playback/.moviePlayback active")
         } catch {
             log("AVAudioSession error: \(error.localizedDescription)")
@@ -367,3 +373,5 @@ extension PiPEngine: AVPictureInPictureSampleBufferPlaybackDelegate {
         false
     }
 }
+
+#endif
