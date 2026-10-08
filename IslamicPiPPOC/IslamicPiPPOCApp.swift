@@ -7,7 +7,7 @@ struct IslamicPiPPOCApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppRootView()
                 .environmentObject(engine)
         }
         .onChange(of: scenePhase) { phase in

@@ -14,7 +14,7 @@ enum HisnSettings {
     static let hapticsKey = "hisn.reader.haptics"
 }
 
-/// Loads the bundled book through the repository and keeps the same-day resume position.
+/// Loads the bundled book through the repository and offers the saved reading cursor.
 @MainActor
 final class HisnLibraryModel: ObservableObject {
     enum State {
@@ -57,7 +57,7 @@ final class HisnLibraryModel: ObservableObject {
         resumePosition = HisnResume.position(in: positionStore, library: library)
     }
 
-    /// From the index: today's saved place in this chapter, otherwise its first item.
+    /// From the index: the saved place when it is in this chapter, otherwise its first item.
     func route(forChapter chapterId: String) -> HisnRoute {
         if let position = resumePosition, position.chapterId == chapterId {
             return route(for: position)

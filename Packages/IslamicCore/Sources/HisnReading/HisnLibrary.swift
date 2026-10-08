@@ -10,12 +10,15 @@ public struct HisnSectionEntry: Identifiable, Hashable, Sendable {
     public let itemCount: Int
     /// Set only for the morning / evening halves of chapter 27.
     public let timeOfDay: HisnPresentationSection?
+    /// The canonical book chapter number: 27 for both halves of chapter 27.
+    public let bookChapterNumber: Int?
 
     init(chapter: HisnChapter) {
         id = chapter.id
         title = chapter.titleArabic
         itemCount = chapter.itemCount
         timeOfDay = chapter.presentationSection
+        bookChapterNumber = chapter.bookChapterNumber
     }
 }
 
@@ -32,4 +35,10 @@ public struct HisnLibrary: Sendable {
     }
 
     public func chapter(id: String) -> HisnChapter? { chaptersById[id] }
+
+    /// The section after this one in index order (for «الفصل التالي»); nil after the last.
+    public func section(after id: String) -> HisnSectionEntry? {
+        guard let index = sections.firstIndex(where: { $0.id == id }), index + 1 < sections.count else { return nil }
+        return sections[index + 1]
+    }
 }

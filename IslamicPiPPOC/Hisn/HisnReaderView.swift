@@ -6,21 +6,34 @@ import HisnReading
 /// previous / next. Ends in a completion state; never opens another chapter by itself.
 struct HisnReaderView: View {
     @StateObject private var screen: HisnReaderScreenModel
+    private let nextSection: HisnSectionEntry?
+    private let openSection: (HisnSectionEntry) -> Void
 
-    init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository) {
+    /// - Parameters:
+    ///   - nextSection: the section after this one, offered as «الفصل التالي» on completion.
+    ///   - openSection: opens it (the reader never changes chapter by itself).
+    init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository,
+         nextSection: HisnSectionEntry? = nil, openSection: @escaping (HisnSectionEntry) -> Void = { _ in }) {
         _screen = StateObject(wrappedValue: HisnReaderScreenModel(reader: reader, store: store,
                                                                   audioRepository: audioRepository))
+        self.nextSection = nextSection
+        self.openSection = openSection
     }
 
     var body: some View {
-        HisnReaderContent(model: screen.controller, screen: screen)
+        HisnReaderContent(model: screen.controller, screen: screen, nextSection: nextSection,
+                          openSection: openSection)
     }
 }
 
 private struct HisnReaderContent: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ObservedObject var model: HisnReaderController
     let screen: HisnReaderScreenModel
+    let nextSection: HisnSectionEntry?
+    let openSection: (HisnSectionEntry) -> Void
     @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
 
     var body: some View {
@@ -36,6 +49,16 @@ private struct HisnReaderContent: View {
         .sensoryFeedback(.impact(weight: .light), trigger: model.recitations) { _, _ in hapticsEnabled }
         .sensoryFeedback(.success, trigger: model.reader.isCompleted) { _, completed in hapticsEnabled && completed }
         .onDisappear { screen.close() }
+        .onChange(of: scenePhase) { _, phase in
+            // Leaving the foreground: the cursor is already saved on each step; save once more
+            // so the stored time is the last moment of reading.
+            if phase == .background { model.persist() }
+        }
+        .onChange(of: model.finishedItemNumber) { _, number in
+            if let number {
+                UIAccessibility.post(notification: .announcement, argument: "أتممت الذكر \(number)")
+            }
+        }
     }
 
     // MARK: Reading
@@ -46,9 +69,16 @@ private struct HisnReaderContent: View {
         return VStack(spacing: 0) {
             ProgressView(value: reader.progress)
                 .accessibilityLabel("التقدم في الباب")
-                .accessibilityValue("الذكر \(reader.itemNumber) من \(reader.itemCount)")
+                .accessibilityValue(HisnAccessibility.itemPosition(reader))
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    if let finished = model.finishedItemNumber {
+                        // The previous item's count is done and the reader moved on (the
+                        // session's rule); say so instead of switching silently.
+                        Label("أتممت الذكر \(finished)، وهذا الذكر التالي", systemImage: "checkmark.circle")
+                            .font(.footnote)
+                            .foregroundStyle(.tint)
+                    }
                     Text(item.text)
                         .font(.title2)
                         .lineSpacing(10)
@@ -92,27 +122,41 @@ private struct HisnReaderContent: View {
                 Button {
                     model.previous()
                 } label: {
-                    Label("السابق", systemImage: "chevron.backward")
+                    if compactLabels {
+                        Image(systemName: "chevron.backward")
+                    } else {
+                        Label("السابق", systemImage: "chevron.backward")
+                    }
                 }
                 .disabled(reader.isFirstItem)
+                .accessibilityLabel("الذكر السابق")
                 Spacer()
                 Text("\(reader.itemNumber) / \(reader.itemCount)")
                     .font(.footnote.monospacedDigit())
                     .foregroundStyle(.secondary)
-                    .accessibilityLabel("الذكر \(reader.itemNumber) من \(reader.itemCount)")
+                    .accessibilityLabel(HisnAccessibility.itemPosition(reader))
                 Spacer()
                 Button {
                     model.next()
                 } label: {
-                    Label("التالي", systemImage: "chevron.forward")
-                        .labelStyle(TrailingIconLabelStyle())
+                    if compactLabels {
+                        Image(systemName: "chevron.forward")
+                    } else {
+                        Label("التالي", systemImage: "chevron.forward")
+                            .labelStyle(TrailingIconLabelStyle())
+                    }
                 }
+                .accessibilityLabel(reader.isLastItem ? "إنهاء الباب" : "الذكر التالي")
             }
             .buttonStyle(.bordered)
         }
         .padding()
         .background(.bar)
     }
+
+    /// At accessibility text sizes previous / next show icons only (with their spoken labels)
+    /// so the count button keeps its room.
+    private var compactLabels: Bool { dynamicTypeSize.isAccessibilitySize }
 
     private var counter: some View {
         let reader = model.reader
@@ -137,25 +181,10 @@ private struct HisnReaderContent: View {
         }
         .buttonStyle(.borderedProminent)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(counterLabel(reader))
-        .accessibilityValue(counterValue(reader))
-        .accessibilityHint(counterHint(reader))
+        .accessibilityLabel(HisnAccessibility.counterLabel(reader))
+        .accessibilityValue(HisnAccessibility.counterValue(reader))
+        .accessibilityHint(HisnAccessibility.counterHint(reader))
         .accessibilityAddTraits(.isButton)
-    }
-
-    private func counterLabel(_ reader: HisnReader) -> String {
-        if case .counted = reader.repetition { return "العدّ" }
-        return "تمّت القراءة"
-    }
-
-    private func counterValue(_ reader: HisnReader) -> String {
-        if case .counted(let completed, let total) = reader.repetition { return "\(completed) من \(total)" }
-        return ""
-    }
-
-    private func counterHint(_ reader: HisnReader) -> String {
-        if case .counted = reader.repetition { return "اضغط مرة بعد كل قراءة" }
-        return reader.isLastItem ? "ينهي الباب" : "ينتقل إلى الذكر التالي"
     }
 
     // MARK: Completion
@@ -179,6 +208,24 @@ private struct HisnReaderContent: View {
                     Text("إعادة").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .accessibilityHint("يبدأ هذا الباب من أوله")
+                if let nextSection {
+                    Button {
+                        openSection(nextSection)
+                    } label: {
+                        VStack(spacing: 2) {
+                            Text("الفصل التالي")
+                            Text(nextSection.title)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("الفصل التالي")
+                    .accessibilityValue(HisnAccessibility.sectionLabel(nextSection))
+                }
                 Button {
                     dismiss()
                 } label: {
