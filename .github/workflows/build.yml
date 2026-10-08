@@ -103,6 +103,29 @@ jobs:
             echo "fixture code found in the production app"; exit 1
           fi
 
+      # Release configuration, as App Store builds use, unsigned (signing is the owner's).
+      - name: Release build (unsigned) and bundle checks
+        run: |
+          set -o pipefail
+          xcodebuild build -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build/ReleaseDerivedData \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee release-build.log | grep -E 'error|warning:|BUILD' || true
+          grep -q 'BUILD SUCCEEDED' release-build.log
+          APP=build/ReleaseDerivedData/Build/Products/Release-iphoneos/IslamicPiPPOC.app
+          plutil -p "$APP/Info.plist"
+          test -f "$APP/PrivacyInfo.xcprivacy"
+          plutil -lint "$APP/PrivacyInfo.xcprivacy"
+          test -f "$APP/Assets.car"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName" "$APP/Info.plist"
+          if grep -rlaF 'HisnAudioFixture' "$APP"; then echo "fixture code in the Release app"; exit 1; fi
+          if find "$APP" -iname 'test-*' -o -name '*.device-test.json' | grep .; then echo "test audio in the Release app"; exit 1; fi
+          # No permission usage strings: the app asks only for notifications, which need none.
+          if plutil -p "$APP/Info.plist" | grep -E 'NS[A-Za-z]+UsageDescription'; then echo "unexpected usage description"; exit 1; fi
+          find "$APP" -name '*.ttf' -o -name '*.json' | sed "s|$APP/||" | sort
+          du -sh "$APP"
+
       # Device-test build for Phase 3C (not for release): compiled with HISN_AUDIO_FIXTURE, it
       # carries the TEST_ONLY synthetic tone and its manifest so Hisn audio and PiP can be
       # tried on a device before any production recording exists.

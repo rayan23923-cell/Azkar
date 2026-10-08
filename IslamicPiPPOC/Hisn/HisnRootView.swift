@@ -3,26 +3,16 @@ import IslamicCore
 import HisnReading
 
 /// Hisn Al-Muslim: chapter index, search and reader. Arabic, right to left, system styles
-/// (Dynamic Type, dark mode) only. The app's main tab (`AppRootView`).
+/// (Dynamic Type, dark mode) only. A tab of `AppRootView`.
 struct HisnRootView: View {
     @StateObject private var model = HisnLibraryModel()
     @State private var path: [HisnRoute] = []
-    @State private var showsSettings = false
+    @ObservedObject private var router = AppServices.shared.router
 
     var body: some View {
         NavigationStack(path: $path) {
             content
                 .navigationTitle("حصن المسلم")
-                .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button {
-                            showsSettings = true
-                        } label: {
-                            Image(systemName: "gearshape")
-                        }
-                        .accessibilityLabel("الإعدادات")
-                    }
-                }
                 .navigationDestination(for: HisnRoute.self) { route in
                     if case .loaded(let library, _, let audio) = model.state,
                        let chapter = library.chapter(id: route.chapterId),
@@ -41,18 +31,6 @@ struct HisnRootView: View {
                     }
                 }
         }
-        .sheet(isPresented: $showsSettings) {
-            NavigationStack {
-                SettingsView(reminders: AppServices.shared.reminders)
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("تم") { showsSettings = false }
-                        }
-                    }
-            }
-            .environment(\.layoutDirection, .rightToLeft)
-            .environment(\.locale, Locale(identifier: "ar"))
-        }
         .environment(\.layoutDirection, .rightToLeft)
         .environment(\.locale, Locale(identifier: "ar"))
         .task {
@@ -61,6 +39,16 @@ struct HisnRootView: View {
         .onChange(of: path) {
             model.refreshResume()
         }
+        .onAppear { model.refreshResume() }
+        // A result from global search: opened once the book is loaded.
+        .onChange(of: router.hisnTarget, initial: true) { openPendingTarget() }
+        .onChange(of: model.isLoaded) { openPendingTarget() }
+    }
+
+    private func openPendingTarget() {
+        guard let target = router.hisnTarget, model.isLoaded else { return }
+        router.hisnTarget = nil
+        if let route = model.route(for: target) { path = [route] }
     }
 
     @ViewBuilder

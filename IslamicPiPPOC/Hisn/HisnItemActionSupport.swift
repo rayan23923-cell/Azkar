@@ -27,6 +27,12 @@ final class SystemHisnHaptics: HisnHaptics {
             UISelectionFeedbackGenerator().selectionChanged()
         }
     }
+
+    /// A light tick for one counted repetition (adhkar counter).
+    func tick() {
+        guard isEnabled else { return }
+        UISelectionFeedbackGenerator().selectionChanged()
+    }
 }
 
 /// The general pasteboard.

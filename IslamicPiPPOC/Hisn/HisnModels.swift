@@ -27,6 +27,10 @@ final class HisnLibraryModel: ObservableObject {
     }
 
     @Published private(set) var state: State = .loading
+    var isLoaded: Bool {
+        if case .loaded = state { return true }
+        return false
+    }
     @Published private(set) var resumePosition: HisnReadingPosition?
     /// Sections read to the end today.
     @Published private(set) var completedToday: Set<ContentRef> = []

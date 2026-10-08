@@ -1,9 +1,16 @@
 import SwiftUI
+import QuranText
 
 @main
 struct IslamicPiPPOCApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var engine = PiPEngine()
     @Environment(\.scenePhase) private var scenePhase
+
+    init() {
+        // The Quran font is bundled; registering it is local and fast.
+        _ = QuranFont.register()
+    }
 
     var body: some Scene {
         WindowGroup {

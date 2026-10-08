@@ -1,11 +1,43 @@
 import SwiftUI
 import UIKit
 import ContentKit
+import QuranReading
+import HisnReading
+
+/// The app's appearance setting, applied at the root.
+enum AppAppearance: String, CaseIterable {
+    case system, light, dark
+
+    static let key = "app.appearance"
+
+    var title: String {
+        switch self {
+        case .system: return "حسب النظام"
+        case .light: return "فاتح"
+        case .dark: return "داكن"
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+}
 
 /// App settings. Arabic, right to left, system styles only.
 struct SettingsView: View {
     @ObservedObject var reminders: ReminderController
     @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
+    @AppStorage(AppAppearance.key) private var appearance: AppAppearance = .system
+    @AppStorage("quran.textSize") private var quranTextSize: Double = 26
+    @AppStorage("adhkar.textSize") private var adhkarTextSize: Double = 24
+    @ObservedObject private var favorites = AppServices.shared.favorites
+    @State private var confirmsReset = false
+    @State private var confirmsFavorites = false
+    @State private var notice: String?
 
     var body: some View {
         Form {
@@ -34,11 +66,73 @@ struct SettingsView: View {
                 Text("تذكير يومي على هذا الجهاز فقط، بالوقت المحلي.")
             }
 
-            Section("القراءة") {
+            Section("المظهر") {
+                Picker("المظهر", selection: $appearance) {
+                    ForEach(AppAppearance.allCases, id: \.self) { Text($0.title).tag($0) }
+                }
+            }
+
+            Section {
                 Toggle("الاهتزاز", isOn: $hapticsEnabled)
+                VStack(alignment: .leading) {
+                    Text("حجم خط القرآن: \(Int(quranTextSize))")
+                    Slider(value: $quranTextSize, in: 18...44, step: 2)
+                        .accessibilityLabel("حجم خط القرآن")
+                        .accessibilityValue("\(Int(quranTextSize))")
+                }
+                VStack(alignment: .leading) {
+                    Text("حجم خط الأذكار: \(Int(adhkarTextSize))")
+                    Slider(value: $adhkarTextSize, in: 16...40, step: 2)
+                        .accessibilityLabel("حجم خط الأذكار")
+                        .accessibilityValue("\(Int(adhkarTextSize))")
+                }
+            } header: {
+                Text("القراءة")
+            } footer: {
+                Text("يكبر الخط أيضاً مع حجم النص في إعدادات النظام.")
+            }
+
+            Section {
+                LabeledContent("التلاوات الصوتية", value: "غير متاحة")
+                LabeledContent("العرض العائم", value: "مع التلاوة فقط")
+            } header: {
+                Text("الصوت والعرض العائم")
+            } footer: {
+                Text("لا تُضمَّن تسجيلات صوتية في هذا الإصدار حتى تُستوفى حقوقها. يظهر العرض العائم عند تشغيل تلاوة.")
+            }
+
+            Section("البيانات") {
+                Button("مسح مواضع القراءة والتقدّم", role: .destructive) { confirmsReset = true }
+                Button("مسح المفضلة (\(favorites.entries.count))", role: .destructive) { confirmsFavorites = true }
+                    .disabled(favorites.entries.isEmpty)
+            }
+
+            Section {
+                NavigationLink("حول التطبيق والمصادر والخصوصية") { AboutView() }
             }
         }
         .navigationTitle("الإعدادات")
+        .transientNotice($notice)
+        .confirmationDialog("مسح مواضع القراءة وتقدّم اليوم في كل الأقسام؟", isPresented: $confirmsReset,
+                            titleVisibility: .visible) {
+            Button("مسح", role: .destructive) {
+                UserDefaultsQuranPositionStore().clear()
+                UserDefaultsHisnReadingPositionStore().clear()
+                AppServices.shared.devotionalPositions.clearAll()
+                AppServices.shared.dailyProgress.clear()
+                showNotice("مُسحت مواضع القراءة", in: $notice)
+            }
+            Button("إلغاء", role: .cancel) {}
+        } message: {
+            Text("لا يمكن التراجع عن ذلك. لا تُمسح المفضلة ولا إعدادات التذكير.")
+        }
+        .confirmationDialog("مسح كل المفضلة والعلامات؟", isPresented: $confirmsFavorites, titleVisibility: .visible) {
+            Button("مسح", role: .destructive) {
+                favorites.clear()
+                showNotice("مُسحت المفضلة", in: $notice)
+            }
+            Button("إلغاء", role: .cancel) {}
+        }
         .task { await reminders.refreshAuthorization() }
     }
 }
