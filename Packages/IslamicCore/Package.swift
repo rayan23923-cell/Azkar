@@ -9,6 +9,8 @@ import PackageDescription
 // ContentKit is shared by every content type: Arabic search normalization, content
 // references, and on-device progress stores.
 // QuranReading is the Quran reader state (library with juz/page lookup, position, search);
+// AdhkarReading is the adhkar and dua reader state (collections, counter, positions, search).
+// GlobalSearch searches every section together on top of their own engines.
 // QuranText bundles the OFL Amiri Quran font and its Core Text layout checks.
 // HisnShareCard draws the share image with Core Text / Core Graphics (testable here).
 let package = Package(
@@ -22,6 +24,8 @@ let package = Package(
         .library(name: "ContentKit", targets: ["ContentKit"]),
         .library(name: "QuranReading", targets: ["QuranReading"]),
         .library(name: "QuranText", targets: ["QuranText"]),
+        .library(name: "AdhkarReading", targets: ["AdhkarReading"]),
+        .library(name: "GlobalSearch", targets: ["GlobalSearch"]),
     ],
     targets: [
         .target(
@@ -35,6 +39,14 @@ let package = Package(
         .target(
             name: "QuranReading",
             dependencies: ["IslamicCore", "ContentKit"]
+        ),
+        .target(
+            name: "AdhkarReading",
+            dependencies: ["IslamicCore", "ContentKit"]
+        ),
+        .target(
+            name: "GlobalSearch",
+            dependencies: ["IslamicCore", "ContentKit", "QuranReading", "HisnReading", "AdhkarReading"]
         ),
         .target(
             name: "QuranText",
@@ -67,6 +79,14 @@ let package = Package(
         .testTarget(
             name: "QuranReadingTests",
             dependencies: ["QuranReading", "QuranText", "ContentKit", "IslamicCore"]
+        ),
+        .testTarget(
+            name: "AdhkarReadingTests",
+            dependencies: ["AdhkarReading", "ContentKit", "IslamicCore"]
+        ),
+        .testTarget(
+            name: "GlobalSearchTests",
+            dependencies: ["GlobalSearch", "QuranReading", "HisnReading", "AdhkarReading", "ContentKit", "IslamicCore"]
         ),
         .testTarget(
             name: "HisnAudioTests",
