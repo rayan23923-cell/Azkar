@@ -95,7 +95,8 @@ jobs:
           if find "$APP" -iname 'test-*' -o -name 'HisnAudioFixture' -o -name '*.device-test.json' | grep .; then
             echo "test audio found in the production app"; exit 1
           fi
-          if strings "$APP/IslamicPiPPOC" | grep -F 'HisnAudioFixture'; then
+          # Debug builds keep the code in IslamicPiPPOC.debug.dylib, so search every file.
+          if grep -rlaF 'HisnAudioFixture' "$APP"; then
             echo "fixture code found in the production app"; exit 1
           fi
 
@@ -112,9 +113,9 @@ jobs:
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | tail -3
           APP=build/FixtureDerivedData/Build/Products/Debug-iphoneos/IslamicPiPPOC.app
           FIX=Packages/IslamicCore/Tests/HisnAudioTests/Fixtures
+          grep -rlaF 'HisnAudioFixture' "$APP"   # the fixture code is compiled in
           mkdir -p "$APP/HisnAudioFixture"
           cp "$FIX/hisn_audio.device-test.json" "$FIX/HisnAudio/test-tone-30s.wav" "$APP/HisnAudioFixture/"
-          strings "$APP/IslamicPiPPOC" | grep -qF 'HisnAudioFixture'
           mkdir -p build/fixture-ipa/Payload && cp -R "$APP" build/fixture-ipa/Payload/
           (cd build/fixture-ipa && zip -qry IslamicPiPPOC-hisn-audio-fixture.ipa Payload)
           ls -lh build/fixture-ipa/IslamicPiPPOC-hisn-audio-fixture.ipa
