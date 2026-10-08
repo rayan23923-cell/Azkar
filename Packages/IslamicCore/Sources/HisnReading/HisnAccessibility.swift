@@ -76,7 +76,7 @@ public enum HisnAccessibility {
     public static func filterTitle(_ filter: HisnSearchFilter) -> String {
         switch filter {
         case .all: return "الكل"
-        case .chapters: return "الفصول"
+        case .chapters: return "الأبواب"
         case .texts: return "النصوص"
         }
     }
@@ -92,12 +92,12 @@ public enum HisnAccessibility {
         }
     }
 
-    /// The result type, then where it is: "فصل، أذكار الصباح" or
+    /// The result type, then where it is: "باب، أذكار الصباح" or
     /// "ذكر، الذكر 2 من 31، أذكار الصباح".
     public static func searchResultLabel(_ result: HisnSearchResult) -> String {
         switch result.kind {
         case .chapter:
-            return "فصل، \(result.chapterTitle)"
+            return "باب، \(result.chapterTitle)"
         case .item:
             let number = (result.itemIndex ?? 0) + 1
             return "ذكر، الذكر \(number) من \(result.chapterItemCount)، \(result.chapterTitle)"
@@ -113,6 +113,6 @@ public enum HisnAccessibility {
     }
 
     public static func searchResultHint(_ result: HisnSearchResult) -> String {
-        result.kind == .chapter ? "يفتح الفصل" : "يفتح الذكر في موضعه"
+        result.kind == .chapter ? "يفتح الباب" : "يفتح الذكر في موضعه"
     }
 }

@@ -32,7 +32,7 @@ struct HisnRootView: View {
                                        audioRepository: audio,
                                        highlightedItemId: route.highlightedItemId,
                                        nextSection: library.section(after: chapter.id)) { next in
-                            // «الفصل التالي»: replaces the finished chapter, so back returns to the index.
+                            // «الباب التالي»: replaces the finished chapter, so back returns to the index.
                             path[path.count - 1] = HisnRoute(chapterId: next.id, itemIndex: 0)
                         }
                         .id(route)

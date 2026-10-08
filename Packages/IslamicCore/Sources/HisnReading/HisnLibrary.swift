@@ -36,7 +36,7 @@ public struct HisnLibrary: Sendable {
 
     public func chapter(id: String) -> HisnChapter? { chaptersById[id] }
 
-    /// The section after this one in index order (for «الفصل التالي»); nil after the last.
+    /// The section after this one in index order (for «الباب التالي»); nil after the last.
     public func section(after id: String) -> HisnSectionEntry? {
         guard let index = sections.firstIndex(where: { $0.id == id }), index + 1 < sections.count else { return nil }
         return sections[index + 1]

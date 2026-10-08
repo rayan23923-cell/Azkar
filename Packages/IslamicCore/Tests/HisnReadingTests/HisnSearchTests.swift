@@ -288,8 +288,8 @@ final class HisnSearchTests: XCTestCase {
     func testSearchAccessibilityText() async throws {
         let engine = try await fixture().engine
         let chapter = try XCTUnwrap(engine.search("أذكار النوم").first)
-        XCTAssertEqual(HisnAccessibility.searchResultLabel(chapter), "فصل، \(chapter.chapterTitle)")
-        XCTAssertEqual(HisnAccessibility.searchResultHint(chapter), "يفتح الفصل")
+        XCTAssertEqual(HisnAccessibility.searchResultLabel(chapter), "باب، \(chapter.chapterTitle)")
+        XCTAssertEqual(HisnAccessibility.searchResultHint(chapter), "يفتح الباب")
         let item = try XCTUnwrap(engine.search("سبحان الله").first)
         XCTAssertEqual(HisnAccessibility.searchResultLabel(item),
                        "ذكر، الذكر \((item.itemIndex ?? 0) + 1) من \(item.chapterItemCount)، \(item.chapterTitle)")
@@ -301,7 +301,7 @@ final class HisnSearchTests: XCTestCase {
         XCTAssertEqual(HisnAccessibility.resultCount(2), "نتيجتان")
         XCTAssertEqual(HisnAccessibility.resultCount(7), "7 نتائج")
         XCTAssertEqual(HisnAccessibility.resultCount(23), "23 نتيجة")
-        XCTAssertEqual(HisnSearchFilter.allCases.map(HisnAccessibility.filterTitle), ["الكل", "الفصول", "النصوص"])
+        XCTAssertEqual(HisnSearchFilter.allCases.map(HisnAccessibility.filterTitle), ["الكل", "الأبواب", "النصوص"])
 
         let fixed = [HisnAccessibility.searchField, HisnAccessibility.clearSearch, HisnAccessibility.searchFilter]
         XCTAssertEqual(fixed, ["بحث في حصن المسلم", "مسح البحث", "نوع النتائج"])

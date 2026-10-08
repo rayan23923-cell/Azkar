@@ -2,7 +2,7 @@ import XCTest
 import IslamicCore
 @testable import HisnReading
 
-/// Phase 3D: index numbering, «الفصل التالي», and the Arabic VoiceOver text.
+/// Phase 3D: index numbering, «الباب التالي», and the Arabic VoiceOver text.
 final class HisnIndexAccessibilityTests: XCTestCase {
     private static var cached: HisnLibrary?
 

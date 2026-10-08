@@ -11,7 +11,7 @@ struct HisnSearchField: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
-            TextField("ابحث في الفصول والأذكار", text: $text)
+            TextField("ابحث في الأبواب والأذكار", text: $text)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .submitLabel(.search)
@@ -74,7 +74,7 @@ private struct HisnSearchResultRow: View {
                     Image(systemName: "book")
                         .foregroundStyle(.tint)
                 }
-                Text("فصل · عدد الأذكار \(result.chapterItemCount)")
+                Text("باب · عدد الأذكار \(result.chapterItemCount)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             case .item:

@@ -32,14 +32,23 @@ public enum ArabicSearchNormalizer {
         normalizeMapped(text).key
     }
 
-    public static func normalizeMapped(_ text: String) -> NormalizedSearchText {
+    /// - Parameter daggerAlefAsAlef: read the superscript (dagger) alef «ٰ» as a full alef
+    ///   instead of dropping it. The Quran search indexes verses both ways, so «العالمين»
+    ///   finds «ٱلْعَـٰلَمِينَ» and «الرحمن» finds «ٱلرَّحْمَـٰنِ». Off by default (the content
+    ///   builder's rule).
+    public static func normalizeMapped(_ text: String, daggerAlefAsAlef: Bool = false) -> NormalizedSearchText {
         var key = String.UnicodeScalarView()
         var offsets: [Int] = []
         var pendingSpace: Int?
         for (offset, scalar) in text.unicodeScalars.enumerated() {
             let value = scalar.value
-            if isDropped(value) { continue }
-            let letter = fold(scalar)
+            let letter: Unicode.Scalar
+            if daggerAlefAsAlef && value == 0x0670 {
+                letter = "\u{0627}"
+            } else {
+                if isDropped(value) { continue }
+                letter = fold(scalar)
+            }
             if (0x0621...0x064A).contains(letter.value) {
                 if let space = pendingSpace, !key.isEmpty {
                     key.append(" ")

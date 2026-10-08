@@ -8,6 +8,8 @@ import PackageDescription
 // live in the app. HisnAudioPlayback is the only target that imports AVFoundation.
 // ContentKit is shared by every content type: Arabic search normalization, content
 // references, and on-device progress stores.
+// QuranReading is the Quran reader state (library with juz/page lookup, position, search);
+// QuranText bundles the OFL Amiri Quran font and its Core Text layout checks.
 // HisnShareCard draws the share image with Core Text / Core Graphics (testable here).
 let package = Package(
     name: "IslamicCore",
@@ -18,6 +20,8 @@ let package = Package(
         .library(name: "HisnAudioPlayback", targets: ["HisnAudioPlayback"]),
         .library(name: "HisnShareCard", targets: ["HisnShareCard"]),
         .library(name: "ContentKit", targets: ["ContentKit"]),
+        .library(name: "QuranReading", targets: ["QuranReading"]),
+        .library(name: "QuranText", targets: ["QuranText"]),
     ],
     targets: [
         .target(
@@ -27,6 +31,14 @@ let package = Package(
         .target(
             name: "ContentKit",
             dependencies: ["IslamicCore"]
+        ),
+        .target(
+            name: "QuranReading",
+            dependencies: ["IslamicCore", "ContentKit"]
+        ),
+        .target(
+            name: "QuranText",
+            resources: [.copy("Resources/AmiriQuran-Regular.ttf"), .copy("Resources/AmiriQuran-OFL.txt")]
         ),
         .target(
             name: "HisnReading",
@@ -51,6 +63,10 @@ let package = Package(
         .testTarget(
             name: "ContentKitTests",
             dependencies: ["ContentKit", "IslamicCore"]
+        ),
+        .testTarget(
+            name: "QuranReadingTests",
+            dependencies: ["QuranReading", "QuranText", "ContentKit", "IslamicCore"]
         ),
         .testTarget(
             name: "HisnAudioTests",

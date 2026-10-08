@@ -14,7 +14,7 @@ struct HisnReaderView: View {
 
     /// - Parameters:
     ///   - highlightedItemId: the item opened from a search result, marked briefly on arrival.
-    ///   - nextSection: the section after this one, offered as «الفصل التالي» on completion.
+    ///   - nextSection: the section after this one, offered as «الباب التالي» on completion.
     ///   - openSection: opens it (the reader never changes chapter by itself).
     init(reader: HisnReader, store: HisnReadingPositionStore, dailyProgress: DailyProgressStore,
          audioRepository: HisnAudioRepository,
@@ -322,7 +322,7 @@ private struct HisnReaderContent: View {
                         openSection(nextSection)
                     } label: {
                         VStack(spacing: 2) {
-                            Text("الفصل التالي")
+                            Text("الباب التالي")
                             Text(nextSection.title)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -331,7 +331,7 @@ private struct HisnReaderContent: View {
                     }
                     .buttonStyle(.bordered)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("الفصل التالي")
+                    .accessibilityLabel("الباب التالي")
                     .accessibilityValue(HisnAccessibility.sectionLabel(nextSection))
                 }
                 Button {
