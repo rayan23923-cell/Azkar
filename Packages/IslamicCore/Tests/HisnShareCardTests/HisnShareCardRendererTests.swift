@@ -54,8 +54,8 @@ final class HisnShareCardRendererTests: XCTestCase {
         let drawn = [layout.header, layout.title, layout.body]
         XCTAssertEqual(drawn, ["حصن المسلم", content.chapterTitle, item.arabicText])
         for text in drawn {
-            for internal in [item.id, item.chapterId, "CONTENT_REVIEW", "PENDING", "rights"] {
-                XCTAssertFalse(text.contains(internal), internal)
+            for marker in [item.id, item.chapterId, "CONTENT_REVIEW", "PENDING", "rights"] {
+                XCTAssertFalse(text.contains(marker), marker)
             }
         }
     }

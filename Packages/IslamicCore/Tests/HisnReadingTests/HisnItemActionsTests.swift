@@ -69,8 +69,8 @@ final class HisnItemActionsTests: XCTestCase {
             let pasteboard = FakePasteboard()
             HisnItemActions(pasteboard: pasteboard, haptics: nil).copy(reader.shareContent)
             let copied = try XCTUnwrap(pasteboard.string)
-            for internal in [item.id, item.chapterId, "hisn-", "CONTENT_REVIEW", "PENDING", "{\"", "sha256"] {
-                XCTAssertFalse(copied.contains(internal), "\(id) contains \(internal)")
+            for marker in [item.id, item.chapterId, "hisn-", "CONTENT_REVIEW", "PENDING", "{\"", "sha256"] {
+                XCTAssertFalse(copied.contains(marker), "\(id) contains \(marker)")
             }
             for reference in item.references.map(\.originalText) where !reference.isEmpty {
                 XCTAssertFalse(copied.hasSuffix(reference), "\(id): no reference appended")
