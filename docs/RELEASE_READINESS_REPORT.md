@@ -70,7 +70,7 @@ The app is a complete, offline Arabic app:
 
 CI shows:
 
-- 312 package tests passing;
+- 389 package tests passing (77 of them PiP);
 - the content checks passing;
 - Debug, Release and IPA builds succeeding.
 
