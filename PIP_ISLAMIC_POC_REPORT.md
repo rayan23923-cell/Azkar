@@ -1,11 +1,13 @@
 # PIP_ISLAMIC_POC_REPORT
 
-Status: **code complete, device testing pending.**
+Status: **code complete and compiles; device testing pending.**
+
+Compile check: PASS on GitHub Actions (macos-26, Xcode 26.6, iOS SDK 26.5) for both an unsigned iOS device build and an iOS Simulator build, with `UIBackgroundModes = audio` confirmed in the built Info.plist ([run](https://github.com/rayan23923-cell/Azkar/actions/runs/37720519705)). Compiling proves nothing about PiP behaviour.
 Date: 2026-10-08
 
 > Rule followed: nothing in this report is marked PASS unless it was observed on a real device.
-> The POC was written in a Linux cloud environment with no Xcode, Simulator or iPhone, so it has
-> **not been compiled or run yet**. Every on-device result below is UNTESTED until the checklist in
+> The POC was written in a Linux cloud environment and compiled on a GitHub Actions macOS runner,
+> but it has **not been run on an iPhone yet**. Every on-device result below is UNTESTED until the checklist in
 > section 6 is run and the results are pasted back.
 
 ---
