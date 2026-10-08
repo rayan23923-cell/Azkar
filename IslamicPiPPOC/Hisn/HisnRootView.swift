@@ -3,9 +3,8 @@ import IslamicCore
 import HisnReading
 
 /// Hisn Al-Muslim: chapter index, search and reader. Arabic, right to left, system styles
-/// (Dynamic Type, dark mode) only. Presented over the app; the PiP screen stays underneath.
+/// (Dynamic Type, dark mode) only. The app's main tab (`AppRootView`).
 struct HisnRootView: View {
-    @Environment(\.dismiss) private var dismiss
     @StateObject private var model = HisnLibraryModel()
     @State private var path: [HisnRoute] = []
     @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
@@ -15,9 +14,6 @@ struct HisnRootView: View {
             content
                 .navigationTitle("حصن المسلم")
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("إغلاق") { dismiss() }
-                    }
                     ToolbarItem(placement: .primaryAction) {
                         Menu {
                             Toggle("الاهتزاز عند العدّ", isOn: $hapticsEnabled)
@@ -32,7 +28,12 @@ struct HisnRootView: View {
                        let chapter = library.chapter(id: route.chapterId),
                        let reader = HisnReader(chapter: chapter, itemIndex: route.itemIndex,
                                                completedRepetitions: route.completedRepetitions) {
-                        HisnReaderView(reader: reader, store: model.positionStore, audioRepository: audio)
+                        HisnReaderView(reader: reader, store: model.positionStore, audioRepository: audio,
+                                       nextSection: library.section(after: chapter.id)) { next in
+                            // «الفصل التالي»: replaces the finished chapter, so back returns to the index.
+                            path[path.count - 1] = HisnRoute(chapterId: next.id, itemIndex: 0)
+                        }
+                        .id(route)
                     } else {
                         HisnErrorView(message: "تعذّر فتح هذا الباب.", retry: nil)
                     }
@@ -63,7 +64,7 @@ struct HisnRootView: View {
     }
 }
 
-/// The 133 presentation sections in order, the same-day resume entry, and search.
+/// The 133 presentation sections in order, «متابعة القراءة» when a cursor is saved, and search.
 private struct HisnIndexView: View {
     let library: HisnLibrary
     let index: HisnSearchIndex
@@ -80,18 +81,15 @@ private struct HisnIndexView: View {
                 if let position = model.resumePosition, let chapter = library.chapter(id: position.chapterId) {
                     Section {
                         NavigationLink(value: model.route(for: position)) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("متابعة القراءة").font(.headline)
-                                Text(chapter.titleArabic).font(.subheadline).foregroundStyle(.secondary)
-                            }
+                            HisnResumeRow(position: position, chapter: chapter)
                         }
-                        .accessibilityHint("يفتح الذكر الذي توقفت عنده اليوم")
+                        .accessibilityHint("يفتح الذكر الذي توقفت عنده")
                     }
                 }
                 Section("الأبواب") {
                     ForEach(library.sections) { entry in
                         NavigationLink(value: model.route(forChapter: entry.id)) {
-                            HisnSectionRow(entry: entry)
+                            HisnSectionRow(entry: entry, isCurrent: entry.id == model.resumePosition?.chapterId)
                         }
                     }
                 }
@@ -111,25 +109,59 @@ private struct HisnIndexView: View {
     }
 }
 
+/// «متابعة القراءة»: the saved chapter, item and when it was last read.
+private struct HisnResumeRow: View {
+    let position: HisnReadingPosition
+    let chapter: HisnChapter
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label("متابعة القراءة", systemImage: "bookmark.fill")
+                .font(.headline)
+            Text(chapter.titleArabic)
+                .font(.subheadline)
+            HStack(spacing: 6) {
+                Text("الذكر \(min(position.itemIndex, chapter.itemCount - 1) + 1) من \(chapter.itemCount)")
+                Text("·").accessibilityHidden(true)
+                Text(position.savedAt, format: .relative(presentation: .named))
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
 private struct HisnSectionRow: View {
     let entry: HisnSectionEntry
+    /// The saved reading cursor is in this section.
+    let isCurrent: Bool
 
     var body: some View {
         HStack(spacing: 12) {
+            if let number = entry.bookChapterNumber {
+                Text("\(number)")
+                    .font(.footnote.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .frame(minWidth: 28, alignment: .leading)
+            }
             if let symbol {
                 Image(systemName: symbol)
                     .foregroundStyle(.tint)
-                    .accessibilityHidden(true)
             }
             Text(entry.title)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            if isCurrent {
+                Image(systemName: "bookmark.fill")
+                    .foregroundStyle(.tint)
+            }
             Text("\(entry.itemCount)")
                 .font(.footnote.monospacedDigit())
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(entry.title)
-        .accessibilityValue("عدد الأذكار \(entry.itemCount)")
+        .accessibilityLabel(HisnAccessibility.sectionLabel(entry))
+        .accessibilityValue(HisnAccessibility.sectionValue(entry, isCurrent: isCurrent))
     }
 
     private var symbol: String? {
