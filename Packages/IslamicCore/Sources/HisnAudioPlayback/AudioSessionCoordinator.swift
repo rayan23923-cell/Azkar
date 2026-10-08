@@ -9,7 +9,7 @@ import HisnReading
 /// Policy (one, for the whole app):
 /// - category `.playback`, mode `.moviePlayback`, no options: the configuration proven on a
 ///   device with the sample-buffer PiP path (plays with the silent switch on, in the
-///   background, and lets AVKit start PiP);
+///   background, and lets the system start PiP);
 /// - the category is set only when it differs, so repeated calls do not reconfigure the session;
 /// - activated when playback or PiP preparation starts, never at launch;
 /// - never deactivated (deactivating could cut off PiP or the other in-app audio).
