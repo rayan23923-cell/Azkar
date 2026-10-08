@@ -1,0 +1,4772 @@
+{
+ "primary": "Packages/IslamicCore/Upstream/hisn/asellam/hisn.json",
+ "crossCheck": "https://shamela.ws/book/31307 (151 pages) and https://binwahaf.com/ar/audio-book-series/897/",
+ "bookChapters": 132,
+ "bookItems": 267,
+ "counts": {
+  "matched": 292,
+  "unmatched": 10,
+  "quranResolved": 16,
+  "quranUnresolved": 1,
+  "repeatConsistent": 279,
+  "repeatConflict": 13,
+  "bookTextNotCovered": 34
+ },
+ "chapters": [
+  {
+   "index": 1,
+   "titleArabic": "أَذْكَارُ الِاسْتِيقَاظِ مِنَ النَّوْمِ",
+   "bookChapterNumber": 1,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 1,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 3,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": null,
+     "bookMatch": 0.482,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 4,
+     "bookMatch": 0.985,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 3,
+       "fromAyah": 190,
+       "toAyah": 200,
+       "wholeVerses": false,
+       "match": "FUZZY"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "QURAN_FUZZY_MATCH:3:190-200"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "titleArabic": "دُعَاءُ لُبْسِ الثَّوْبِ",
+   "bookChapterNumber": 2,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 5,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 3,
+   "titleArabic": "دُعَاءُ لُبْسِ الثَّوْبِ الجَدِيدِ",
+   "bookChapterNumber": 3,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 6,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 4,
+   "titleArabic": "الدُّعَاءُ لِمَنْ لَبِسَ ثَوْبًـا جَدِيدًا",
+   "bookChapterNumber": 4,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 8,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": null,
+     "bookMatch": 0.222,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 5,
+   "titleArabic": "مَا يَقُولُ إِذَا وَضَعَ ثَوْبَهُ",
+   "bookChapterNumber": 5,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 9,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 6,
+   "titleArabic": "دُعَاءُ دُخُولِ الخَلَاءِ",
+   "bookChapterNumber": 6,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 10,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 7,
+   "titleArabic": "دُعَاءُ الخُرُوجِ مِنَ الخَلَاءِ",
+   "bookChapterNumber": 7,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 11,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 8,
+   "titleArabic": "الذِّكْرُ قَبْلَ الوُضُوءِ",
+   "bookChapterNumber": 8,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 12,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 9,
+   "titleArabic": "الذِّكْرُ بَعْدَ الفَرَاغِ مِنَ الوُضُوءِ",
+   "bookChapterNumber": 9,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 13,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 14,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 15,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 10,
+   "titleArabic": "الذِّكْرُ عِنْدَ الخُرُوجِ مِنَ الـمَنْزِلِ",
+   "bookChapterNumber": 10,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 17,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": null,
+     "bookMatch": 0.231,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 11,
+   "titleArabic": "الذِّكْرُ عِنْدَ دُخُولِ الـمَنْزِلِ",
+   "bookChapterNumber": 11,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 18,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 12,
+   "titleArabic": "دُعَاءُ الذَّهَابِ إِلَى الـمَسْجِدِ",
+   "bookChapterNumber": 12,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 19,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 19,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 19,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 19,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 13,
+   "titleArabic": "دُعَاءُ دُخُولِ الـمَسْجِدِ",
+   "bookChapterNumber": 13,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 20,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.84"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 20,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.84"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 14,
+   "titleArabic": "دُعَاءُ الخُرُوجِ مِنَ الـمَسْجِدِ",
+   "bookChapterNumber": 14,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 21,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.79"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 15,
+   "titleArabic": "أَذْكَارُ الأَذَانِ",
+   "bookChapterNumber": 15,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 22,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 23,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.79"
+     ]
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 24,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 25,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 26,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 16,
+   "titleArabic": "دُعَاءُ الاسْتِفْتَاحِ",
+   "bookChapterNumber": 16,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 27,
+     "bookMatch": 0.952,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 28,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 29,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 30,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 31,
+     "bookMatch": 0.959,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[3]"
+     ]
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 32,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 17,
+   "titleArabic": "دُعَاءُ الرُّكُوعِ",
+   "bookChapterNumber": 17,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 33,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.64"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 34,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 35,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 36,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 37,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 18,
+   "titleArabic": "دُعَاءُ الرَّفْعِ مِنَ الرُّكُوعِ",
+   "bookChapterNumber": 18,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 38,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 39,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 40,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 19,
+   "titleArabic": "دُعَاءُ السُّجُودِ",
+   "bookChapterNumber": 19,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 41,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.64"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 42,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 43,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 44,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 45,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 46,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 7,
+     "bookItemNumber": 47,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 20,
+   "titleArabic": "دُعَاءُ الجَلْسَةِ بَيْنَ السَّجْدَتَيْنِ",
+   "bookChapterNumber": 20,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 48,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 49,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 21,
+   "titleArabic": "دُعَاءُ سُجُودِ التِّلَاوَةِ",
+   "bookChapterNumber": 21,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 50,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 23,
+       "fromAyah": 14,
+       "toAyah": 14,
+       "wholeVerses": false,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 51,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 22,
+   "titleArabic": "التَّشَهُّدُ",
+   "bookChapterNumber": 22,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 52,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 23,
+   "titleArabic": "الصَّلَاةُ عَلَى النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ بَعْدَ التَّشَهُّدِ",
+   "bookChapterNumber": 23,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 53,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 54,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 24,
+   "titleArabic": "الدُّعَاءُ بَعْدَ التَّشَهُّدِ الأَخِيرِ وَقَبْلَ السَّلَامِ",
+   "bookChapterNumber": 24,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 55,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 56,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 57,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 58,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 59,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 60,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 7,
+     "bookItemNumber": 61,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 8,
+     "bookItemNumber": 62,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 9,
+     "bookItemNumber": 63,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 10,
+     "bookItemNumber": 64,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 11,
+     "bookItemNumber": 65,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 25,
+   "titleArabic": "الأَذْكَارُ بَعْدَ السَّلَامِ مِنَ الصَّلَاةِ",
+   "bookChapterNumber": 25,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 66,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[3]"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 67,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[3]"
+     ]
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 68,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 69,
+     "bookMatch": 0.894,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      33
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[33]"
+     ]
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 70,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 112,
+       "fromAyah": 1,
+       "toAyah": 4,
+       "wholeVerses": true,
+       "match": "EXACT"
+      },
+      {
+       "surah": 113,
+       "fromAyah": 1,
+       "toAyah": 5,
+       "wholeVerses": true,
+       "match": "EXACT"
+      },
+      {
+       "surah": 114,
+       "fromAyah": 1,
+       "toAyah": 6,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 71,
+     "bookMatch": 0.878,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 2,
+       "fromAyah": 255,
+       "toAyah": 255,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 7,
+     "bookItemNumber": 72,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      10
+     ],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 8,
+     "bookItemNumber": 73,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 26,
+   "titleArabic": "دُعَاءُ صَلَاةِ الاسْتِخَارَةِ",
+   "bookChapterNumber": 26,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 74,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.81"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 27,
+   "titleArabic": "أَذْكَارُ الصَّبَاحِ",
+   "bookChapterNumber": 27,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": null,
+     "bookMatch": 0.725,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 75,
+     "bookMatch": 0.991,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 2,
+       "fromAyah": 255,
+       "toAyah": 255,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 76,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 112,
+       "fromAyah": 1,
+       "toAyah": 4,
+       "wholeVerses": true,
+       "match": "EXACT"
+      },
+      {
+       "surah": 113,
+       "fromAyah": 1,
+       "toAyah": 5,
+       "wholeVerses": true,
+       "match": "EXACT"
+      },
+      {
+       "surah": 114,
+       "fromAyah": 1,
+       "toAyah": 6,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 77,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 78,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 79,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 7,
+     "bookItemNumber": 80,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      4
+     ],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 8,
+     "bookItemNumber": 81,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 9,
+     "bookItemNumber": 82,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 10,
+     "bookItemNumber": 83,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      7
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.86"
+     ]
+    },
+    {
+     "index": 11,
+     "bookItemNumber": 84,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 12,
+     "bookItemNumber": 85,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 13,
+     "bookItemNumber": 86,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.88"
+     ]
+    },
+    {
+     "index": 14,
+     "bookItemNumber": 87,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.86"
+     ]
+    },
+    {
+     "index": 15,
+     "bookItemNumber": 88,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 16,
+     "bookItemNumber": 89,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 17,
+     "bookItemNumber": 90,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 18,
+     "bookItemNumber": 91,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      100
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.68"
+     ]
+    },
+    {
+     "index": 19,
+     "bookItemNumber": 92,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      10
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.76"
+     ]
+    },
+    {
+     "index": 20,
+     "bookItemNumber": 92,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      10
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=100,book=[10]",
+      "BOOK_TEXT_NOT_COVERED:0.76"
+     ]
+    },
+    {
+     "index": 21,
+     "bookItemNumber": 94,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.77"
+     ]
+    },
+    {
+     "index": 22,
+     "bookItemNumber": 95,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.86"
+     ]
+    },
+    {
+     "index": 23,
+     "bookItemNumber": 96,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      100
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.58"
+     ]
+    },
+    {
+     "index": 24,
+     "bookItemNumber": 98,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      10
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.77"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 28,
+   "titleArabic": "أَذْكَارُ المَسَاءِ",
+   "bookChapterNumber": 27,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": null,
+     "bookMatch": 0.725,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 75,
+     "bookMatch": 0.991,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 2,
+       "fromAyah": 255,
+       "toAyah": 255,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 76,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 112,
+       "fromAyah": 1,
+       "toAyah": 4,
+       "wholeVerses": true,
+       "match": "EXACT"
+      },
+      {
+       "surah": 113,
+       "fromAyah": 1,
+       "toAyah": 5,
+       "wholeVerses": true,
+       "match": "EXACT"
+      },
+      {
+       "surah": 114,
+       "fromAyah": 1,
+       "toAyah": 6,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "QURAN_UNBRACED_IN_SOURCE:114:1-6"
+     ]
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 77,
+     "bookMatch": 0.923,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": null,
+     "bookMatch": 0.809,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 79,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 7,
+     "bookItemNumber": 80,
+     "bookMatch": 0.97,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      4
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.90"
+     ]
+    },
+    {
+     "index": 8,
+     "bookItemNumber": 81,
+     "bookMatch": 0.952,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 9,
+     "bookItemNumber": 82,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 10,
+     "bookItemNumber": 83,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      7
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.86"
+     ]
+    },
+    {
+     "index": 11,
+     "bookItemNumber": 84,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 12,
+     "bookItemNumber": 85,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 13,
+     "bookItemNumber": 86,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.88"
+     ]
+    },
+    {
+     "index": 14,
+     "bookItemNumber": 87,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.86"
+     ]
+    },
+    {
+     "index": 15,
+     "bookItemNumber": 88,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 16,
+     "bookItemNumber": null,
+     "bookMatch": 0.847,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    },
+    {
+     "index": 17,
+     "bookItemNumber": 90,
+     "bookMatch": 0.973,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 18,
+     "bookItemNumber": 91,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      100
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.68"
+     ]
+    },
+    {
+     "index": 19,
+     "bookItemNumber": 92,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      10
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.68"
+     ]
+    },
+    {
+     "index": 20,
+     "bookItemNumber": 96,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      100
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.58"
+     ]
+    },
+    {
+     "index": 21,
+     "bookItemNumber": 97,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.67"
+     ]
+    },
+    {
+     "index": 22,
+     "bookItemNumber": 98,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      10
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.77"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 29,
+   "titleArabic": "أَذْكَارُ النَّوْمِ",
+   "bookChapterNumber": 28,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 99,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 112,
+       "fromAyah": 1,
+       "toAyah": 4,
+       "wholeVerses": true,
+       "match": "EXACT"
+      },
+      {
+       "surah": 113,
+       "fromAyah": 1,
+       "toAyah": 5,
+       "wholeVerses": true,
+       "match": "EXACT"
+      },
+      {
+       "surah": 114,
+       "fromAyah": 1,
+       "toAyah": 6,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 100,
+     "bookMatch": 0.878,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 2,
+       "fromAyah": 255,
+       "toAyah": 255,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 101,
+     "bookMatch": 0.929,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 2,
+       "fromAyah": 285,
+       "toAyah": 286,
+       "wholeVerses": false,
+       "match": "FUZZY"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "QURAN_FUZZY_MATCH:2:285-286"
+     ]
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 102,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 103,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 104,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=3,book=[]"
+     ]
+    },
+    {
+     "index": 7,
+     "bookItemNumber": 105,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    },
+    {
+     "index": 8,
+     "bookItemNumber": 106,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      33,
+      34
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.40"
+     ]
+    },
+    {
+     "index": 9,
+     "bookItemNumber": 106,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      33,
+      34
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.40"
+     ]
+    },
+    {
+     "index": 10,
+     "bookItemNumber": 106,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      33,
+      34
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.40"
+     ]
+    },
+    {
+     "index": 11,
+     "bookItemNumber": 107,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 12,
+     "bookItemNumber": 108,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 13,
+     "bookItemNumber": 109,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 14,
+     "bookItemNumber": null,
+     "bookMatch": 0.74,
+     "inOfficialItemList": null,
+     "quran": "PARTIAL",
+     "quranCitations": [
+      {
+       "surah": 67,
+       "fromAyah": 1,
+       "toAyah": 1,
+       "wholeVerses": false,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "QURAN_SEGMENT_UNRESOLVED:ألم * تَنْزِيل ...",
+      "REPEAT_UNVERIFIED"
+     ]
+    },
+    {
+     "index": 15,
+     "bookItemNumber": 111,
+     "bookMatch": 0.984,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 30,
+   "titleArabic": "الدُّعَاءُ إِذَا تَقَلَّبَ لَيْلًا",
+   "bookChapterNumber": 29,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 112,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 31,
+   "titleArabic": "دُعَاءُ الفَزَعِ فِي النَّوْمِ وَمَنْ بُلِيَ بِالوَحْشَةِ",
+   "bookChapterNumber": 30,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 113,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 32,
+   "titleArabic": "مَا يَفْعَلُ مَنْ رَأَى الرُّؤْيَا أَوِ الحُلُمَ",
+   "bookChapterNumber": 31,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 114,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.85"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 114,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.85"
+     ]
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 114,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "REPEAT_CONFLICT:source=1,book=[3]",
+      "BOOK_TEXT_NOT_COVERED:0.85"
+     ]
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 114,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[3]",
+      "BOOK_TEXT_NOT_COVERED:0.85"
+     ]
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 115,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 33,
+   "titleArabic": "دُعَاءُ قُنُوتِ الوِتْرِ",
+   "bookChapterNumber": 32,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 116,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 117,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 118,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 34,
+   "titleArabic": "الذِّكْرُ عَقِبَ السَّلَامِ مِنَ الوِتْرِ",
+   "bookChapterNumber": 33,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 119,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.89"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 35,
+   "titleArabic": "دُعَاءُ الهَمِّ والحُزْنِ",
+   "bookChapterNumber": 34,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 120,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 121,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 36,
+   "titleArabic": "دُعَاءُ الكَرْبِ",
+   "bookChapterNumber": 35,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 122,
+     "bookMatch": 0.989,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 123,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 124,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 125,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 37,
+   "titleArabic": "دُعَاءُ لِقَاءِ العَدُّوِّ وَذِي السُّلْطَانِ",
+   "bookChapterNumber": 36,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 126,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 127,
+     "bookMatch": 0.976,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 128,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 38,
+   "titleArabic": "دُعَاءُ مَنْ خَافَ ظُلْمَ السُّلْطَانِ",
+   "bookChapterNumber": 37,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 129,
+     "bookMatch": 0.991,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 130,
+     "bookMatch": 0.995,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 39,
+   "titleArabic": "الدُّعَاءُ عَلَى العَدُوِّ",
+   "bookChapterNumber": 38,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 131,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 40,
+   "titleArabic": "مَا يَقُولُ مَنْ خَافَ قَوْمًا",
+   "bookChapterNumber": 39,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 132,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 41,
+   "titleArabic": "دُعَاءُ مَنْ أَصَابَهُ شَكٌّ فِي الِإيمَانِ",
+   "bookChapterNumber": 40,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 133,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "BOOK_TEXT_NOT_COVERED:0.42"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": null,
+     "bookMatch": 0.846,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "SHORT_TEXT_MATCH",
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 134,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 135,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 57,
+       "fromAyah": 3,
+       "toAyah": 3,
+       "wholeVerses": true,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 42,
+   "titleArabic": "دُعَاءُ قَضَاءِ الدَّيْنِ",
+   "bookChapterNumber": 41,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 136,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 137,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 43,
+   "titleArabic": "دُعَاءُ الوَسْوَسَةِ فِي الصَّلَاةِ وَالقِرَاءَةِ",
+   "bookChapterNumber": 42,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 138,
+     "bookMatch": 0.854,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.83"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 44,
+   "titleArabic": "دُعاءُ مَنِ اسْتَصْعَبَ عَلَيْهِ أَمْرٌ",
+   "bookChapterNumber": 43,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 139,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 45,
+   "titleArabic": "مَا يَقُولُ وَيَفْعَلُ مَنْ أَذْنَبَ ذَنْبًا",
+   "bookChapterNumber": 44,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 140,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 46,
+   "titleArabic": "دُعَاءُ طَرْدِ الشَّيْطَانِ وَوَسَاوِسِهِ",
+   "bookChapterNumber": 45,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 141,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 141,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 143,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 47,
+   "titleArabic": "الدُّعَاءُ حِينَمَا يَقَعُ مَا لَا يَرْضَاهُ أَوْ غُلِبَ عَلَى أَمْرِهِ",
+   "bookChapterNumber": 46,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 144,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 48,
+   "titleArabic": "تَهْنِئَةُ المَوْلُودِ لَهُ وَجَوَابُهُ",
+   "bookChapterNumber": 47,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 145,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 49,
+   "titleArabic": "مَا يُعَوَّذُ بِهِ الأَوْلَادُ",
+   "bookChapterNumber": 48,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 146,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.88"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 50,
+   "titleArabic": "الدُّعَاءُ لِلْمَرِيضِ فِي عِيَادَتِهِ",
+   "bookChapterNumber": 49,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 147,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 148,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      7
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.83"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 51,
+   "titleArabic": "فَضْلُ عِيَادَةِ المَرِيضِ",
+   "bookChapterNumber": 50,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 149,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 52,
+   "titleArabic": "دُعَاءُ المَرِيضِ الذِي يَئِسَ مِنْ حَيَاتِهِ",
+   "bookChapterNumber": 51,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 150,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 151,
+     "bookMatch": 0.989,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 152,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 53,
+   "titleArabic": "تَلْقِينُ المُحْتَضِرِ",
+   "bookChapterNumber": 52,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 153,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 54,
+   "titleArabic": "دُعَاءُ مَنْ أُصِيبَ بِمُصِيبَةٍ",
+   "bookChapterNumber": 53,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 154,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 55,
+   "titleArabic": "الدُّعَاءُ عِنْدَ إِغْمَاضِ المَيِّتِ",
+   "bookChapterNumber": 54,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 155,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 56,
+   "titleArabic": "الدُّعَاءُ لِلْمَيِّتِ فِي الصَّلَاةِ عَلَيْهِ",
+   "bookChapterNumber": 55,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 156,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 157,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 158,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 159,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 57,
+   "titleArabic": "الدُّعَاءُ لِلْفَرَطِ فِي الصَّلَاةِ عَلَيْهِ",
+   "bookChapterNumber": 56,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 160,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 160,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 161,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 58,
+   "titleArabic": "دُعَاءُ التَّعْزِيَةِ",
+   "bookChapterNumber": 57,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 162,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 162,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 59,
+   "titleArabic": "الدُّعَاءُ عِنْدَ إِدْخَالِ المَيِّتِ القَبْرَ",
+   "bookChapterNumber": 58,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 163,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 60,
+   "titleArabic": "الدُّعَاءُ بَعْدَ دَفْنِ المَيِّتِ",
+   "bookChapterNumber": 59,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 164,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 61,
+   "titleArabic": "دُعَاءُ زِيَارَةِ القُبُورِ",
+   "bookChapterNumber": 60,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 165,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 62,
+   "titleArabic": "دُعَاءُ الرِّيحِ",
+   "bookChapterNumber": 61,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 166,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 167,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 63,
+   "titleArabic": "دُعَاءُ الرَّعْدِ",
+   "bookChapterNumber": 62,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 168,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 64,
+   "titleArabic": "مِنْ أَدْعِيَةِ الاسْتِسْقَاءِ",
+   "bookChapterNumber": 63,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 169,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 170,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 171,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 65,
+   "titleArabic": "الدُّعَاءُ إِذَا نَزَلَ المَطَرُ",
+   "bookChapterNumber": 64,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 172,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 66,
+   "titleArabic": "الذِّكْرُ بَعْدَ نُزُولِ المَطَرِ",
+   "bookChapterNumber": 65,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 173,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 67,
+   "titleArabic": "مِنْ أَدْعِيَةِ الاسْتِصْحَاءِ",
+   "bookChapterNumber": 66,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 174,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 68,
+   "titleArabic": "دُعَاءُ رُؤْيَةِ الهِلَالِ",
+   "bookChapterNumber": 67,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 175,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 69,
+   "titleArabic": "الدُّعَاءُ عِنْدَ إِفْطَارِ الصَّائِمِ",
+   "bookChapterNumber": 68,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 176,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 177,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 70,
+   "titleArabic": "الدُّعَاءُ قَبْلَ الطَّعَامِ",
+   "bookChapterNumber": 69,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 178,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 179,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 71,
+   "titleArabic": "الدُّعَاءُ عِنْدَ الفَرَاغِ مِنَ الطَّعَامِ",
+   "bookChapterNumber": 70,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 180,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 181,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 72,
+   "titleArabic": "دُعَاءُ الضَّيْفِ لِصَاحِبِ الطَّعَامِ",
+   "bookChapterNumber": 71,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 182,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 73,
+   "titleArabic": "الدُّعَاءُ لِمَنْ سَقَاهُ أَوْ إِذَا أَرَادَ ذَلِكَ",
+   "bookChapterNumber": 72,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 183,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 74,
+   "titleArabic": "الدُّعَاءُ إِذَا أَفْطَرَ عِنْدَ أَهْلِ بَيْتٍ",
+   "bookChapterNumber": 73,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 184,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 75,
+   "titleArabic": "دُعَاءُ الصَّائِمِ إِذَا حَضَرَ الطَّعَامُ وَلَمْ يُفْطِرْ",
+   "bookChapterNumber": 74,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 185,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 76,
+   "titleArabic": "مَا يَقُولُ الصَّائِمُ إِذَا سَابَّهُ أَحَدٌ",
+   "bookChapterNumber": 75,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 186,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 77,
+   "titleArabic": "الدُّعَاءُ عِنْدَ رُؤْيَةِ بَاكُورَةِ الثَّمَرِ",
+   "bookChapterNumber": 76,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 187,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 78,
+   "titleArabic": "دُعَاءُ العُطَاسِ",
+   "bookChapterNumber": 77,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 188,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 79,
+   "titleArabic": "مَا يُقَالُ لِلْكَافِرِ إِذَا عَطَسَ فَحَمِدَ اللَّهَ",
+   "bookChapterNumber": 78,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 189,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 80,
+   "titleArabic": "الدُّعَاءُ لِلْمُتَزَوِّجِ",
+   "bookChapterNumber": 79,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 190,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 81,
+   "titleArabic": "دُعَاءُ المُتَزَوِّجِ وَشِرَاءِ الدَّابَّةِ",
+   "bookChapterNumber": 80,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 191,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 82,
+   "titleArabic": "الدُّعَاءُ قَبْلَ إِتُيَانِ الزَّوْجَةِ",
+   "bookChapterNumber": 81,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 192,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 83,
+   "titleArabic": "دُعَاءُ الغَضَبِ",
+   "bookChapterNumber": 82,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 193,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 84,
+   "titleArabic": "دُعَاءُ مَنْ رَأَى مُبْتَلًى",
+   "bookChapterNumber": 83,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 194,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 85,
+   "titleArabic": "مَا يُقَالُ فِي المَجْلِسِ",
+   "bookChapterNumber": 84,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 195,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      100
+     ],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.90"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 86,
+   "titleArabic": "كَفَّارَةُ المَجْلِسِ",
+   "bookChapterNumber": 85,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 196,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 87,
+   "titleArabic": "الدُّعَاءُ لِمَنْ قَالَ غَفَرَ اللَّهُ لَكَ",
+   "bookChapterNumber": 86,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 197,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 88,
+   "titleArabic": "الدُّعَاءُ لِمَنْ صَنَعَ إِلَيْكَ مَعْرُوفًا",
+   "bookChapterNumber": 87,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 198,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 89,
+   "titleArabic": "مَا يَعْصِمُ اللَّهُ بِهِ مِنَ الدَّجَّالِ",
+   "bookChapterNumber": 88,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 199,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 199,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 90,
+   "titleArabic": "الدُّعَاءُ لِمَنْ قَالَ إِنِّي أُحِبُّكَ فِي اللَّهِ",
+   "bookChapterNumber": 89,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 200,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 91,
+   "titleArabic": "الدُّعَاءُ لِمَنْ عَرَضَ عَلَيْكَ مَالَهُ",
+   "bookChapterNumber": 90,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 201,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 92,
+   "titleArabic": "الدُّعَاءُ لِمَنْ أَقْرَضَ عِنْدَ القَضَاءِ",
+   "bookChapterNumber": 91,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 202,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 93,
+   "titleArabic": "دُعَاءُ الخَوْفِ مِنَ الشِّرْكِ",
+   "bookChapterNumber": 92,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 203,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 94,
+   "titleArabic": "الدُّعَاءُ لِمَنْ قَالَ بَارَكَ اللَّهُ فِيكَ",
+   "bookChapterNumber": 93,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 204,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 95,
+   "titleArabic": "دُعَاءُ كَرَاهِيَّةِ الطِّيرَةِ",
+   "bookChapterNumber": 94,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 205,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 96,
+   "titleArabic": "دُعَاءُ الرُّكُوبِ",
+   "bookChapterNumber": 95,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 206,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 43,
+       "fromAyah": 13,
+       "toAyah": 14,
+       "wholeVerses": false,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 97,
+   "titleArabic": "دُعَاءُ السَّفَرِ",
+   "bookChapterNumber": 96,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 207,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 43,
+       "fromAyah": 13,
+       "toAyah": 14,
+       "wholeVerses": false,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 98,
+   "titleArabic": "دُعَاءُ دُخُولِ القَرْيَةِ أَو البَلْدَةِ",
+   "bookChapterNumber": 97,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 208,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 99,
+   "titleArabic": "دُعَاءُ دُخُولِ السُّوقِ",
+   "bookChapterNumber": 98,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 209,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 100,
+   "titleArabic": "الدُّعَاءُ إِذَا تَعِسَ المَرْكُوبُ",
+   "bookChapterNumber": 99,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 210,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 101,
+   "titleArabic": "دُعَاءُ المُسَافِرِ لِلْمُقِيمِ",
+   "bookChapterNumber": 100,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 211,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 102,
+   "titleArabic": "دُعَاءُ المُقِيمِ لِلْمُسَافِرِ",
+   "bookChapterNumber": 101,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 212,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 213,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 103,
+   "titleArabic": "التَّكْبِيرُ وَالتَّسْبِيحُ فِي سَيْرِ السَّفَرِ",
+   "bookChapterNumber": 102,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 214,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 104,
+   "titleArabic": "دُعَاءُ المُسَافِرِ إِذَا أَسْحَرَ",
+   "bookChapterNumber": 103,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 215,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 105,
+   "titleArabic": "الدُّعَاءُ إِذَا نَزَلَ مَنْزِلًا فِي سَفَرٍ أَوْ غَيْرِهِ",
+   "bookChapterNumber": 104,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 216,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 106,
+   "titleArabic": "ذِكْرُ الرُّجُوعِ مِنَ السَّفَرِ",
+   "bookChapterNumber": 105,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 217,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 107,
+   "titleArabic": "مَا يَقُولُ مَنْ أَتَاهُ أَمْرٌ يَسُرُّهُ أَوْ يَكْرَهُهُ",
+   "bookChapterNumber": 106,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 218,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 108,
+   "titleArabic": "فَضْلُ الصَّلَاةِ عَلَى النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+   "bookChapterNumber": 107,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 219,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 220,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 221,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 222,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 223,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 109,
+   "titleArabic": "إِفْشَاءُ السَّلَامِ",
+   "bookChapterNumber": 108,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 224,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 225,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 226,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 110,
+   "titleArabic": "كَيْفَ يَرُدُّ السَّلَامُ عَلَى الكَافِرِ إِذَا سَلَّمَ",
+   "bookChapterNumber": 109,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 227,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 111,
+   "titleArabic": "الدُّعَاءُ عِنْدَ صِيَاحِ الدِّيكِ وَنَهِيقِ الحِمَارِ",
+   "bookChapterNumber": 110,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 228,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 112,
+   "titleArabic": "الدُّعَاءُ عِنْدَ سَمَاعِ نُبَاحِ الكِلَابِ بِاللَّيْلِ",
+   "bookChapterNumber": 111,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 229,
+     "bookMatch": 0.985,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 113,
+   "titleArabic": "الدُّعَاءُ لِمَنْ سَبَبْتَهُ",
+   "bookChapterNumber": 112,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 230,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 114,
+   "titleArabic": "مَا يَقُولُ المُسْلِمُ إِذَا مَدَحَ المُسْلِمَ",
+   "bookChapterNumber": 113,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 231,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 115,
+   "titleArabic": "مَا يَقُولُ المُسْلِمُ إِذَا زُكِّيَ",
+   "bookChapterNumber": 114,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 232,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 116,
+   "titleArabic": "كَيْفَ يُلَبِّي المُحْرِمُ فِي الحَجِّ أَوْ العُمْرَةِ",
+   "bookChapterNumber": 115,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 233,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 117,
+   "titleArabic": "التَّكْبِيرُ إِذَا أَتَى الرُّكْنَ الأَسْوَدَ",
+   "bookChapterNumber": 116,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 234,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 118,
+   "titleArabic": "الدُّعَاءُ بَيْنَ الرُّكْنِ اليَمَانِي وَالحَجَرِ الأَسْوَدِ",
+   "bookChapterNumber": 117,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 235,
+     "bookMatch": 0.979,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 2,
+       "fromAyah": 201,
+       "toAyah": 201,
+       "wholeVerses": false,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 119,
+   "titleArabic": "دُعَاءُ الوُقُوفِ عَلَى الصَّفَا وَالمَرْوَةِ",
+   "bookChapterNumber": 118,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 236,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "RESOLVED",
+     "quranCitations": [
+      {
+       "surah": 2,
+       "fromAyah": 158,
+       "toAyah": 158,
+       "wholeVerses": false,
+       "match": "EXACT"
+      }
+     ],
+     "bookRepeatValues": [
+      3
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[3]"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 120,
+   "titleArabic": "الدُّعَاءُ يَوْمَ عَرَفَةَ",
+   "bookChapterNumber": 119,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 237,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.81"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 121,
+   "titleArabic": "الذِّكْرُ عِنْدَ المَشْعَرِ الحَرَامِ",
+   "bookChapterNumber": 120,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 238,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 122,
+   "titleArabic": "التَّكْبِيرُ عِنْدَ رَمْيِ الجِمَارِ مَعَ كُلِّ حَصَاةٍ",
+   "bookChapterNumber": 121,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 239,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 123,
+   "titleArabic": "دُعَاءُ التَّعَجُّبِ وَالأَمْرِ السَّارِ",
+   "bookChapterNumber": 122,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 240,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 241,
+     "bookMatch": 1.0,
+     "inOfficialItemList": false,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 124,
+   "titleArabic": "مَا يَفْعَلُ مَنْ أَتَاهُ أَمْرٌ يَسُرُّهُ",
+   "bookChapterNumber": 123,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 242,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 125,
+   "titleArabic": "مَا يَقُولُ مَنْ أَحَسَّ وَجَعًا فِي جَسَدِهِ",
+   "bookChapterNumber": 124,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 243,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      3,
+      7
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[3, 7]"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 126,
+   "titleArabic": "دُعَاءُ مَنْ خَشِيَ أَنْ يُصِيبَ شَيْئًا بِعَيْنِهِ",
+   "bookChapterNumber": 125,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 244,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 127,
+   "titleArabic": "مَا يُقَالُ عِنْدَ الفَزَعِ",
+   "bookChapterNumber": 126,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 245,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "SHORT_TEXT_MATCH"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 128,
+   "titleArabic": "مَا يَقُولُ عِنْدَ الذَّبْحِ أَوْ النَّحْرِ",
+   "bookChapterNumber": 127,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 246,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 129,
+   "titleArabic": "مَا يَقُولُ لِرَدِّ كَيْدِ مَرَدَةِ الشَّيَاطِينِ",
+   "bookChapterNumber": 128,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 247,
+     "bookMatch": 0.994,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 130,
+   "titleArabic": "الاسْتِغْفَارُ وَالتَّوْبَةُ",
+   "bookChapterNumber": 129,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 248,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 249,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      100
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[100]"
+     ]
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 250,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 251,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 252,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 253,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      100
+     ],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=1,book=[100]"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 131,
+   "titleArabic": "فَضْلُ التَّسْبِيحِ وَالتَّحْمِيدِ، وَالتَّهْلِيلِ، وَالتَّكْبِيرِ",
+   "bookChapterNumber": 130,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 254,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [
+      100
+     ],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 2,
+     "bookItemNumber": 255,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": false,
+     "flags": [
+      "REPEAT_CONFLICT:source=10,book=[]"
+     ]
+    },
+    {
+     "index": 3,
+     "bookItemNumber": 256,
+     "bookMatch": 0.99,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 4,
+     "bookItemNumber": 257,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 5,
+     "bookItemNumber": 258,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 6,
+     "bookItemNumber": 259,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 7,
+     "bookItemNumber": 260,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 8,
+     "bookItemNumber": 261,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 9,
+     "bookItemNumber": 262,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 10,
+     "bookItemNumber": 263,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 11,
+     "bookItemNumber": 264,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    },
+    {
+     "index": 12,
+     "bookItemNumber": 265,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": []
+    }
+   ]
+  },
+  {
+   "index": 132,
+   "titleArabic": "كَيْفَ كَانَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ يُسَبِّحُ؟",
+   "bookChapterNumber": 131,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": 266,
+     "bookMatch": 1.0,
+     "inOfficialItemList": true,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": true,
+     "flags": [
+      "BOOK_TEXT_NOT_COVERED:0.90"
+     ]
+    }
+   ]
+  },
+  {
+   "index": 133,
+   "titleArabic": "مِنْ أَنْوَاعِ الخَيْرِ وَالآدَابِ الجَامِعَةِ",
+   "bookChapterNumber": 132,
+   "items": [
+    {
+     "index": 1,
+     "bookItemNumber": null,
+     "bookMatch": 0.816,
+     "inOfficialItemList": null,
+     "quran": "NONE",
+     "quranCitations": [],
+     "bookRepeatValues": [],
+     "repeatConsistent": null,
+     "flags": [
+      "ITEM_NOT_MATCHED_IN_BOOK",
+      "REPEAT_UNVERIFIED"
+     ]
+    }
+   ]
+  }
+ ]
+}
