@@ -4,12 +4,24 @@ import AVFoundation
 struct ContentView: View {
     @EnvironmentObject var engine: PiPEngine
     @State private var copied = false
+    @State private var showsHisn = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 Text("Islamic PiP Technical Test")
                     .font(.title2.bold())
+
+                // Phase 3A entry point: the Hisn Al-Muslim reader, presented over this screen
+                // so the PiP layer below stays mounted.
+                Button {
+                    showsHisn = true
+                } label: {
+                    Label("حصن المسلم", systemImage: "book")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
 
                 // In-app Arabic text (SwiftUI, RTL).
                 Text(engine.currentText)
@@ -72,6 +84,9 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding()
+        }
+        .fullScreenCover(isPresented: $showsHisn) {
+            HisnRootView()
         }
     }
 }
