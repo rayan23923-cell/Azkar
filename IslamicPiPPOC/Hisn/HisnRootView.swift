@@ -29,6 +29,7 @@ struct HisnRootView: View {
                        let reader = HisnReader(chapter: chapter, itemIndex: route.itemIndex,
                                                completedRepetitions: route.completedRepetitions) {
                         HisnReaderView(reader: reader, store: model.positionStore, audioRepository: audio,
+                                       highlightedItemId: route.highlightedItemId,
                                        nextSection: library.section(after: chapter.id)) { next in
                             // «الفصل التالي»: replaces the finished chapter, so back returns to the index.
                             path[path.count - 1] = HisnRoute(chapterId: next.id, itemIndex: 0)
@@ -58,25 +59,38 @@ struct HisnRootView: View {
             HisnErrorView(message: "تعذّر تحميل حصن المسلم من التطبيق.") {
                 Task { await model.load() }
             }
-        case .loaded(let library, let index, _):
-            HisnIndexView(library: library, index: index, model: model)
+        case .loaded(let library, let search, _):
+            HisnIndexView(library: library, search: search, model: model)
         }
     }
 }
 
 /// The 133 presentation sections in order, «متابعة القراءة» when a cursor is saved, and search.
+/// The query lives only while this screen exists; it is not saved.
 private struct HisnIndexView: View {
     let library: HisnLibrary
-    let index: HisnSearchIndex
+    let search: HisnSearchEngine
     @ObservedObject var model: HisnLibraryModel
     @State private var query = ""
+    @State private var filter: HisnSearchFilter = .all
+    @State private var results: [HisnSearchResult] = []
 
     var body: some View {
-        let results = index.search(query)
-        let searching = !HisnSearchKey.make(query).isEmpty
+        let searching = HisnSearchEngine.isSearchable(query)
         List {
+            Section {
+                HisnSearchField(text: $query)
+                if searching {
+                    Picker(HisnAccessibility.searchFilter, selection: $filter) {
+                        ForEach(HisnSearchFilter.allCases, id: \.self) { filter in
+                            Text(HisnAccessibility.filterTitle(filter)).tag(filter)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+            }
             if searching {
-                HisnSearchResultsSection(results: results)
+                HisnSearchResultsSection(results: results) { model.route(for: $0) }
             } else {
                 if let position = model.resumePosition, let chapter = library.chapter(id: position.chapterId) {
                     Section {
@@ -95,17 +109,14 @@ private struct HisnIndexView: View {
                 }
             }
         }
-        .overlay {
-            if searching && results.isEmpty {
-                ContentUnavailableView {
-                    Label("لا توجد نتائج", systemImage: "magnifyingglass")
-                } description: {
-                    Text("جرّب كلمة أخرى أو جزءاً من نص الذكر.")
-                }
-            }
-        }
-        .searchable(text: $query, prompt: "ابحث في الأذكار")
-        .autocorrectionDisabled()
+        .scrollDismissesKeyboard(.immediately)
+        // Searches run only when the query or the filter changes, against the index built once.
+        .onChange(of: query, initial: true) { runSearch() }
+        .onChange(of: filter) { runSearch() }
+    }
+
+    private func runSearch() {
+        results = search.search(query, filter: filter)
     }
 }
 

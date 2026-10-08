@@ -54,7 +54,7 @@ final class HisnReaderTests: XCTestCase {
         let split = library.sections.filter { $0.timeOfDay != nil }
         XCTAssertEqual(split.map(\.id), ["hisn-ch-027", "hisn-ch-028"])
         XCTAssertEqual(split.map(\.timeOfDay), [.morning, .evening])
-        XCTAssertEqual(split.map { HisnSearchKey.make($0.title) }, ["اذكار الصباح", "اذكار المساء"],
+        XCTAssertEqual(split.map { HisnSearchNormalizer.normalize($0.title) }, ["اذكار الصباح", "اذكار المساء"],
                        "titles come from the domain")
     }
 
