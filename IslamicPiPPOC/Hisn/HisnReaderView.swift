@@ -1,6 +1,7 @@
 import SwiftUI
 import IslamicCore
 import HisnReading
+import HisnShareCard
 
 /// One chapter: the item text, its source on demand, the repetition counter and
 /// previous / next. Ends in a completion state; never opens another chapter by itself.
@@ -30,11 +31,13 @@ private struct HisnReaderContent: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var sharePayload: HisnSharePayload?
+    @State private var notice: String?
     @ObservedObject var model: HisnReaderController
     let screen: HisnReaderScreenModel
     let nextSection: HisnSectionEntry?
     let openSection: (HisnSectionEntry) -> Void
-    @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
 
     var body: some View {
         Group {
@@ -46,8 +49,27 @@ private struct HisnReaderContent: View {
         }
         .navigationTitle(model.reader.chapter.titleArabic)
         .navigationBarTitleDisplayMode(.inline)
-        .sensoryFeedback(.impact(weight: .light), trigger: model.recitations) { _, _ in hapticsEnabled }
-        .sensoryFeedback(.success, trigger: model.reader.isCompleted) { _, completed in hapticsEnabled && completed }
+        .toolbar {
+            if !model.reader.isCompleted {
+                ToolbarItem(placement: .primaryAction) { actionsMenu }
+            }
+        }
+        .sheet(item: $sharePayload) { payload in
+            ActivityShareSheet(items: payload.items)
+                .presentationDetents([.medium, .large])
+        }
+        .overlay(alignment: .top) {
+            if let notice {
+                Text(notice)
+                    .font(.callout.bold())
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.regularMaterial, in: Capsule())
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .accessibilityHidden(true)
+            }
+        }
         .onDisappear { screen.close() }
         .onChange(of: scenePhase) { _, phase in
             // Leaving the foreground: the cursor is already saved on each step; save once more
@@ -58,6 +80,65 @@ private struct HisnReaderContent: View {
             if let number {
                 UIAccessibility.post(notification: .announcement, argument: "أتممت الذكر \(number)")
             }
+        }
+    }
+
+    // MARK: Item actions
+
+    private var actionsMenu: some View {
+        Menu {
+            Button {
+                copy()
+            } label: {
+                Label("نسخ", systemImage: "doc.on.doc")
+            }
+            .accessibilityLabel(HisnAccessibility.copyAction)
+            Button {
+                shareText()
+            } label: {
+                Label("مشاركة", systemImage: "square.and.arrow.up")
+            }
+            .accessibilityLabel(HisnAccessibility.shareAction)
+            Button {
+                shareImage()
+            } label: {
+                Label("مشاركة كصورة", systemImage: "photo")
+            }
+            .accessibilityLabel(HisnAccessibility.shareImageAction)
+        } label: {
+            Image(systemName: "ellipsis.circle")
+        }
+        .accessibilityLabel(HisnAccessibility.actionsMenu)
+    }
+
+    private func copy() {
+        if screen.actions.copy(model.reader.shareContent) {
+            show(HisnAccessibility.copied)
+        }
+    }
+
+    private func shareText() {
+        guard let text = screen.actions.textPayload(model.reader.shareContent) else { return }
+        sharePayload = HisnSharePayload(items: [text])
+    }
+
+    private func shareImage() {
+        let card = HisnShareCardRenderer.render(model.reader.shareContent, appearance: .init(colorScheme))
+        screen.actions.cardGenerated(card != nil)
+        guard let card else {
+            show(HisnAccessibility.cardFailed)
+            return
+        }
+        sharePayload = HisnSharePayload(items: [UIImage(cgImage: card.image)])
+    }
+
+    /// A short notice at the top, also spoken; it goes away by itself.
+    private func show(_ text: String) {
+        withAnimation { notice = text }
+        UIAccessibility.post(notification: .announcement, argument: text)
+        Task {
+            try? await Task.sleep(nanoseconds: 1_600_000_000)
+            withAnimation { if notice == text { notice = nil } }
         }
     }
 
@@ -168,7 +249,10 @@ private struct HisnReaderContent: View {
                 case .counted(let completed, let total):
                     Text("\(completed) / \(total)")
                         .font(.largeTitle.monospacedDigit().bold())
-                    Text("اضغط بعد كل قراءة")
+                    ProgressView(value: Double(completed), total: Double(total))
+                        .tint(.white.opacity(0.9))
+                        .frame(maxWidth: 160)
+                    Text(completed + 1 == total ? "القراءة الأخيرة" : "اضغط بعد كل قراءة")
                         .font(.footnote)
                 case .once, .unstated:
                     Text("تمّ")

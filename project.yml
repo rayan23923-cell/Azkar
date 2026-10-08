@@ -18,6 +18,8 @@ targets:
         product: HisnReading
       - package: IslamicCore
         product: HisnAudioPlayback
+      - package: IslamicCore
+        product: HisnShareCard
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.IslamicPiPPOC

@@ -16,7 +16,7 @@ struct HisnRootView: View {
                 .toolbar {
                     ToolbarItem(placement: .primaryAction) {
                         Menu {
-                            Toggle("الاهتزاز عند العدّ", isOn: $hapticsEnabled)
+                            Toggle("الاهتزاز", isOn: $hapticsEnabled)
                         } label: {
                             Image(systemName: "gearshape")
                         }

@@ -22,13 +22,16 @@ public final class HisnReaderController: ObservableObject {
     /// Nil when the app has no audio player (e.g. previews).
     public let audio: HisnAudioPlayer?
     private let store: HisnReadingPositionStore
+    private let haptics: HisnHaptics?
     private var audioTask: Task<Void, Never>?
     private var audioItemId: String?
 
-    public init(reader: HisnReader, store: HisnReadingPositionStore, audio: HisnAudioPlayer? = nil) {
+    public init(reader: HisnReader, store: HisnReadingPositionStore, audio: HisnAudioPlayer? = nil,
+                haptics: HisnHaptics? = nil) {
         self.reader = reader
         self.store = store
         self.audio = audio
+        self.haptics = haptics
         save()
         syncAudio()
     }
@@ -37,6 +40,12 @@ public final class HisnReaderController: ObservableObject {
         let number = reader.itemNumber
         let step = reader.recite()
         finishedItemNumber = step == .movedToNext ? number : nil
+        // Feedback marks completion only, not every recitation.
+        switch step {
+        case .movedToNext: haptics?.play(.itemCompleted)
+        case .completed: haptics?.play(.chapterCompleted)
+        case .counted: break
+        }
         recitations += 1
         save()
         syncAudio()
@@ -44,7 +53,9 @@ public final class HisnReaderController: ObservableObject {
 
     public func next() {
         finishedItemNumber = nil
+        let wasCompleted = reader.isCompleted
         reader.next()
+        if !wasCompleted && reader.isCompleted { haptics?.play(.chapterCompleted) }
         save()
         syncAudio()
     }
