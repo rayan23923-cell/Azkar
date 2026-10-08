@@ -78,7 +78,7 @@ extension HisnReaderController {
                      audioRepository: HisnAudioRepository) -> HisnReaderController {
         let audio = HisnAudioPlayer(repository: audioRepository, engine: AVHisnAudioEngine(),
                                     session: AudioSessionCoordinator.shared)
-        return HisnReaderController(reader: reader, store: store, audio: audio)
+        return HisnReaderController(reader: reader, store: store, audio: audio, haptics: SystemHisnHaptics.shared)
     }
 }
 
@@ -90,12 +90,14 @@ final class HisnReaderScreenModel: ObservableObject {
     let controller: HisnReaderController
     let surface: SampleBufferPiPSurface
     let pip: HisnPiPCoordinator
+    let actions: HisnItemActions
 
     init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository) {
         controller = .make(reader: reader, store: store, audioRepository: audioRepository)
         surface = SampleBufferPiPSurface()
         pip = HisnPiPCoordinator(controller: controller, surface: surface)
         surface.coordinator = pip
+        actions = HisnItemActions(pasteboard: SystemPasteboard(), haptics: SystemHisnHaptics.shared)
     }
 
     /// The screen is closing: leave PiP first, then stop the recording and save the place.
