@@ -2,7 +2,8 @@ import XCTest
 import IslamicCore
 @testable import HisnReading
 
-/// Phase 3A: same-day resume (chapter, item, repetitions) through the position store.
+/// Phase 3A resume through the position store; Phase 3D made the cursor long-lived (repetitions
+/// still restore only on the same day).
 final class HisnResumeTests: XCTestCase {
     private static var cached: HisnLibrary?
     private let calendar: Calendar = {
@@ -63,14 +64,20 @@ final class HisnResumeTests: XCTestCase {
         XCTAssertEqual(restored.completedRepetitions, 0)
     }
 
-    func testOnlyTheSameDayResumes() async throws {
+    func testCursorOutlivesTheDayButRepetitionsDoNot() async throws {
         let library = try await library()
         let store = InMemoryHisnReadingPositionStore()
-        HisnResume.record(try await reader("hisn-ch-001", at: 1), in: store, now: date(8, 23))
-        XCTAssertNotNil(HisnResume.position(in: store, library: library, now: date(8, 23), calendar: calendar))
-        XCTAssertNil(HisnResume.position(in: store, library: library, now: date(9, 0), calendar: calendar),
-                     "a new day starts from the index")
-        XCTAssertNil(HisnResume.position(in: store, library: library, now: date(7, 23), calendar: calendar))
+        var reader = try await reader("hisn-ch-017")
+        reader.recite()
+        HisnResume.record(reader, in: store, now: date(8, 23))
+        XCTAssertEqual(HisnResume.position(in: store, library: library, now: date(8, 23), calendar: calendar)?
+            .completedRepetitions, 1, "same day: repetitions restored")
+        let tomorrow = try XCTUnwrap(HisnResume.position(in: store, library: library, now: date(9, 0), calendar: calendar),
+                                     "the cursor is kept across days (Phase 3D)")
+        XCTAssertEqual(tomorrow.chapterId, "hisn-ch-017")
+        XCTAssertEqual(tomorrow.itemId, "hisn-017-01")
+        XCTAssertEqual(tomorrow.completedRepetitions, 0, "a later day starts the item's count again")
+        XCTAssertEqual(store.position?.completedRepetitions, 1, "reading the cursor does not rewrite it")
     }
 
     func testCompletingTheChapterClearsThePosition() async throws {
@@ -103,6 +110,7 @@ final class HisnResumeTests: XCTestCase {
         XCTAssertNil(HisnResume.reader(for: position(chapter.id, "hisn-001-01", 0, 0), in: library))
         let store = InMemoryHisnReadingPositionStore(position(chapter.id, "missing", 0, 0))
         XCTAssertNil(HisnResume.position(in: store, library: library, now: date(8, 8), calendar: calendar))
+        XCTAssertNil(store.position, "a stale cursor is removed")
     }
 
     func testUserDefaultsStoreRoundTrip() throws {
@@ -119,5 +127,6 @@ final class HisnResumeTests: XCTestCase {
         XCTAssertNil(store.load())
         defaults.set(Data("not json".utf8), forKey: UserDefaultsHisnReadingPositionStore.defaultKey)
         XCTAssertNil(store.load(), "unreadable data is no position")
+        XCTAssertNil(defaults.object(forKey: UserDefaultsHisnReadingPositionStore.defaultKey), "and is removed")
     }
 }
