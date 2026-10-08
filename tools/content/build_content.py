@@ -7,6 +7,8 @@ Inputs (never edited by this script):
   tools/content/adhkar.source.json, tools/content/duas.source.json
   Packages/IslamicCore/Upstream/hisn/asellam/hisn.json    Hisn Al-Muslim text (MIT repository), verbatim
   tools/content/hisn.crosscheck.json                      per-item book cross-check (prepare_crosscheck.py)
+  tools/content/hisn.reconciliation.json                  Phase 2D book reconciliation (hisn/reconcile.py)
+  tools/content/hisn.corrections.json                     Phase 2E correction manifest (hand-reviewed)
 
 Outputs (deterministic, UTF-8, sorted, indented):
   Packages/IslamicCore/Sources/IslamicCore/Resources/Content/{quran,adhkar,duas,hisn}.json
@@ -14,9 +16,14 @@ Outputs (deterministic, UTF-8, sorted, indented):
 Quran text is copied character for character. Quranic adhkar and duas reference verses
 and get their text from the same Tanzil file, so nothing Quranic is typed by hand.
 
+Hisn pipeline: upstream text -> cross-check mapping -> correction manifest -> hisn.json.
+Only manifest entries with an accepted status change a value; every other entry is recorded
+and checked. The Arabic text is never changed unless an entry is an ACCEPTED_TEXT_CORRECTION.
+
 Run: python3 tools/content/build_content.py [--check]
 --check fails if the committed JSON differs from what the script would write.
 """
+import copy
 import hashlib
 import json
 import re
@@ -191,6 +198,7 @@ def build_hisn(surahs):
                     "reference": {"surah": c["surah"], "fromAyah": c["fromAyah"], "toAyah": c["toAyah"]},
                     "coversWholeVerses": c["wholeVerses"],
                     "match": c["match"],
+                    "recitesWholeSurah": False,
                 })
             reference = raw_item["Reference"].strip()
             items.append({
@@ -214,6 +222,8 @@ def build_hisn(surahs):
                 "quranStatus": check["quran"],
                 "reviewFlags": check["flags"],
                 "reviewStatus": REVIEW_REQUIRED,
+                "bookItemRelation": None,
+                "corrections": {"applied": [], "open": []},
             })
         chapters.append({
             "id": chapter_id,
@@ -221,8 +231,10 @@ def build_hisn(surahs):
             "titleArabic": title,
             "searchText": search_text(title),
             "bookChapterNumber": cc["bookChapterNumber"],
+            "presentationSection": None,
             "items": items,
         })
+    corrections = apply_hisn_corrections(chapters, surahs, hashlib.sha256(raw).hexdigest())
     return {
         "formatVersion": FORMAT_VERSION,
         "contentVersion": 1,
@@ -252,6 +264,7 @@ def build_hisn(surahs):
                     "sha256": HISN_PDF_SHA256,
                     "comparison": "NOT_YET_COMPARED",
                 },
+                "corrections": corrections,
             },
             "attribution": {
                 "sourceTitle": "حصن المسلم من أذكار الكتاب والسنة",
@@ -264,6 +277,328 @@ def build_hisn(surahs):
         },
         "chapters": chapters,
     }
+
+
+# ---------------------------------------------------------------------------
+# Phase 2E correction manifest
+# ---------------------------------------------------------------------------
+HISN_MANIFEST = SRC / "hisn.corrections.json"
+HISN_RECONCILIATION = SRC / "hisn.reconciliation.json"
+CORRECTION_TYPES = {"BOOK_ITEM_NUMBER", "CANONICAL_ORDER", "REPETITION_COUNT", "QURAN_CITATION",
+                    "BOOK_ITEM_RELATION", "TEXT_DISCREPANCY", "NON_DHIKR_TEXT", "REFERENCE_METADATA",
+                    "PRESENTATION_SECTION"}
+APPLIED_STATUSES = {"ACCEPTED", "ACCEPTED_TEXT_CORRECTION"}
+OBSERVED_STATUSES = {"OBSERVED_DIFFERENCE", "OBSERVATION"}
+PENDING_STATUSES = {"PENDING_DECISION"}
+CONFIDENCES = {"HIGH", "MEDIUM", "LOW"}
+PRIORITIES = {"P0", "P1", "P2"}
+RELATIONS = {"DIRECT", "SPLIT_PART", "EVENING_VARIANT", "CHAPTER_INTRODUCTION"}
+SECTIONS = {"MORNING", "EVENING"}
+# Types whose accepted entries change a value, and the value they own (for conflict checks).
+APPLIED_FIELD = {"BOOK_ITEM_NUMBER": "bookItemNumber", "REPETITION_COUNT": "repetition.count",
+                 "QURAN_CITATION": "quranCitations", "BOOK_ITEM_RELATION": "bookItemRelation",
+                 "PRESENTATION_SECTION": "presentationSection", "TEXT_DISCREPANCY": "arabicText",
+                 "CANONICAL_ORDER": "canonicalOrder"}
+# Types that only record what was found; they may never be ACCEPTED.
+RECORD_ONLY = {"NON_DHIKR_TEXT", "REFERENCE_METADATA"}
+
+
+class CorrectionError(Exception):
+    pass
+
+
+def fail(entry, message):
+    raise CorrectionError(f"{entry.get('id', '?')}: {message}" if isinstance(entry, dict) else f"{entry}: {message}")
+
+
+def check_entry(c, items, chapters_by_id):
+    """Schema, status and evidence rules every entry must meet, applied or not."""
+    for key in ("id", "type", "target", "evidence", "confidence", "reviewStatus", "reviewPriority"):
+        if key not in c:
+            fail(c, f"missing {key}")
+    if not re.fullmatch(r"HISN-CORR-\d{3}", c["id"]):
+        fail(c, "id must be HISN-CORR-NNN")
+    if c["type"] not in CORRECTION_TYPES:
+        fail(c, f"unknown type {c['type']}")
+    status = c["reviewStatus"]
+    if status not in APPLIED_STATUSES | OBSERVED_STATUSES | PENDING_STATUSES:
+        fail(c, f"unknown reviewStatus {status}")
+    if c["confidence"] not in CONFIDENCES:
+        fail(c, f"unknown confidence {c['confidence']}")
+    if c["reviewPriority"] not in PRIORITIES:
+        fail(c, f"unknown reviewPriority {c['reviewPriority']}")
+    ev = c["evidence"]
+    for key in ("source", "reference", "reason"):
+        if not isinstance(ev.get(key), str) or not ev[key].strip():
+            fail(c, f"evidence.{key} is missing")
+    if len(ev["reason"]) < 30:
+        fail(c, "evidence.reason is too vague")
+    if status in APPLIED_STATUSES:
+        if c["confidence"] == "LOW":
+            fail(c, "a LOW confidence entry cannot be accepted")
+        if c["confidence"] == "MEDIUM" and not c.get("acceptedBy"):
+            fail(c, "a MEDIUM confidence entry needs acceptedBy to be accepted")
+        if c["type"] in RECORD_ONLY:
+            fail(c, f"{c['type']} entries are recorded only and cannot be accepted")
+        if c["type"] == "TEXT_DISCREPANCY" and status != "ACCEPTED_TEXT_CORRECTION":
+            fail(c, "a text change must be an ACCEPTED_TEXT_CORRECTION")
+        if status == "ACCEPTED_TEXT_CORRECTION" and (c["type"] != "TEXT_DISCREPANCY" or not c.get("acceptedBy")):
+            fail(c, "ACCEPTED_TEXT_CORRECTION is only for TEXT_DISCREPANCY and needs acceptedBy")
+        if c["type"] == "BOOK_ITEM_RELATION" and c["after"]["bookItemRelation"] == "SPLIT_PART":
+            fail(c, "SPLIT_PART is derived from the mapping; record split groups as OBSERVATION")
+    target = c["target"]
+    ids = [target["sourceItemId"]] if "sourceItemId" in target else target.get("sourceItemIds", [])
+    if c.get("sourceItemId") != target.get("sourceItemId"):
+        fail(c, "sourceItemId does not match target")
+    for sid in ids:
+        if sid not in items:
+            fail(c, f"item {sid} does not exist")
+    if "chapterId" in target and target["chapterId"] not in chapters_by_id:
+        fail(c, f"chapter {target['chapterId']} does not exist")
+    if not ids and "chapterId" not in target and target.get("scope") != "BOOK":
+        fail(c, "target names no item, chapter or BOOK scope")
+    return ids
+
+
+def check_quran(c, surahs, after):
+    if after["quranStatus"] not in ("RESOLVED", "PARTIAL") or not after["quranCitations"]:
+        fail(c, "a Quran correction must resolve to at least one citation")
+    for cit in after["quranCitations"]:
+        ref = cit["reference"]
+        if not 1 <= ref["surah"] <= len(surahs):
+            fail(c, f"invalid surah {ref['surah']}")
+        if not 1 <= ref["fromAyah"] <= ref["toAyah"] <= surahs[ref["surah"] - 1]["ayahCount"]:
+            fail(c, f"invalid Quran reference {ref}")
+        if cit["match"] not in ("EXACT", "FUZZY") or not isinstance(cit["coversWholeVerses"], bool) \
+                or not isinstance(cit["recitesWholeSurah"], bool):
+            fail(c, f"invalid citation {cit}")
+
+
+def canonical_key_order(chapter):
+    """Book order inside one presentation section: by book item number, unnumbered items stay
+    after the item before them, a chapter introduction comes first. Stable on display order."""
+    keyed, last = [], 0
+    for item in chapter["items"]:
+        if item["bookItemRelation"] == "CHAPTER_INTRODUCTION":
+            key = 0
+        else:
+            key = item["bookItemNumber"] if item["bookItemNumber"] is not None else last
+            last = key
+        keyed.append((key, item["order"], item["id"]))
+    return keyed
+
+
+def apply_hisn_corrections(chapters, surahs, upstream_sha):
+    manifest_raw = HISN_MANIFEST.read_bytes()
+    manifest = json.loads(manifest_raw.decode("utf-8"))
+    rec = json.loads(HISN_RECONCILIATION.read_text(encoding="utf-8"))
+    try:
+        return _apply(manifest, manifest_raw, rec, chapters, surahs, upstream_sha)
+    except CorrectionError as error:
+        sys.exit(f"Hisn correction manifest rejected: {error}")
+
+
+def _apply(manifest, manifest_raw, rec, chapters, surahs, upstream_sha):
+    if manifest.get("schemaVersion") != 1:
+        fail("manifest", "schemaVersion must be 1")
+    if manifest["source"].get("upstreamSha256") != upstream_sha:
+        fail("manifest", f"upstream hisn.json changed: manifest {manifest['source'].get('upstreamSha256')}, file {upstream_sha}")
+    book_total = rec["summary"]["bookItems"]
+    chapter_total = rec["summary"]["bookChapters"]
+    book_chapter_of = {b["bookItemNumber"]: b["bookChapterNumber"] for b in rec["bookItems"]}
+    if sorted(book_chapter_of) != list(range(1, book_total + 1)):
+        fail("reconciliation", "book item list is not 1..N")
+
+    chapters_by_id = {ch["id"]: ch for ch in chapters}
+    items = {it["id"]: it for ch in chapters for it in ch["items"]}
+    chapter_of = {it["id"]: chapters_by_id[it["chapterId"]] for it in items.values()}
+    # Every `before` is checked against the mapped value, before any entry is applied.
+    mapped = copy.deepcopy(items)
+
+    seen_ids, owned = set(), {}
+    entries = manifest["corrections"]
+    for c in entries:
+        if c["id"] in seen_ids:
+            fail(c, "duplicate id")
+        seen_ids.add(c["id"])
+        ids = check_entry(c, items, chapters_by_id)
+        status, kind, before, after = c["reviewStatus"], c["type"], c.get("before"), c.get("after")
+        applied = status in APPLIED_STATUSES
+
+        # Value checks run for pending entries too, so accepting one later cannot break the build.
+        if kind == "BOOK_ITEM_NUMBER":
+            (sid,) = ids
+            if mapped[sid]["bookItemNumber"] != before["bookItemNumber"]:
+                fail(c, f"before {before} does not match the mapped value {mapped[sid]['bookItemNumber']}")
+            number = after["bookItemNumber"]
+            if not isinstance(number, int) or not 1 <= number <= book_total:
+                fail(c, f"book item number {number} is outside 1...{book_total}")
+            if book_chapter_of[number] != chapter_of[sid]["bookChapterNumber"]:
+                fail(c, f"book item {number} is in book chapter {book_chapter_of[number]}, not {chapter_of[sid]['bookChapterNumber']}")
+        elif kind == "REPETITION_COUNT":
+            (sid,) = ids
+            if mapped[sid]["repetition"]["count"] != before["count"]:
+                fail(c, f"before {before} does not match the mapped count {mapped[sid]['repetition']['count']}")
+            if after["count"] is not None and (not isinstance(after["count"], int) or after["count"] < 1):
+                fail(c, f"invalid count {after['count']}")
+        elif kind == "QURAN_CITATION":
+            (sid,) = ids
+            if mapped[sid]["quranStatus"] != before["quranStatus"] or \
+                    [{k: v for k, v in x.items() if k != "recitesWholeSurah"} for x in mapped[sid]["quranCitations"]] != before["quranCitations"]:
+                fail(c, "before does not match the current citations")
+            check_quran(c, surahs, after)
+        elif kind == "BOOK_ITEM_RELATION":
+            if after["bookItemRelation"] not in RELATIONS:
+                fail(c, f"unknown relation {after['bookItemRelation']}")
+        elif kind == "PRESENTATION_SECTION":
+            ch = chapters_by_id[c["target"]["chapterId"]]
+            if after["presentationSection"] not in SECTIONS or after["bookChapterNumber"] != ch["bookChapterNumber"]:
+                fail(c, "presentation section does not match the chapter")
+        elif kind == "CANONICAL_ORDER":
+            if before["displayOrder"] != sorted(ids, key=lambda i: (chapter_of[i]["number"], items[i]["order"])) \
+                    or sorted(after["canonicalOrder"]) != sorted(ids):
+                fail(c, "displayOrder/canonicalOrder do not list the target items")
+        elif kind == "TEXT_DISCREPANCY":
+            (sid,) = ids
+            if before["arabicText"] != mapped[sid]["arabicText"]:
+                fail(c, "before text does not match the source text")
+            if applied and (not isinstance(after, dict) or not after.get("arabicText", "").strip()):
+                fail(c, "an accepted text correction needs the full replacement text")
+        elif kind == "NON_DHIKR_TEXT":
+            (sid,) = ids
+            if before["arabicText"] != mapped[sid]["arabicText"] or c["evidence"]["sourceExcerpt"] not in mapped[sid]["arabicText"]:
+                fail(c, "the recorded excerpt is not in the source text")
+
+        if not applied:
+            if status != "OBSERVATION":
+                for sid in ids:
+                    items[sid]["corrections"]["open"].append(c["id"])
+            continue
+        targets = ids or [c["target"]["chapterId"]]
+        for t in targets:
+            key = (t, APPLIED_FIELD[kind])
+            if key in owned:
+                fail(c, f"conflicts with {owned[key]} on {key[1]} of {t}")
+            owned[key] = c["id"]
+        for sid in ids:
+            items[sid]["corrections"]["applied"].append(c["id"])
+        if kind == "BOOK_ITEM_NUMBER":
+            items[ids[0]]["bookItemNumber"] = after["bookItemNumber"]
+        elif kind == "REPETITION_COUNT":
+            items[ids[0]]["repetition"]["count"] = after["count"]
+        elif kind == "QURAN_CITATION":
+            items[ids[0]]["quranStatus"] = after["quranStatus"]
+            items[ids[0]]["quranCitations"] = after["quranCitations"]
+        elif kind == "BOOK_ITEM_RELATION":
+            for sid in ids:
+                items[sid]["bookItemRelation"] = after["bookItemRelation"]
+        elif kind == "PRESENTATION_SECTION":
+            chapters_by_id[c["target"]["chapterId"]]["presentationSection"] = after["presentationSection"]
+        elif kind == "TEXT_DISCREPANCY":
+            item = items[ids[0]]
+            item["arabicText"] = after["arabicText"]
+            item["searchText"] = search_text(after["arabicText"])
+
+    # Canonical structure: 132 book chapters, every book number 1...N carried.
+    if sorted({ch["bookChapterNumber"] for ch in chapters}) != list(range(1, chapter_total + 1)):
+        fail("structure", f"presentation sections do not cover book chapters 1...{chapter_total}")
+    for ch in chapters:
+        siblings = [x for x in chapters if x["bookChapterNumber"] == ch["bookChapterNumber"]]
+        sections = [x["presentationSection"] for x in siblings]
+        if len(siblings) > 1 and (None in sections or len(set(sections)) != len(sections)):
+            fail(ch["id"], "a book chapter shown as several sections needs distinct presentation sections")
+        if len(siblings) == 1 and ch["presentationSection"] is not None:
+            fail(ch["id"], "a single-section chapter has no presentation section")
+
+    carriers = {}
+    for item in items.values():
+        number = item["bookItemNumber"]
+        if number is not None:
+            if book_chapter_of[number] != chapter_of[item["id"]]["bookChapterNumber"]:
+                fail(item["id"], f"book item {number} belongs to book chapter {book_chapter_of[number]}")
+            carriers.setdefault(number, []).append(item)
+    missing = sorted(set(range(1, book_total + 1)) - set(carriers))
+    if missing:
+        fail("structure", f"unmapped canonical book items {missing}")
+
+    # Relations: derive DIRECT / SPLIT_PART, check the explicit ones.
+    split_groups = set()
+    for number, group in carriers.items():
+        by_chapter = {}
+        for item in group:
+            by_chapter.setdefault(item["chapterId"], []).append(item)
+        if len(by_chapter) > 1 and len({chapters_by_id[cid]["presentationSection"] for cid in by_chapter} - {None}) != len(by_chapter):
+            fail("structure", f"book item {number} is mapped from unrelated sections {sorted(by_chapter)}")
+        for cid, part in by_chapter.items():
+            if len(part) > 1:
+                orders = [x["order"] for x in part]
+                if orders != list(range(orders[0], orders[0] + len(part))):
+                    fail("structure", f"book item {number} is mapped twice in {cid} by non-adjacent items")
+                if any(x["bookItemRelation"] is not None for x in part):
+                    fail("structure", f"split parts of book item {number} carry a contradictory relation")
+                split_groups.add((number, tuple(x["id"] for x in part)))
+                for x in part:
+                    x["bookItemRelation"] = "SPLIT_PART"
+    for item in items.values():
+        relation = item["bookItemRelation"]
+        if relation is None:
+            if item["bookItemNumber"] is None:
+                fail(item["id"], "has no book item number and no relation")
+            item["bookItemRelation"] = relation = "DIRECT"
+        if relation == "CHAPTER_INTRODUCTION" and (item["bookItemNumber"] is not None or item["order"] != 1):
+            fail(item["id"], "a chapter introduction is the unnumbered first item")
+        if relation == "EVENING_VARIANT" and chapter_of[item["id"]]["presentationSection"] != "EVENING":
+            fail(item["id"], "an evening variant must be in the evening section")
+    observed_splits = {(c["after"]["bookItemNumber"], tuple(c["target"]["sourceItemIds"]))
+                       for c in entries if c["type"] == "BOOK_ITEM_RELATION" and c["after"]["bookItemRelation"] == "SPLIT_PART"}
+    if observed_splits != split_groups:
+        fail("structure", f"split groups differ from the manifest: {sorted(split_groups ^ observed_splits)}")
+
+    # Canonical order: every display/book inversion must be an accepted CANONICAL_ORDER entry.
+    order_entries = [c for c in entries if c["type"] == "CANONICAL_ORDER" and c["reviewStatus"] in APPLIED_STATUSES]
+    documented = {frozenset(c["target"]["sourceItemIds"]) for c in order_entries}
+    canonical = {}
+    for ch in chapters:
+        keyed = canonical_key_order(ch)
+        for i, (ka, _, a) in enumerate(keyed):
+            for kb, _, b in keyed[i + 1:]:
+                if ka > kb and frozenset((a, b)) not in documented:
+                    fail(ch["id"], f"{a} comes after {b} in the book but has no CANONICAL_ORDER entry")
+        for rank, (_, _, sid) in enumerate(sorted(keyed), start=1):
+            canonical[sid] = rank
+    for c in order_entries:
+        derived = sorted(c["target"]["sourceItemIds"], key=lambda sid: canonical[sid])
+        if derived != c["after"]["canonicalOrder"]:
+            fail(c, f"derived canonical order {derived} differs from {c['after']['canonicalOrder']}")
+
+    for item in items.values():
+        item["corrections"]["applied"].sort()
+        item["corrections"]["open"].sort()
+        assert item["reviewStatus"] == REVIEW_REQUIRED and item["repetition"]["reviewStatus"] == REVIEW_REQUIRED
+
+    accepted = [c for c in entries if c["reviewStatus"] in APPLIED_STATUSES]
+    observed = [c for c in entries if c["reviewStatus"] in OBSERVED_STATUSES]
+    pending = [c for c in entries if c["reviewStatus"] in PENDING_STATUSES]
+    p0 = [c for c in entries if c["reviewPriority"] == "P0"]
+    summary = {
+        "manifest": "tools/content/hisn.corrections.json",
+        "sha256": hashlib.sha256(manifest_raw).hexdigest(),
+        "total": len(entries),
+        "accepted": len(accepted),
+        "observationOnly": len(observed),
+        "pendingDecision": len(pending),
+        "p0Accepted": sum(c in accepted for c in p0),
+        "p0Pending": len(p0) - sum(c in accepted for c in p0),
+        "canonicalBookChapters": chapter_total,
+        "canonicalBookItems": book_total,
+        "presentationSections": len(chapters),
+        "displayItems": len(items),
+    }
+    print("Hisn corrections:\n"
+          f"  total {summary['total']}, accepted {summary['accepted']}, observation-only {summary['observationOnly']}, "
+          f"pending {summary['pendingDecision']}, P0 accepted {summary['p0Accepted']}, P0 pending {summary['p0Pending']}\n"
+          f"  canonical {chapter_total} chapters / {book_total} items, presentation {len(chapters)} sections / {len(items)} items")
+    return summary
 
 
 def dump(obj):

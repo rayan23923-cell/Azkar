@@ -33,6 +33,35 @@ public struct HisnBook: Identifiable, Hashable, Codable, Sendable {
     public var itemCount: Int { chapters.reduce(0) { $0 + $1.items.count } }
     /// Every item in reading order.
     public var allItems: [HisnItem] { chapters.flatMap(\.items) }
+
+    /// The book's own chapters (132), each made of the presentation sections that show it.
+    /// Chapter 27 is the only one shown as two sections (morning 27A, evening 27B).
+    public var canonicalChapters: [HisnCanonicalChapter] {
+        Dictionary(grouping: chapters.filter { $0.bookChapterNumber != nil }, by: { $0.bookChapterNumber! })
+            .map { HisnCanonicalChapter(bookChapterNumber: $0.key, sections: $0.value.sorted { $0.number < $1.number }) }
+            .sorted { $0.bookChapterNumber < $1.bookChapterNumber }
+    }
+
+    /// Every book item number carried by at least one display item.
+    public var bookItemNumbers: Set<Int> { Set(allItems.compactMap(\.bookItemNumber)) }
+}
+
+/// One chapter of the printed book, independent of how the source splits it for display.
+public struct HisnCanonicalChapter: Hashable, Sendable {
+    public let bookChapterNumber: Int
+    /// Presentation sections in display order; one, except for chapter 27.
+    public let sections: [HisnChapter]
+
+    /// Book item numbers in this chapter, ascending, each once.
+    public var bookItemNumbers: [Int] {
+        Array(Set(sections.flatMap { $0.items.compactMap(\.bookItemNumber) })).sorted()
+    }
+}
+
+/// How a book chapter shown as several sections is divided. Not a canonical chapter.
+public enum HisnPresentationSection: String, Codable, Sendable {
+    case morning = "MORNING"
+    case evening = "EVENING"
 }
 
 public struct HisnChapter: Identifiable, Hashable, Codable, Sendable {
@@ -45,19 +74,46 @@ public struct HisnChapter: Identifiable, Hashable, Codable, Sendable {
     public let searchText: String
     /// Matching chapter number in the cross-check transcription of the book, if any.
     public let bookChapterNumber: Int?
+    /// Set only when one book chapter is shown as several sections (chapter 27).
+    public let presentationSection: HisnPresentationSection?
+    /// Display order, as in the source; never re-sorted.
     public let items: [HisnItem]
 
     public init(id: String, number: Int, titleArabic: String, searchText: String,
-                bookChapterNumber: Int?, items: [HisnItem]) {
+                bookChapterNumber: Int?, presentationSection: HisnPresentationSection? = nil, items: [HisnItem]) {
         self.id = id
         self.number = number
         self.titleArabic = titleArabic
         self.searchText = searchText
         self.bookChapterNumber = bookChapterNumber
+        self.presentationSection = presentationSection
         self.items = items
     }
 
     public var itemCount: Int { items.count }
+
+    /// "27A" / "27B" for a presentation section, otherwise the book chapter number.
+    public var presentationLabel: String? {
+        guard let bookChapterNumber else { return nil }
+        switch presentationSection {
+        case .morning: return "\(bookChapterNumber)A"
+        case .evening: return "\(bookChapterNumber)B"
+        case nil: return "\(bookChapterNumber)"
+        }
+    }
+
+    /// The items in the book's order. Differs from `items` only where the source lists
+    /// two book items the other way round (chapters 1, 4 and 10). An introduction comes
+    /// first; an unnumbered item stays after the item before it.
+    public var itemsInBookOrder: [HisnItem] {
+        var last = 0
+        let keyed = items.map { item -> (key: Int, order: Int, item: HisnItem) in
+            if item.bookItemRelation == .chapterIntroduction { return (0, item.order, item) }
+            last = item.bookItemNumber ?? last
+            return (last, item.order, item)
+        }
+        return keyed.sorted { ($0.key, $0.order) < ($1.key, $1.order) }.map(\.item)
+    }
 }
 
 public struct HisnItem: Identifiable, Hashable, Codable, Sendable {
@@ -65,8 +121,11 @@ public struct HisnItem: Identifiable, Hashable, Codable, Sendable {
     public let chapterId: String
     /// 1-based position inside the chapter.
     public let order: Int
-    /// The book's own item number (1...267 in the cross-check print), when matched with confidence.
+    /// The book's own item number (1...267), after the Phase 2E corrections. Nil only for a
+    /// chapter introduction or an evening variant whose number is still pending.
     public let bookItemNumber: Int?
+    /// How this display item relates to the book item it carries.
+    public let bookItemRelation: HisnBookItemRelation
     /// Source text exactly as received. The only text to display.
     public let arabicText: String
     /// Diacritic-free search key derived from `arabicText`. Never displayed.
@@ -77,16 +136,21 @@ public struct HisnItem: Identifiable, Hashable, Codable, Sendable {
     public let quranStatus: HisnQuranStatus
     /// Machine findings a reviewer must look at (book mismatch, repeat conflict, ...).
     public let reviewFlags: [String]
+    /// Correction manifest entries (tools/content/hisn.corrections.json) for this item.
+    public let corrections: HisnItemCorrections
     public let reviewStatus: ContentReviewStatus
 
-    public init(id: String, chapterId: String, order: Int, bookItemNumber: Int?, arabicText: String,
+    public init(id: String, chapterId: String, order: Int, bookItemNumber: Int?,
+                bookItemRelation: HisnBookItemRelation = .direct, arabicText: String,
                 searchText: String, repetition: HisnRepetition, references: [HisnReference],
                 quranCitations: [HisnQuranCitation], quranStatus: HisnQuranStatus,
-                reviewFlags: [String], reviewStatus: ContentReviewStatus) {
+                reviewFlags: [String], corrections: HisnItemCorrections = HisnItemCorrections(),
+                reviewStatus: ContentReviewStatus) {
         self.id = id
         self.chapterId = chapterId
         self.order = order
         self.bookItemNumber = bookItemNumber
+        self.bookItemRelation = bookItemRelation
         self.arabicText = arabicText
         self.searchText = searchText
         self.repetition = repetition
@@ -94,7 +158,31 @@ public struct HisnItem: Identifiable, Hashable, Codable, Sendable {
         self.quranCitations = quranCitations
         self.quranStatus = quranStatus
         self.reviewFlags = reviewFlags
+        self.corrections = corrections
         self.reviewStatus = reviewStatus
+    }
+}
+
+public enum HisnBookItemRelation: String, Codable, Sendable {
+    /// The display item is the book item.
+    case direct = "DIRECT"
+    /// One of several consecutive display items that together make one book item.
+    case splitPart = "SPLIT_PART"
+    /// Evening wording the book gives in a footnote for a morning item.
+    case eveningVariant = "EVENING_VARIANT"
+    /// The book's unnumbered opening line of a chapter.
+    case chapterIntroduction = "CHAPTER_INTRODUCTION"
+}
+
+/// Manifest entry ids. Applied entries changed a value of this item; open ones are
+/// pending decisions or recorded discrepancies that still need editorial review.
+public struct HisnItemCorrections: Hashable, Codable, Sendable {
+    public let applied: [String]
+    public let open: [String]
+
+    public init(applied: [String] = [], open: [String] = []) {
+        self.applied = applied
+        self.open = open
     }
 }
 
@@ -142,11 +230,15 @@ public struct HisnQuranCitation: Hashable, Codable, Sendable {
     /// False when the item quotes only part of the first or last verse.
     public let coversWholeVerses: Bool
     public let match: Match
+    /// True when the item quotes only the opening of a surah and instructs reciting the
+    /// whole surah. The surah text itself is not part of the item.
+    public let recitesWholeSurah: Bool
 
-    public init(reference: QuranReference, coversWholeVerses: Bool, match: Match) {
+    public init(reference: QuranReference, coversWholeVerses: Bool, match: Match, recitesWholeSurah: Bool = false) {
         self.reference = reference
         self.coversWholeVerses = coversWholeVerses
         self.match = match
+        self.recitesWholeSurah = recitesWholeSurah
     }
 }
 
@@ -185,9 +277,27 @@ public struct HisnProvenance: Hashable, Codable, Sendable {
         public let comparison: String
     }
 
+    /// Summary of the Phase 2E correction manifest applied by the content build.
+    public struct Corrections: Hashable, Codable, Sendable {
+        public let manifest: String
+        public let sha256: String
+        public let total: Int
+        /// Correction decisions accepted and applied. Not an editorial review.
+        public let accepted: Int
+        public let observationOnly: Int
+        public let pendingDecision: Int
+        public let p0Accepted: Int
+        public let p0Pending: Int
+        public let canonicalBookChapters: Int
+        public let canonicalBookItems: Int
+        public let presentationSections: Int
+        public let displayItems: Int
+    }
+
     public let primarySource: PrimarySource
     public let crossCheck: CrossCheck
     public let canonicalEdition: CanonicalEdition
+    public let corrections: Corrections
 }
 
 /// Placeholder until the pre-release rights review fills it in.

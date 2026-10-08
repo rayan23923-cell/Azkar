@@ -74,13 +74,32 @@ func validateHisn(_ book: HisnBook) throws {
         try requireContent(chapter.number == offset + 1, "hisn: \(chapter.id) number")
         try requireContent(isWellFormedArabic(chapter.titleArabic), "hisn: \(chapter.id) title")
         try requireContent(!chapter.items.isEmpty, "hisn: \(chapter.id) is empty")
+        let siblings = book.chapters.filter { $0.bookChapterNumber != nil && $0.bookChapterNumber == chapter.bookChapterNumber }
+        if siblings.count > 1 {
+            try requireContent(chapter.presentationSection != nil
+                               && Set(siblings.compactMap(\.presentationSection)).count == siblings.count,
+                               "hisn: \(chapter.id) presentation section")
+        } else {
+            try requireContent(chapter.presentationSection == nil, "hisn: \(chapter.id) presentation section")
+        }
         for (index, item) in chapter.items.enumerated() {
             try requireContent(itemIds.insert(item.id).inserted, "hisn: duplicate item id \(item.id)")
             try requireContent(item.chapterId == chapter.id, "hisn: \(item.id) is in the wrong chapter")
             try requireContent(item.order == index + 1, "hisn: \(item.id) order")
             try requireContent(isWellFormedArabic(item.arabicText), "hisn: \(item.id) text")
             try requireContent(!item.searchText.isEmpty, "hisn: \(item.id) search text")
-            try requireContent(item.bookItemNumber.map { $0 >= 1 } ?? true, "hisn: \(item.id) book item number")
+            try requireContent(item.bookItemNumber.map { $0 >= 1 && $0 <= book.provenance.corrections.canonicalBookItems } ?? true,
+                               "hisn: \(item.id) book item number")
+            switch item.bookItemRelation {
+            case .direct, .splitPart:
+                try requireContent(item.bookItemNumber != nil, "hisn: \(item.id) relation needs a book item number")
+            case .chapterIntroduction:
+                try requireContent(item.bookItemNumber == nil && item.order == 1, "hisn: \(item.id) chapter introduction")
+            case .eveningVariant:
+                try requireContent(chapter.presentationSection == .evening, "hisn: \(item.id) evening variant outside the evening section")
+            }
+            try requireContent((item.corrections.applied + item.corrections.open).allSatisfy { $0.hasPrefix("HISN-CORR-") },
+                               "hisn: \(item.id) correction ids")
             try requireContent(item.repetition.sourceCount >= 1 && (item.repetition.count.map { $0 >= 1 } ?? true),
                                "hisn: \(item.id) repeat count")
             try requireContent(item.references.allSatisfy { !$0.originalText.isEmpty }, "hisn: \(item.id) empty reference")
@@ -88,6 +107,8 @@ func validateHisn(_ book: HisnBook) throws {
                 let ref = citation.reference
                 try requireContent((1...114).contains(ref.surah) && 1 <= ref.fromAyah && ref.fromAyah <= ref.toAyah,
                                    "hisn: \(item.id) quran citation")
+                // A whole-surah instruction cites the surah's opening verses only.
+                try requireContent(!citation.recitesWholeSurah || ref.fromAyah == 1, "hisn: \(item.id) whole-surah citation")
             }
             let hasCitations = !item.quranCitations.isEmpty
             switch item.quranStatus {
@@ -101,6 +122,10 @@ func validateHisn(_ book: HisnBook) throws {
                                "hisn: \(item.id) review status")
         }
     }
+    let corrections = book.provenance.corrections
+    try requireContent(book.canonicalChapters.map(\.bookChapterNumber) == Array(1...corrections.canonicalBookChapters),
+                       "hisn: canonical chapters")
+    try requireContent(book.bookItemNumbers == Set(1...corrections.canonicalBookItems), "hisn: canonical book items")
 }
 
 /// Non-empty, no U+FFFD, and contains Arabic letters.
