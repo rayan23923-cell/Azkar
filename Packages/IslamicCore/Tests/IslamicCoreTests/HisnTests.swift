@@ -165,8 +165,11 @@ final class HisnRepositoryTests: XCTestCase {
             XCTAssertTrue(item.reviewFlags.contains { $0.hasPrefix("QURAN_FUZZY_MATCH") }, item.id)
         }
         // A Phase 2C finding is only cleared by an applied manifest entry.
-        for item in items where item.reviewFlags.contains(where: { $0.hasPrefix("QURAN_") }) && item.quranStatus == .resolved
-            && item.quranCitations.allSatisfy({ $0.match == .exact }) {
+        let reported = items.filter { item in
+            item.reviewFlags.contains { $0.hasPrefix("QURAN_FUZZY_MATCH") || $0.hasPrefix("QURAN_SEGMENT_UNRESOLVED") }
+        }
+        XCTAssertEqual(reported.map(\.id), ["hisn-001-04", "hisn-029-03", "hisn-029-14"])
+        for item in reported where item.quranStatus == .resolved && item.quranCitations.allSatisfy({ $0.match == .exact }) {
             XCTAssertFalse(item.corrections.applied.isEmpty, item.id)
         }
     }
