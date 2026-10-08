@@ -6,6 +6,7 @@ import PackageDescription
 // HisnReading is the Hisn Al-Muslim reader state on top of IslamicCore
 // (navigation, repetition, search, resume, the audio player state); the SwiftUI views
 // live in the app. HisnAudioPlayback is the only target that imports AVFoundation.
+// HisnShareCard draws the share image with Core Text / Core Graphics (testable here).
 let package = Package(
     name: "IslamicCore",
     platforms: [.iOS(.v17), .macOS(.v14)],
@@ -13,6 +14,7 @@ let package = Package(
         .library(name: "IslamicCore", targets: ["IslamicCore"]),
         .library(name: "HisnReading", targets: ["HisnReading"]),
         .library(name: "HisnAudioPlayback", targets: ["HisnAudioPlayback"]),
+        .library(name: "HisnShareCard", targets: ["HisnShareCard"]),
     ],
     targets: [
         .target(
@@ -27,6 +29,10 @@ let package = Package(
             name: "HisnAudioPlayback",
             dependencies: ["HisnReading"]
         ),
+        .target(
+            name: "HisnShareCard",
+            dependencies: ["HisnReading"]
+        ),
         .testTarget(
             name: "IslamicCoreTests",
             dependencies: ["IslamicCore"]
@@ -39,6 +45,10 @@ let package = Package(
             name: "HisnAudioTests",
             dependencies: ["HisnAudioPlayback", "HisnReading", "IslamicCore"],
             resources: [.copy("Fixtures")]
+        ),
+        .testTarget(
+            name: "HisnShareCardTests",
+            dependencies: ["HisnShareCard", "HisnReading", "IslamicCore"]
         ),
     ]
 )
