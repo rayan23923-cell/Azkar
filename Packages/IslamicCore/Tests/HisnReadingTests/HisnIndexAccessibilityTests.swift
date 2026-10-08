@@ -41,11 +41,11 @@ final class HisnIndexAccessibilityTests: XCTestCase {
         let library = try await library()
         var counted = try XCTUnwrap(HisnReader(chapter: try XCTUnwrap(library.chapter(id: "hisn-ch-017"))))
         XCTAssertEqual(HisnAccessibility.counterLabel(counted), "العدّ")
-        XCTAssertEqual(HisnAccessibility.counterValue(counted), "0 من 3")
+        XCTAssertEqual(HisnAccessibility.counterValue(counted), "التكرار 0 من 3")
         XCTAssertEqual(HisnAccessibility.counterHint(counted), "اضغط مرة بعد كل قراءة")
         counted.recite()
         counted.recite()
-        XCTAssertEqual(HisnAccessibility.counterValue(counted), "2 من 3")
+        XCTAssertEqual(HisnAccessibility.counterValue(counted), "التكرار 2 من 3")
         XCTAssertTrue(HisnAccessibility.counterHint(counted).hasPrefix("القراءة الأخيرة"))
         XCTAssertEqual(HisnAccessibility.itemPosition(counted), "الذكر 1 من \(counted.itemCount)")
 

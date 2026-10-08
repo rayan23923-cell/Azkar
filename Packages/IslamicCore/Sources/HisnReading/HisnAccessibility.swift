@@ -12,7 +12,8 @@ public enum HisnAccessibility {
     }
 
     public static func counterValue(_ reader: HisnReader) -> String {
-        if case .counted(let completed, let total) = reader.repetition { return "\(completed) من \(total)" }
+        if case .counted(let completed, let total) = reader.repetition { return "التكرار \(completed) من \(total)" }
+        // No stated count: nothing is announced, never a made-up total.
         return ""
     }
 
@@ -29,6 +30,15 @@ public enum HisnAccessibility {
     public static func itemPosition(_ reader: HisnReader) -> String {
         "الذكر \(reader.itemNumber) من \(reader.itemCount)"
     }
+
+    // MARK: Item actions
+
+    public static let actionsMenu = "إجراءات الذكر"
+    public static let copyAction = "نسخ الذكر"
+    public static let shareAction = "مشاركة الذكر"
+    public static let shareImageAction = "مشاركة الذكر كصورة"
+    public static let copied = "تم النسخ"
+    public static let cardFailed = "تعذّر إنشاء الصورة"
 
     // MARK: Index
 
