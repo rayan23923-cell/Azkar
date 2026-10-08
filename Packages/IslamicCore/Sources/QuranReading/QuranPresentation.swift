@@ -36,6 +36,7 @@ public enum QuranAccessibility {
 
     public static func verseLabel(_ ayah: Int) -> String { "الآية \(ayah)" }
 
+    @MainActor
     public static func position(_ controller: QuranReaderController) -> String {
         "الآية \(controller.currentAyah) من \(controller.surah.ayahCount)، الجزء \(controller.juz)، الصفحة \(controller.page)"
     }
