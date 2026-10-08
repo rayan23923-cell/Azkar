@@ -1,0 +1,30 @@
+name: kfgqpc-probe (temporary, research only)
+on:
+  push:
+    branches: ['scratch/kfgqpc-probe']
+    paths: ['.github/workflows/kfgqpc-probe.yml', 'probe/step.txt']
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch official pages and list links
+        run: |
+          mkdir -p probe/out
+          UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 Safari/605.1.15'
+          for u in "https://qurancomplex.gov.sa/en/?p=3979" "https://qurancomplex.gov.sa/?p=3979"; do
+            n=$(echo "$u" | sed 's#https://##; s#[^A-Za-z0-9]#_#g')
+            curl -sSL -A "$UA" -m 60 -D "probe/out/$n.headers" -o "probe/out/$n.html" -w '%{http_code} %{url_effective} %{size_download}\n' "$u" >> probe/out/fetch.log 2>&1 || echo "FAIL $u" >> probe/out/fetch.log
+            grep -oiE '(href|src|data-[a-z-]+)="[^"]+"' "probe/out/$n.html" | sort -u > "probe/out/$n.links" || true
+            grep -oiE 'https?://[^"'"'"' <>]+\.(mp3|zip|m4a|ogg|rar|7z)' "probe/out/$n.html" | sort -u > "probe/out/$n.media" || true
+          done
+          rm -f probe/out/*.html.gz
+          ls -la probe/out; cat probe/out/fetch.log
+      - name: Commit text results
+        run: |
+          git config user.name probe-bot; git config user.email probe@example.invalid
+          git add probe/out
+          git commit -m "probe results" || true
+          git push
