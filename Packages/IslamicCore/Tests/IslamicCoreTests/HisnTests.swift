@@ -93,9 +93,10 @@ final class HisnRepositoryTests: XCTestCase {
         }
     }
 
-    func testBookItemNumbersNeverGoBackwardsInAChapter() async throws {
+    func testBookItemNumbersFollowTheBookInBookOrder() async throws {
+        // Display order is the source's; three chapters list two book items the other way round.
         for chapter in try await repository.loadChapters() {
-            let numbers = chapter.items.compactMap(\.bookItemNumber)
+            let numbers = chapter.itemsInBookOrder.compactMap(\.bookItemNumber)
             XCTAssertEqual(numbers, numbers.sorted(), chapter.id)
             XCTAssertTrue(numbers.allSatisfy { (1...267).contains($0) }, chapter.id)
         }
@@ -155,13 +156,21 @@ final class HisnRepositoryTests: XCTestCase {
 
     func testUnresolvedQuranIsReportedNotGuessed() async throws {
         let items = try await repository.loadBook().allItems
-        let open = items.filter { $0.quranStatus == .partial || $0.quranStatus == .unresolved }
-        XCTAssertFalse(open.isEmpty, "the source has at least one passage that cannot be located")
-        for item in open {
+        // Phase 2E resolved the last open passages through the correction manifest; any
+        // passage still open must carry the Phase 2C flag that reported it.
+        for item in items where item.quranStatus == .partial || item.quranStatus == .unresolved {
             XCTAssertTrue(item.reviewFlags.contains { $0.hasPrefix("QURAN_SEGMENT_UNRESOLVED") }, item.id)
         }
         for item in items where item.quranCitations.contains(where: { $0.match == .fuzzy }) {
             XCTAssertTrue(item.reviewFlags.contains { $0.hasPrefix("QURAN_FUZZY_MATCH") }, item.id)
+        }
+        // A Phase 2C finding is only cleared by an applied manifest entry.
+        let reported = items.filter { item in
+            item.reviewFlags.contains { $0.hasPrefix("QURAN_FUZZY_MATCH") || $0.hasPrefix("QURAN_SEGMENT_UNRESOLVED") }
+        }
+        XCTAssertEqual(reported.map(\.id), ["hisn-001-04", "hisn-029-03", "hisn-029-14"])
+        for item in reported where item.quranStatus == .resolved && item.quranCitations.allSatisfy({ $0.match == .exact }) {
+            XCTAssertFalse(item.corrections.applied.isEmpty, item.id)
         }
     }
 
@@ -240,6 +249,9 @@ final class HisnRepositoryTests: XCTestCase {
 // MARK: Invalid content
 
 final class HisnInvalidContentTests: XCTestCase {
+    private static let morning = #""MORNING""#
+    private static let evening = #""EVENING""#
+
     private func repository(_ json: String) -> BundledHisnRepository {
         BundledHisnRepository(source: .data(Data(json.utf8)))
     }
@@ -251,7 +263,10 @@ final class HisnInvalidContentTests: XCTestCase {
           "provenance": {
             "primarySource": {"name": "n", "url": "u", "license": "l", "edition": "e", "upstreamFile": "f", "sha256": "s", "retrieved": "r"},
             "crossCheck": {"name": "n", "urls": [], "bookChapters": 1, "bookItems": 1},
-            "canonicalEdition": {"name": "n", "url": "u", "sha256": "s", "comparison": "NOT_YET_COMPARED"}},
+            "canonicalEdition": {"name": "n", "url": "u", "sha256": "s", "comparison": "NOT_YET_COMPARED"},
+            "corrections": {"manifest": "m", "sha256": "s", "total": 0, "accepted": 0, "observationOnly": 0,
+                            "pendingDecision": 0, "p0Accepted": 0, "p0Pending": 0, "canonicalBookChapters": 1,
+                            "canonicalBookItems": 1, "presentationSections": 1, "displayItems": 1}},
           "attribution": {"sourceTitle": "t", "author": "a", "edition": null, "sourceURL": "u", "attributionText": null,
                           "rightsStatus": "PENDING_PRE_RELEASE_REVIEW"}},
          "chapters": \#(chapters)}
@@ -259,24 +274,43 @@ final class HisnInvalidContentTests: XCTestCase {
     }
 
     private func item(id: String = "i1", chapter: String = "c1", order: Int = 1, text: String = "ذكر",
-                      count: String = "1", status: String = "CONTENT_REVIEW_REQUIRED") -> String {
+                      count: String = "1", status: String = "CONTENT_REVIEW_REQUIRED", number: String = "1",
+                      relation: String = "DIRECT", citations: String = "[]", quranStatus: String = "NONE",
+                      corrections: String = #"{"applied": [], "open": []}"#) -> String {
         #"""
-        {"id": "\#(id)", "chapterId": "\#(chapter)", "order": \#(order), "bookItemNumber": null, "arabicText": "\#(text)",
+        {"id": "\#(id)", "chapterId": "\#(chapter)", "order": \#(order), "bookItemNumber": \#(number),
+         "bookItemRelation": "\#(relation)", "arabicText": "\#(text)",
          "searchText": "ذكر", "repetition": {"count": \#(count), "sourceCount": 1, "bookStatedCounts": [], "reviewStatus": "CONTENT_REVIEW_REQUIRED"},
-         "references": [], "quranCitations": [], "quranStatus": "NONE", "reviewFlags": [], "reviewStatus": "\#(status)"}
+         "references": [], "quranCitations": \#(citations), "quranStatus": "\#(quranStatus)", "reviewFlags": [],
+         "corrections": \#(corrections), "reviewStatus": "\#(status)"}
         """#
     }
 
-    private func chapter(id: String = "c1", number: Int = 1, items: [String]) -> String {
-        #"{"id": "\#(id)", "number": \#(number), "titleArabic": "باب", "searchText": "باب", "bookChapterNumber": null, "items": [\#(items.joined(separator: ","))]}"#
+    private func chapter(id: String = "c1", number: Int = 1, bookChapter: String = "1", section: String = "null",
+                         items: [String]) -> String {
+        #"{"id": "\#(id)", "number": \#(number), "titleArabic": "باب", "searchText": "باب", "bookChapterNumber": \#(bookChapter), "presentationSection": \#(section), "items": [\#(items.joined(separator: ","))]}"#
+    }
+
+    private func citation(fromAyah: Int, wholeSurah: Bool) -> String {
+        #"[{"reference": {"surah": 67, "fromAyah": \#(fromAyah), "toAyah": \#(fromAyah)}, "coversWholeVerses": false, "match": "EXACT", "recitesWholeSurah": \#(wholeSurah)}]"#
     }
 
     func testValidMinimalBookLoads() async throws {
-        let book = try await repository(book(chapters: "[\(chapter(items: [item()]))]")).loadBook()
-        XCTAssertEqual(book.itemCount, 1)
+        let minimal = try await repository(book(chapters: "[\(chapter(items: [item()]))]")).loadBook()
+        XCTAssertEqual(minimal.itemCount, 1)
+        let morning = chapter(section: Self.morning, items: [item()])
+        let evening = chapter(id: "c2", number: 2, section: Self.evening,
+                              items: [item(id: "i2", chapter: "c2", relation: "EVENING_VARIANT")])
+        let split = "[\(morning), \(evening)]"
+        let sections = try await repository(book(chapters: split)).loadBook()
+        XCTAssertEqual(sections.canonicalChapters.map { $0.sections.count }, [2])
+        let surah = "[\(chapter(items: [item(citations: citation(fromAyah: 1, wholeSurah: true), quranStatus: "RESOLVED")]))]"
+        let whole = try await repository(book(chapters: surah)).loadBook()
+        XCTAssertEqual(whole.allItems.first?.quranCitations.first?.recitesWholeSurah, true)
     }
 
     func testRejectsBrokenContent() async {
+        let foreign = #"{"applied": ["X-1"], "open": []}"#
         let cases: [String: String] = [
             "no chapters": "[]",
             "empty chapter": "[\(chapter(items: []))]",
@@ -290,6 +324,17 @@ final class HisnInvalidContentTests: XCTestCase {
             "zero repeat count": "[\(chapter(items: [item(count: "0")]))]",
             "Tanzil status on Hisn text": "[\(chapter(items: [item(status: "QURAN_VERBATIM_TANZIL")]))]",
             "unknown review status": "[\(chapter(items: [item(status: "LICENSED")]))]",
+            "book item number outside the book": "[\(chapter(items: [item(number: "2")]))]",
+            "unmapped canonical book item": "[\(chapter(items: [item(number: "null", relation: "CHAPTER_INTRODUCTION")]))]",
+            "direct item without a number": "[\(chapter(items: [item(number: "null")]))]",
+            "numbered chapter introduction": "[\(chapter(items: [item(relation: "CHAPTER_INTRODUCTION")]))]",
+            "evening variant outside the evening": "[\(chapter(items: [item(relation: "EVENING_VARIANT")]))]",
+            "unknown relation": "[\(chapter(items: [item(relation: "MERGED")]))]",
+            "presentation section on a single chapter": "[\(chapter(section: Self.morning, items: [item()]))]",
+            "two sections without sections": "[\(chapter(items: [item()])), \(chapter(id: "c2", number: 2, items: [item(id: "i2", chapter: "c2")]))]",
+            "canonical chapter missing": "[\(chapter(bookChapter: "null", items: [item()]))]",
+            "whole-surah citation mid-surah": "[\(chapter(items: [item(citations: citation(fromAyah: 2, wholeSurah: true), quranStatus: "RESOLVED")]))]",
+            "foreign correction id": "[\(chapter(items: [item(corrections: foreign)]))]",
         ]
         for (name, chapters) in cases {
             do {
