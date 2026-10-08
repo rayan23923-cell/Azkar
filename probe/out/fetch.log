@@ -1,0 +1,6 @@
+curl: (28) Connection timed out after 60002 milliseconds
+000 https://qurancomplex.gov.sa/en/?p=3979 0
+FAIL https://qurancomplex.gov.sa/en/?p=3979
+curl: (28) Connection timed out after 60001 milliseconds
+000 https://qurancomplex.gov.sa/?p=3979 0
+FAIL https://qurancomplex.gov.sa/?p=3979
