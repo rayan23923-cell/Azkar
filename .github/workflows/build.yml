@@ -20,6 +20,9 @@ jobs:
       - name: Hisn correction manifest rules
         run: python3 tools/content/test_hisn_corrections.py
 
+      - name: Hisn editorial review gate
+        run: python3 tools/content/test_hisn_editorial_review.py
+
       - name: swift test
         working-directory: Packages/IslamicCore
         run: |

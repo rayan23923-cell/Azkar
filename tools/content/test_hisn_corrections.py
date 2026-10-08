@@ -83,10 +83,13 @@ class HisnCorrectionManifestTests(unittest.TestCase):
                      "missing reviewStatus")
 
     def test_accepted_without_confidence_or_acceptance(self):
-        self.rejects(lambda m: entry_for(m, "REPETITION_COUNT", "hisn-029-06").update(reviewStatus="ACCEPTED"),
+        self.rejects(lambda m: entry_for(m, "REPETITION_COUNT", "hisn-029-06").update(confidence="LOW"),
                      "LOW confidence")
-        self.rejects(lambda m: entry_for(m, "REPETITION_COUNT", "hisn-130-02").update(reviewStatus="ACCEPTED"),
+        self.rejects(lambda m: entry_for(m, "BOOK_ITEM_NUMBER", "hisn-028-05").update(reviewStatus="ACCEPTED"),
                      "needs acceptedBy")
+
+    def test_rejected_entry_names_its_review(self):
+        self.rejects(lambda m: entry_for(m, "REPETITION_COUNT", "hisn-130-02").pop("rejectedBy"), "rejectedBy")
 
     def test_conflicting_accepted_corrections(self):
         def edit(m):
@@ -128,14 +131,17 @@ class HisnCorrectionManifestTests(unittest.TestCase):
         self.rejects(lambda m: entry_for(m, "TEXT_DISCREPANCY", "hisn-016-01").update(reviewStatus="ACCEPTED"),
                      "ACCEPTED_TEXT_CORRECTION")
 
-    def test_pending_repetition_is_not_applied_until_accepted(self):
+    def test_pending_entry_is_not_applied_until_accepted(self):
         items = {i["id"]: i for ch in self.build(MANIFEST)["chapters"] for i in ch["items"]}
-        self.assertIsNone(items["hisn-130-02"]["repetition"]["count"])
+        self.assertIsNone(items["hisn-028-05"]["bookItemNumber"])
         manifest = copy.deepcopy(MANIFEST)
-        entry_for(manifest, "REPETITION_COUNT", "hisn-130-02").update(reviewStatus="ACCEPTED", acceptedBy="test")
+        entry_for(manifest, "BOOK_ITEM_NUMBER", "hisn-028-05").update(reviewStatus="ACCEPTED", acceptedBy="test")
         items = {i["id"]: i for ch in self.build(manifest)["chapters"] for i in ch["items"]}
-        self.assertEqual(items["hisn-130-02"]["repetition"]["count"], 1)
+        self.assertEqual(items["hisn-028-05"]["bookItemNumber"], 78)
 
+    def test_editorial_keep_nil_blocks_an_accepted_count(self):
+        self.rejects(lambda m: entry_for(m, "REPETITION_COUNT", "hisn-130-02").update(
+            reviewStatus="ACCEPTED", acceptedBy="test"), "KEEP_NIL")
 
 if __name__ == "__main__":
     unittest.main()

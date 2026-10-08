@@ -100,6 +100,10 @@ func validateHisn(_ book: HisnBook) throws {
             }
             try requireContent((item.corrections.applied + item.corrections.open).allSatisfy { $0.hasPrefix("HISN-CORR-") },
                                "hisn: \(item.id) correction ids")
+            try requireContent(item.nonRecitationText.allSatisfy {
+                !$0.text.isEmpty && item.arabicText.components(separatedBy: $0.text).count == 2
+            }, "hisn: \(item.id) non-recitation text must be one exact span of the text")
+            try requireContent(item.editorialReviews.allSatisfy { $0.id.hasPrefix("HISN-REVIEW-") }, "hisn: \(item.id) review ids")
             try requireContent(item.repetition.sourceCount >= 1 && (item.repetition.count.map { $0 >= 1 } ?? true),
                                "hisn: \(item.id) repeat count")
             try requireContent(item.references.allSatisfy { !$0.originalText.isEmpty }, "hisn: \(item.id) empty reference")

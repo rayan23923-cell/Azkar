@@ -9,6 +9,7 @@ Inputs (never edited by this script):
   tools/content/hisn.crosscheck.json                      per-item book cross-check (prepare_crosscheck.py)
   tools/content/hisn.reconciliation.json                  Phase 2D book reconciliation (hisn/reconcile.py)
   tools/content/hisn.corrections.json                     Phase 2E correction manifest (hand-reviewed)
+  tools/content/hisn.editorial_review.json                Phase 2F editorial decisions on the P0 findings
 
 Outputs (deterministic, UTF-8, sorted, indented):
   Packages/IslamicCore/Sources/IslamicCore/Resources/Content/{quran,adhkar,duas,hisn}.json
@@ -16,7 +17,7 @@ Outputs (deterministic, UTF-8, sorted, indented):
 Quran text is copied character for character. Quranic adhkar and duas reference verses
 and get their text from the same Tanzil file, so nothing Quranic is typed by hand.
 
-Hisn pipeline: upstream text -> cross-check mapping -> correction manifest -> hisn.json.
+Hisn pipeline: upstream text -> cross-check mapping -> correction manifest -> editorial review -> hisn.json.
 Only manifest entries with an accepted status change a value; every other entry is recorded
 and checked. The Arabic text is never changed unless an entry is an ACCEPTED_TEXT_CORRECTION.
 
@@ -224,6 +225,8 @@ def build_hisn(surahs):
                 "reviewStatus": REVIEW_REQUIRED,
                 "bookItemRelation": None,
                 "corrections": {"applied": [], "open": []},
+                "nonRecitationText": [],
+                "editorialReviews": [],
             })
         chapters.append({
             "id": chapter_id,
@@ -235,6 +238,7 @@ def build_hisn(surahs):
             "items": items,
         })
     corrections = apply_hisn_corrections(chapters, surahs, hashlib.sha256(raw).hexdigest())
+    editorial_review = apply_hisn_editorial_review(chapters, surahs)
     return {
         "formatVersion": FORMAT_VERSION,
         "contentVersion": 1,
@@ -265,6 +269,7 @@ def build_hisn(surahs):
                     "comparison": "NOT_YET_COMPARED",
                 },
                 "corrections": corrections,
+                "editorialReview": editorial_review,
             },
             "attribution": {
                 "sourceTitle": "حصن المسلم من أذكار الكتاب والسنة",
@@ -290,6 +295,7 @@ CORRECTION_TYPES = {"BOOK_ITEM_NUMBER", "CANONICAL_ORDER", "REPETITION_COUNT", "
 APPLIED_STATUSES = {"ACCEPTED", "ACCEPTED_TEXT_CORRECTION"}
 OBSERVED_STATUSES = {"OBSERVED_DIFFERENCE", "OBSERVATION"}
 PENDING_STATUSES = {"PENDING_DECISION"}
+REJECTED_STATUSES = {"REJECTED"}
 CONFIDENCES = {"HIGH", "MEDIUM", "LOW"}
 PRIORITIES = {"P0", "P1", "P2"}
 RELATIONS = {"DIRECT", "SPLIT_PART", "EVENING_VARIANT", "CHAPTER_INTRODUCTION"}
@@ -321,7 +327,7 @@ def check_entry(c, items, chapters_by_id):
     if c["type"] not in CORRECTION_TYPES:
         fail(c, f"unknown type {c['type']}")
     status = c["reviewStatus"]
-    if status not in APPLIED_STATUSES | OBSERVED_STATUSES | PENDING_STATUSES:
+    if status not in APPLIED_STATUSES | OBSERVED_STATUSES | PENDING_STATUSES | REJECTED_STATUSES:
         fail(c, f"unknown reviewStatus {status}")
     if c["confidence"] not in CONFIDENCES:
         fail(c, f"unknown confidence {c['confidence']}")
@@ -333,6 +339,8 @@ def check_entry(c, items, chapters_by_id):
             fail(c, f"evidence.{key} is missing")
     if len(ev["reason"]) < 30:
         fail(c, "evidence.reason is too vague")
+    if status in REJECTED_STATUSES and not re.fullmatch(r"HISN-REVIEW-\d{3}", c.get("rejectedBy") or ""):
+        fail(c, "a REJECTED entry names the editorial review that declined it (rejectedBy)")
     if status in APPLIED_STATUSES:
         if c["confidence"] == "LOW":
             fail(c, "a LOW confidence entry cannot be accepted")
@@ -470,7 +478,7 @@ def _apply(manifest, manifest_raw, rec, chapters, surahs, upstream_sha):
                 fail(c, "the recorded excerpt is not in the source text")
 
         if not applied:
-            if status != "OBSERVATION":
+            if status not in OBSERVED_STATUSES - {"OBSERVED_DIFFERENCE"} | REJECTED_STATUSES:
                 for sid in ids:
                     items[sid]["corrections"]["open"].append(c["id"])
             continue
@@ -579,6 +587,7 @@ def _apply(manifest, manifest_raw, rec, chapters, surahs, upstream_sha):
     accepted = [c for c in entries if c["reviewStatus"] in APPLIED_STATUSES]
     observed = [c for c in entries if c["reviewStatus"] in OBSERVED_STATUSES]
     pending = [c for c in entries if c["reviewStatus"] in PENDING_STATUSES]
+    rejected = [c for c in entries if c["reviewStatus"] in REJECTED_STATUSES]
     p0 = [c for c in entries if c["reviewPriority"] == "P0"]
     summary = {
         "manifest": "tools/content/hisn.corrections.json",
@@ -587,8 +596,9 @@ def _apply(manifest, manifest_raw, rec, chapters, surahs, upstream_sha):
         "accepted": len(accepted),
         "observationOnly": len(observed),
         "pendingDecision": len(pending),
+        "rejected": len(rejected),
         "p0Accepted": sum(c in accepted for c in p0),
-        "p0Pending": len(p0) - sum(c in accepted for c in p0),
+        "p0Pending": sum(c["reviewStatus"] in OBSERVED_STATUSES | PENDING_STATUSES for c in p0),
         "canonicalBookChapters": chapter_total,
         "canonicalBookItems": book_total,
         "presentationSections": len(chapters),
@@ -596,8 +606,157 @@ def _apply(manifest, manifest_raw, rec, chapters, surahs, upstream_sha):
     }
     print("Hisn corrections:\n"
           f"  total {summary['total']}, accepted {summary['accepted']}, observation-only {summary['observationOnly']}, "
-          f"pending {summary['pendingDecision']}, P0 accepted {summary['p0Accepted']}, P0 pending {summary['p0Pending']}\n"
+          f"pending {summary['pendingDecision']}, rejected {summary['rejected']}, P0 accepted {summary['p0Accepted']}, P0 pending {summary['p0Pending']}\n"
           f"  canonical {chapter_total} chapters / {book_total} items, presentation {len(chapters)} sections / {len(items)} items")
+    return summary
+
+
+# ---------------------------------------------------------------------------
+# Phase 2F editorial review
+# ---------------------------------------------------------------------------
+HISN_EDITORIAL_REVIEW = SRC / "hisn.editorial_review.json"
+EDITORIAL_DECISIONS = {"ACCEPT_CORRECTION", "KEEP_SOURCE", "KEEP_NIL", "KEEP_METADATA", "DEFER"}
+DECISION_CONFIDENCES = {"HIGH", "MEDIUM", "LOW", "INSUFFICIENT"}
+ISSUE_TYPES = {"TEXT_DISCREPANCY", "NON_DHIKR_TEXT", "REPETITION_COUNT"}
+TEXT_ROLES = {"NARRATION", "CLOSING", "LABEL", "INSTRUCTION"}
+REVIEW_KEYS = ("id", "sourceItemId", "issueType", "question", "sourceText", "bookText", "correctionIds",
+               "decision", "decisionConfidence", "evidence", "rationale", "changesApplied",
+               "independentReviewer", "reviewStatus")
+
+
+def apply_hisn_editorial_review(chapters, surahs):
+    raw = HISN_EDITORIAL_REVIEW.read_bytes()
+    review = json.loads(raw.decode("utf-8"))
+    manifest = json.loads(HISN_MANIFEST.read_text(encoding="utf-8"))
+    rec = json.loads(HISN_RECONCILIATION.read_text(encoding="utf-8"))
+    try:
+        return _review(review, raw, manifest, rec, chapters)
+    except CorrectionError as error:
+        sys.exit(f"Hisn editorial review rejected: {error}")
+
+
+def check_reviewer(r, reviewer):
+    """An independent reviewer is a named person with a dated, referenced sign-off, or null."""
+    if reviewer is None:
+        return False
+    if not isinstance(reviewer, dict) or not all(isinstance(reviewer.get(k), str) and reviewer[k].strip()
+                                                 for k in ("name", "role", "date", "signOffReference")):
+        fail(r, "independentReviewer must be null or {name, role, date, signOffReference}")
+    return True
+
+
+def _review(review, raw, manifest, rec, chapters):
+    if review.get("schemaVersion") != 1 or review.get("phase") != "2F":
+        fail("editorial review", "schemaVersion 1 / phase 2F expected")
+    if review["source"].get("upstreamSha256") != manifest["source"]["upstreamSha256"]:
+        fail("editorial review", "upstream hash differs from the correction manifest")
+    books = {b["bookItemNumber"]: b for b in rec["bookItems"]}
+    items = {it["id"]: it for ch in chapters for it in ch["items"]}
+    corrections = {c["id"]: c for c in manifest["corrections"]}
+    seen, covered = set(), set()
+    independent = 0
+    for r in review["reviews"]:
+        for key in REVIEW_KEYS:
+            if key not in r:
+                fail(r, f"missing {key}")
+        if not re.fullmatch(r"HISN-REVIEW-\d{3}", r["id"]) or r["id"] in seen:
+            fail(r, "id must be a unique HISN-REVIEW-NNN")
+        seen.add(r["id"])
+        sid = r["sourceItemId"]
+        if sid not in items:
+            fail(r, f"item {sid} does not exist")
+        item = items[sid]
+        if r["issueType"] not in ISSUE_TYPES:
+            fail(r, f"unknown issueType {r['issueType']}")
+        if r["decision"] not in EDITORIAL_DECISIONS:
+            fail(r, f"unknown decision {r['decision']}")
+        if r["decisionConfidence"] not in DECISION_CONFIDENCES:
+            fail(r, f"unknown decisionConfidence {r['decisionConfidence']}")
+        if not r["question"].strip() or len(r["rationale"]) < 30:
+            fail(r, "question or rationale missing")
+        if not r["evidence"]:
+            fail(r, "a decision needs evidence")
+        for ev in r["evidence"]:
+            for key in ("source", "reference", "finding"):
+                if not isinstance(ev.get(key), str) or not ev[key].strip():
+                    fail(r, f"evidence.{key} is missing")
+        if r["sourceText"] != item["arabicText"] and r["decision"] != "ACCEPT_CORRECTION":
+            fail(r, "sourceText is not the item's text")
+        if r["bookText"] != books[item["bookItemNumber"]]["bookText"]:
+            fail(r, "bookText is not the cross-check text of the item's book number")
+        # No invented sign-off: REVIEWED needs a real reviewer, and content stays CONTENT_REVIEW_REQUIRED.
+        has_reviewer = check_reviewer(r, r["independentReviewer"])
+        independent += has_reviewer
+        if r["reviewStatus"] not in ("EDITORIAL_DECISION_RECORDED", "INDEPENDENTLY_REVIEWED") or \
+                (r["reviewStatus"] == "INDEPENDENTLY_REVIEWED") != has_reviewer:
+            fail(r, "reviewStatus must match the independent reviewer")
+        linked = [corrections.get(cid) for cid in r["correctionIds"]]
+        if not linked or None in linked or any(c["sourceItemId"] != sid or c["type"] != r["issueType"]
+                                               or c["reviewPriority"] != "P0" for c in linked):
+            fail(r, "correctionIds must name this item's P0 manifest entries of the same issue type")
+        covered.update(r["correctionIds"])
+        applied_text = [c for c in linked if c["reviewStatus"] == "ACCEPTED_TEXT_CORRECTION"]
+        decision = r["decision"]
+        if decision == "ACCEPT_CORRECTION":
+            if r["issueType"] == "TEXT_DISCREPANCY" and r["changesApplied"]:
+                if not applied_text or any(not c["before"].get("arabicText") or not c["after"].get("arabicText") for c in applied_text):
+                    fail(r, "an applied text correction needs an ACCEPTED_TEXT_CORRECTION with exact before/after")
+        else:
+            if applied_text:
+                fail(r, f"{decision} cannot sit on an applied text correction")
+            if r["changesApplied"]:
+                fail(r, f"{decision} applies no change")
+        if decision == "KEEP_NIL":
+            if r["issueType"] != "REPETITION_COUNT" or item["repetition"]["count"] is not None \
+                    or r.get("repetition", {}).get("count", 0) is not None:
+                fail(r, "KEEP_NIL is for repetition and needs a nil count")
+            if any(c["reviewStatus"] in APPLIED_STATUSES and c["after"]["count"] is not None for c in linked):
+                fail(r, "KEEP_NIL conflicts with an applied count")
+        if decision == "KEEP_METADATA":
+            pieces = r.get("metadata") or []
+            if not pieces:
+                fail(r, "KEEP_METADATA needs metadata entries")
+            for piece in pieces:
+                if piece.get("role") not in TEXT_ROLES:
+                    fail(r, f"unknown role {piece.get('role')}")
+                if item["arabicText"].count(piece.get("text") or "\0") != 1:
+                    fail(r, "a metadata span must occur exactly once, verbatim, in the item text")
+                item["nonRecitationText"].append({"role": piece["role"], "text": piece["text"]})
+        elif "metadata" in r:
+            fail(r, "metadata is only for KEEP_METADATA")
+        for c in linked:
+            if c["reviewStatus"] == "REJECTED" and c["rejectedBy"] != r["id"]:
+                fail(r, f"{c['id']} is rejected by another review")
+        item["editorialReviews"].append({"id": r["id"], "issueType": r["issueType"], "decision": decision,
+                                          "changesApplied": r["changesApplied"]})
+        assert item["reviewStatus"] == REVIEW_REQUIRED
+
+    # Every P0 finding the corrections manifest did not settle has an editorial decision.
+    open_p0 = {c["id"] for c in manifest["corrections"]
+               if c["reviewPriority"] == "P0" and c["reviewStatus"] not in APPLIED_STATUSES}
+    if open_p0 - covered:
+        fail("editorial review", f"P0 entries without a decision: {sorted(open_p0 - covered)}")
+    for c in manifest["corrections"]:
+        if c["reviewStatus"] == "REJECTED" and c["rejectedBy"] not in seen:
+            fail(c, f"rejectedBy {c['rejectedBy']} is not a review")
+    if review.get("editorialReviewComplete") and independent < len(review["reviews"]):
+        fail("editorial review", "editorialReviewComplete needs an independent reviewer on every decision")
+    for item in items.values():
+        item["nonRecitationText"].sort(key=lambda p: item["arabicText"].index(p["text"]))
+
+    counts = {d: sum(r["decision"] == d for r in review["reviews"]) for d in sorted(EDITORIAL_DECISIONS)}
+    summary = {
+        "manifest": "tools/content/hisn.editorial_review.json",
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "total": len(review["reviews"]),
+        "decisions": counts,
+        "changesApplied": sum(r["changesApplied"] for r in review["reviews"]),
+        "independentlyReviewed": independent,
+        "editorialReviewComplete": bool(review.get("editorialReviewComplete")),
+    }
+    print("Hisn editorial review:\n"
+          f"  total {summary['total']}, " + ", ".join(f"{k} {v}" for k, v in counts.items()) +
+          f", changes applied {summary['changesApplied']}, independent review {independent}/{summary['total']}")
     return summary
 
 
