@@ -11,6 +11,7 @@
 		A10000000000000000000084 /* HisnReading in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000082 /* HisnReading */; };
 		A10000000000000000000086 /* HisnAudioPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000085 /* HisnAudioPlayback */; };
 		A10000000000000000000088 /* HisnShareCard in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000087 /* HisnShareCard */; };
+		A1000000000000000000008A /* ContentKit in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000089 /* ContentKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 				A10000000000000000000084 /* HisnReading in Frameworks */,
 				A10000000000000000000086 /* HisnAudioPlayback in Frameworks */,
 				A10000000000000000000088 /* HisnShareCard in Frameworks */,
+				A1000000000000000000008A /* ContentKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +80,7 @@
 				A10000000000000000000082 /* HisnReading */,
 				A10000000000000000000085 /* HisnAudioPlayback */,
 				A10000000000000000000087 /* HisnShareCard */,
+				A10000000000000000000089 /* ContentKit */,
 			);
 			productName = IslamicPiPPOC;
 			productReference = A10000000000000000000001 /* IslamicPiPPOC.app */;
@@ -274,6 +277,10 @@
 		A10000000000000000000087 /* HisnShareCard */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HisnShareCard;
+		};
+		A10000000000000000000089 /* ContentKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ContentKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

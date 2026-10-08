@@ -6,6 +6,8 @@ import PackageDescription
 // HisnReading is the Hisn Al-Muslim reader state on top of IslamicCore
 // (navigation, repetition, search, resume, the audio player state); the SwiftUI views
 // live in the app. HisnAudioPlayback is the only target that imports AVFoundation.
+// ContentKit is shared by every content type: Arabic search normalization, content
+// references, and on-device progress stores.
 // HisnShareCard draws the share image with Core Text / Core Graphics (testable here).
 let package = Package(
     name: "IslamicCore",
@@ -15,6 +17,7 @@ let package = Package(
         .library(name: "HisnReading", targets: ["HisnReading"]),
         .library(name: "HisnAudioPlayback", targets: ["HisnAudioPlayback"]),
         .library(name: "HisnShareCard", targets: ["HisnShareCard"]),
+        .library(name: "ContentKit", targets: ["ContentKit"]),
     ],
     targets: [
         .target(
@@ -22,8 +25,12 @@ let package = Package(
             resources: [.copy("Resources/Content")]
         ),
         .target(
-            name: "HisnReading",
+            name: "ContentKit",
             dependencies: ["IslamicCore"]
+        ),
+        .target(
+            name: "HisnReading",
+            dependencies: ["IslamicCore", "ContentKit"]
         ),
         .target(
             name: "HisnAudioPlayback",
@@ -39,7 +46,11 @@ let package = Package(
         ),
         .testTarget(
             name: "HisnReadingTests",
-            dependencies: ["HisnReading", "IslamicCore"]
+            dependencies: ["HisnReading", "IslamicCore", "ContentKit"]
+        ),
+        .testTarget(
+            name: "ContentKitTests",
+            dependencies: ["ContentKit", "IslamicCore"]
         ),
         .testTarget(
             name: "HisnAudioTests",

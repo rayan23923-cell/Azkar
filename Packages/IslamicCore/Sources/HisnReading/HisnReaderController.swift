@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import IslamicCore
+import ContentKit
 
 /// One open chapter on screen: the reader state (the session), its persistent cursor, and the item's
 /// recording. The reader owns navigation; the audio player only follows it.
@@ -23,15 +24,23 @@ public final class HisnReaderController: ObservableObject {
     public let audio: HisnAudioPlayer?
     private let store: HisnReadingPositionStore
     private let haptics: HisnHaptics?
+    private let dailyProgress: DailyProgressStore?
+    private let now: () -> Date
     private var audioTask: Task<Void, Never>?
     private var audioItemId: String?
 
+    /// - Parameters:
+    ///   - dailyProgress: where finishing the chapter is recorded for today (Phase 3G).
+    ///   - now: the clock used for that day (tests pass a fixed one).
     public init(reader: HisnReader, store: HisnReadingPositionStore, audio: HisnAudioPlayer? = nil,
-                haptics: HisnHaptics? = nil) {
+                haptics: HisnHaptics? = nil, dailyProgress: DailyProgressStore? = nil,
+                now: @escaping () -> Date = Date.init) {
         self.reader = reader
         self.store = store
         self.audio = audio
         self.haptics = haptics
+        self.dailyProgress = dailyProgress
+        self.now = now
         save()
         syncAudio()
     }
@@ -43,7 +52,9 @@ public final class HisnReaderController: ObservableObject {
         // Feedback marks completion only, not every recitation.
         switch step {
         case .movedToNext: haptics?.play(.itemCompleted)
-        case .completed: haptics?.play(.chapterCompleted)
+        case .completed:
+            haptics?.play(.chapterCompleted)
+            recordCompletion()
         case .counted: break
         }
         recitations += 1
@@ -55,7 +66,10 @@ public final class HisnReaderController: ObservableObject {
         finishedItemNumber = nil
         let wasCompleted = reader.isCompleted
         reader.next()
-        if !wasCompleted && reader.isCompleted { haptics?.play(.chapterCompleted) }
+        if !wasCompleted && reader.isCompleted {
+            haptics?.play(.chapterCompleted)
+            recordCompletion()
+        }
         save()
         syncAudio()
     }
@@ -100,6 +114,11 @@ public final class HisnReaderController: ObservableObject {
         audioItemId = itemId
         audio.stop()
         audioTask = Task { await audio.load(itemId: itemId) }
+    }
+
+    /// Finishing the chapter (by counting or by «إنهاء الباب») marks it done for today.
+    private func recordCompletion() {
+        dailyProgress?.markCompleted(.hisnSection(reader.chapter.id), on: DayKey(date: now()))
     }
 
     private func save() {

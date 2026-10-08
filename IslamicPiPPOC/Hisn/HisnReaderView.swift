@@ -2,6 +2,7 @@ import SwiftUI
 import IslamicCore
 import HisnReading
 import HisnShareCard
+import ContentKit
 
 /// One chapter: the item text, its source on demand, the repetition counter and
 /// previous / next. Ends in a completion state; never opens another chapter by itself.
@@ -15,10 +16,12 @@ struct HisnReaderView: View {
     ///   - highlightedItemId: the item opened from a search result, marked briefly on arrival.
     ///   - nextSection: the section after this one, offered as «الفصل التالي» on completion.
     ///   - openSection: opens it (the reader never changes chapter by itself).
-    init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository,
+    init(reader: HisnReader, store: HisnReadingPositionStore, dailyProgress: DailyProgressStore,
+         audioRepository: HisnAudioRepository,
          highlightedItemId: String? = nil, nextSection: HisnSectionEntry? = nil,
          openSection: @escaping (HisnSectionEntry) -> Void = { _ in }) {
         _screen = StateObject(wrappedValue: HisnReaderScreenModel(reader: reader, store: store,
+                                                                  dailyProgress: dailyProgress,
                                                                   audioRepository: audioRepository))
         self.nextSection = nextSection
         self.openSection = openSection

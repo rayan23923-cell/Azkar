@@ -2,6 +2,7 @@ import SwiftUI
 import IslamicCore
 import HisnReading
 import HisnAudioPlayback
+import ContentKit
 
 /// Opens a chapter at a display item. Built from the index, a search result or the saved position.
 struct HisnRoute: Hashable {
@@ -27,13 +28,18 @@ final class HisnLibraryModel: ObservableObject {
 
     @Published private(set) var state: State = .loading
     @Published private(set) var resumePosition: HisnReadingPosition?
+    /// Sections read to the end today.
+    @Published private(set) var completedToday: Set<ContentRef> = []
     let positionStore: HisnReadingPositionStore
+    let dailyProgress: DailyProgressStore
     private let repository: HisnRepository
 
     init(repository: HisnRepository = BundledHisnRepository(),
-         positionStore: HisnReadingPositionStore = UserDefaultsHisnReadingPositionStore()) {
+         positionStore: HisnReadingPositionStore = UserDefaultsHisnReadingPositionStore(),
+         dailyProgress: DailyProgressStore = UserDefaultsDailyProgressStore()) {
         self.repository = repository
         self.positionStore = positionStore
+        self.dailyProgress = dailyProgress
     }
 
     func load() async {
@@ -58,6 +64,11 @@ final class HisnLibraryModel: ObservableObject {
     func refreshResume() {
         guard case .loaded(let library, _, _) = state else { return }
         resumePosition = HisnResume.position(in: positionStore, library: library)
+        completedToday = dailyProgress.completed(on: DayKey(date: Date()))
+    }
+
+    func isCompletedToday(_ sectionId: String) -> Bool {
+        completedToday.contains(.hisnSection(sectionId))
     }
 
     /// From the index: the saved place when it is in this chapter, otherwise its first item.
@@ -88,11 +99,12 @@ final class HisnLibraryModel: ObservableObject {
 extension HisnReaderController {
     /// The reader for one chapter with the item's recording, played through the app's single
     /// audio session owner.
-    static func make(reader: HisnReader, store: HisnReadingPositionStore,
+    static func make(reader: HisnReader, store: HisnReadingPositionStore, dailyProgress: DailyProgressStore,
                      audioRepository: HisnAudioRepository) -> HisnReaderController {
         let audio = HisnAudioPlayer(repository: audioRepository, engine: AVHisnAudioEngine(),
                                     session: AudioSessionCoordinator.shared)
-        return HisnReaderController(reader: reader, store: store, audio: audio, haptics: SystemHisnHaptics.shared)
+        return HisnReaderController(reader: reader, store: store, audio: audio, haptics: SystemHisnHaptics.shared,
+                                    dailyProgress: dailyProgress)
     }
 }
 
@@ -106,8 +118,9 @@ final class HisnReaderScreenModel: ObservableObject {
     let pip: HisnPiPCoordinator
     let actions: HisnItemActions
 
-    init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository) {
-        controller = .make(reader: reader, store: store, audioRepository: audioRepository)
+    init(reader: HisnReader, store: HisnReadingPositionStore, dailyProgress: DailyProgressStore,
+         audioRepository: HisnAudioRepository) {
+        controller = .make(reader: reader, store: store, dailyProgress: dailyProgress, audioRepository: audioRepository)
         surface = SampleBufferPiPSurface()
         pip = HisnPiPCoordinator(controller: controller, surface: surface)
         surface.coordinator = pip

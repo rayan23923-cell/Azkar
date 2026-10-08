@@ -56,10 +56,16 @@ public enum HisnAccessibility {
         return parts.joined(separator: "، ")
     }
 
-    public static func sectionValue(_ entry: HisnSectionEntry, isCurrent: Bool) -> String {
-        let count = "عدد الأذكار \(entry.itemCount)"
-        return isCurrent ? "موضع القراءة الحالي، \(count)" : count
+    public static func sectionValue(_ entry: HisnSectionEntry, isCurrent: Bool, completedToday: Bool = false) -> String {
+        var parts: [String] = []
+        if isCurrent { parts.append("موضع القراءة الحالي") }
+        if completedToday { parts.append(completedTodayLabel) }
+        parts.append("عدد الأذكار \(entry.itemCount)")
+        return parts.joined(separator: "، ")
     }
+
+    /// A section read to the end today.
+    public static let completedTodayLabel = "أُتمّ اليوم"
 
     // MARK: Search
 

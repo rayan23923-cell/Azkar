@@ -28,7 +28,8 @@ struct HisnRootView: View {
                        let chapter = library.chapter(id: route.chapterId),
                        let reader = HisnReader(chapter: chapter, itemIndex: route.itemIndex,
                                                completedRepetitions: route.completedRepetitions) {
-                        HisnReaderView(reader: reader, store: model.positionStore, audioRepository: audio,
+                        HisnReaderView(reader: reader, store: model.positionStore, dailyProgress: model.dailyProgress,
+                                       audioRepository: audio,
                                        highlightedItemId: route.highlightedItemId,
                                        nextSection: library.section(after: chapter.id)) { next in
                             // «الفصل التالي»: replaces the finished chapter, so back returns to the index.
@@ -103,7 +104,8 @@ private struct HisnIndexView: View {
                 Section("الأبواب") {
                     ForEach(library.sections) { entry in
                         NavigationLink(value: model.route(forChapter: entry.id)) {
-                            HisnSectionRow(entry: entry, isCurrent: entry.id == model.resumePosition?.chapterId)
+                            HisnSectionRow(entry: entry, isCurrent: entry.id == model.resumePosition?.chapterId,
+                                           completedToday: model.isCompletedToday(entry.id))
                         }
                     }
                 }
@@ -147,6 +149,8 @@ private struct HisnSectionRow: View {
     let entry: HisnSectionEntry
     /// The saved reading cursor is in this section.
     let isCurrent: Bool
+    /// Read to the end today.
+    var completedToday = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -162,6 +166,10 @@ private struct HisnSectionRow: View {
             }
             Text(entry.title)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            if completedToday {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            }
             if isCurrent {
                 Image(systemName: "bookmark.fill")
                     .foregroundStyle(.tint)
@@ -172,7 +180,7 @@ private struct HisnSectionRow: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(HisnAccessibility.sectionLabel(entry))
-        .accessibilityValue(HisnAccessibility.sectionValue(entry, isCurrent: isCurrent))
+        .accessibilityValue(HisnAccessibility.sectionValue(entry, isCurrent: isCurrent, completedToday: completedToday))
     }
 
     private var symbol: String? {
