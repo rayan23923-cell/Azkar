@@ -1,13 +1,21 @@
 # Fallback only: if the .xcodeproj does not open, run `brew install xcodegen && xcodegen` here.
 name: IslamicPiPPOC
+packages:
+  IslamicCore:
+    path: Packages/IslamicCore
 options:
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "17.0"
 targets:
   IslamicPiPPOC:
     type: application
     platform: iOS
     sources: [IslamicPiPPOC]
+    dependencies:
+      - package: IslamicCore
+        product: IslamicCore
+      - package: IslamicCore
+        product: HisnReading
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.IslamicPiPPOC
