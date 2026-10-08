@@ -1,0 +1,20 @@
+Title:           <4D6963726F736F667420576F7264202D203037372D20CDD5DCE420C7E1E3D3DCE1E320C5E3E1C7C6ED20E3E1E6E42D31372D32342E646F63>
+Author:          user
+Creator:         PScript5.dll Version 5.2.2
+Producer:        Acrobat Distiller 9.0.0 (Windows)
+CreationDate:    Wed Dec 22 10:18:32 2010 UTC
+ModDate:         Tue Dec  2 09:42:18 2025 UTC
+Custom Metadata: no
+Metadata Stream: yes
+Tagged:          no
+UserProperties:  no
+Suspects:        no
+Form:            AcroForm
+JavaScript:      no
+Pages:           161
+Encrypted:       no
+Page size:       480.96 x 737.16 pts
+Page rot:        0
+File size:       1922580 bytes
+Optimized:       no
+PDF version:     1.7
