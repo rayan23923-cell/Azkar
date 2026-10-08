@@ -93,7 +93,7 @@ Current behaviour (`PiPEngine.swift`, `enqueueCurrentFrame`):
 - Every 0.5 s re-renders a full 1280×720 frame **on the main thread**, even when nothing changed.
 - Recovery = `if renderer.status == .failed { flush() }` before the next enqueue. Nothing reacts to foreground/background, and `requiresFlushToResumeDecoding` (iOS 17+) is not checked.
 
-Explanation of the observed `renderer failed: Operation Interrupted`: when the app returns from background, the video renderer is interrupted by the system and reports `.failed`. The next heartbeat flushes and re-enqueues, so it self-heals within about 0.5 s, but by accident rather than by design.
+Likely explanation (inferred, not verified) of the observed `renderer failed: Operation Interrupted`: around the background/foreground transition the system interrupts the video renderer, which then reports `.failed`. The next heartbeat flushes and re-enqueues, so it self-heals within about 0.5 s, but by accident rather than by design.
 
 V1 requirements:
 1. One `FrameRenderer` / `VideoSurface` component owns the layer and is the only place that calls `enqueue`/`flush`.
