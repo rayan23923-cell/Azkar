@@ -7,7 +7,7 @@ import HisnReading
 struct HisnRootView: View {
     @StateObject private var model = HisnLibraryModel()
     @State private var path: [HisnRoute] = []
-    @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
+    @State private var showsSettings = false
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -15,8 +15,8 @@ struct HisnRootView: View {
                 .navigationTitle("حصن المسلم")
                 .toolbar {
                     ToolbarItem(placement: .primaryAction) {
-                        Menu {
-                            Toggle("الاهتزاز", isOn: $hapticsEnabled)
+                        Button {
+                            showsSettings = true
                         } label: {
                             Image(systemName: "gearshape")
                         }
@@ -40,6 +40,18 @@ struct HisnRootView: View {
                         HisnErrorView(message: "تعذّر فتح هذا الباب.", retry: nil)
                     }
                 }
+        }
+        .sheet(isPresented: $showsSettings) {
+            NavigationStack {
+                SettingsView(reminders: AppServices.shared.reminders)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("تم") { showsSettings = false }
+                        }
+                    }
+            }
+            .environment(\.layoutDirection, .rightToLeft)
+            .environment(\.locale, Locale(identifier: "ar"))
         }
         .environment(\.layoutDirection, .rightToLeft)
         .environment(\.locale, Locale(identifier: "ar"))

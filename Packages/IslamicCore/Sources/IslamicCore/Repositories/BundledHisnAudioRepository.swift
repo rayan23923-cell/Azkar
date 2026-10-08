@@ -49,6 +49,12 @@ public actor BundledHisnAudioRepository: HisnAudioRepository {
         try assetsByItem().values.sorted { $0.id < $1.id }
     }
 
+    /// The validated manifest (pack status and assets), for the release report.
+    public func manifest() async throws -> HisnAudioManifest {
+        _ = try assetsByItem()
+        return try manifestSource.decode(HisnAudioManifest.self, resource: "hisn_audio")
+    }
+
     private func assetsByItem() throws -> [String: HisnAudioAsset] {
         if let cache { return cache }
         let manifest = try manifestSource.decode(HisnAudioManifest.self, resource: "hisn_audio")

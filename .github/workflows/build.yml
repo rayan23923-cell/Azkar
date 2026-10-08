@@ -26,6 +26,9 @@ jobs:
       - name: Hisn audio test fixture is reproducible
         run: python3 tools/content/make_hisn_audio_fixture.py --check
 
+      - name: Bundled audio packs are intact (release status is reported)
+        run: python3 tools/content/check_audio_packs.py
+
       - name: swift test
         working-directory: Packages/IslamicCore
         run: |
