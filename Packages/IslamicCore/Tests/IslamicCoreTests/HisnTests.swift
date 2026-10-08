@@ -293,14 +293,14 @@ final class HisnInvalidContentTests: XCTestCase {
     }
 
     func testValidMinimalBookLoads() async throws {
-        let book = try await repository(book(chapters: "[\(chapter(items: [item()]))]")).loadBook()
-        XCTAssertEqual(book.itemCount, 1)
+        let minimal = try await repository(book(chapters: "[\(chapter(items: [item()]))]")).loadBook()
+        XCTAssertEqual(minimal.itemCount, 1)
         let morning = chapter(section: Self.morning, items: [item()])
         let evening = chapter(id: "c2", number: 2, section: Self.evening,
                               items: [item(id: "i2", chapter: "c2", relation: "EVENING_VARIANT")])
         let split = "[\(morning), \(evening)]"
         let sections = try await repository(book(chapters: split)).loadBook()
-        XCTAssertEqual(sections.canonicalChapters.map(\.sections.count), [2])
+        XCTAssertEqual(sections.canonicalChapters.map { $0.sections.count }, [2])
         let surah = "[\(chapter(items: [item(citations: citation(fromAyah: 1, wholeSurah: true), quranStatus: "RESOLVED")]))]"
         let whole = try await repository(book(chapters: surah)).loadBook()
         XCTAssertEqual(whole.allItems.first?.quranCitations.first?.recitesWholeSurah, true)

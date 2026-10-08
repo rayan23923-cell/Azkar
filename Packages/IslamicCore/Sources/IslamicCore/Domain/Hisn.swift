@@ -220,7 +220,8 @@ public struct HisnReference: Hashable, Codable, Sendable {
 /// A Quran passage quoted inside an item, pointing at the canonical Tanzil verses.
 public struct HisnQuranCitation: Hashable, Codable, Sendable {
     public enum Match: String, Codable, Sendable {
-        /// The quoted letters occur exactly once in Tanzil, inside these verses.
+        /// The quoted letters occur exactly once in Tanzil, inside these verses, or an accepted
+        /// manifest entry identified them verse for verse with spelling-only differences.
         case exact = "EXACT"
         /// Located through the book's footnote and close letter agreement; needs review.
         case fuzzy = "FUZZY"
