@@ -20,9 +20,9 @@ jobs:
       - name: swift test
         working-directory: Packages/IslamicCore
         run: |
+          set -o pipefail
           swift --version
           swift test 2>&1 | tee ../../core-tests.log
-          grep -E "Executed [0-9]+ tests, with 0 failures" ../../core-tests.log
 
       - uses: actions/upload-artifact@v4
         if: always()
