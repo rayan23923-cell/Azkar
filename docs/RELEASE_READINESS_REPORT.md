@@ -22,7 +22,8 @@ FINAL STATUS: READY_WITH_EXTERNAL_BLOCKERS
 What each line means:
 
 - **CODE: READY.** CI is green. Release has no test screen, no POC engine, no background mode
-  and no development logging.
+  and no development logging. Unified PiP is built for all four sections; in Release it stays
+  hidden until the background-mode decision (see PiP Status).
 - **BUILD: READY.** The Release build, archive and unsigned IPA all succeed in CI. Building
   unsigned is all that is possible without credentials.
 - **CONTENT: READY.** This line covers integrity only. The Quran is verbatim from Tanzil, and
@@ -81,11 +82,11 @@ claimed.
 | Area | Features |
 |---|---|
 | Home | Today's adhkar by time of day, resume, Favorites, today's progress, global search |
-| Quran | Surah and juz index, bookmarks, search (Uthmani-aware), reader with basmala, ayah markers, juz and page, go to ayah, previous and next surah, copy, share, share image, text size, resume, daily completion |
-| Hisn Al-Muslim | Index, reader with counter, resume, search with 6 ranks and filters, copy, share, share image, haptics, daily completion, audio and PiP ready (no recordings) |
-| Adhkar and duas | Collections, counter reader with per-collection resume, search, favorites, copy, share, share image, completion |
+| Quran | Surah and juz index, bookmarks, search (Uthmani-aware), reader with basmala, ayah markers, juz and page, go to ayah, previous and next surah, copy, share, share image, text size, resume, daily completion, PiP |
+| Hisn Al-Muslim | Index, reader with counter, resume, search with 6 ranks and filters, copy, share, share image, haptics, daily completion, audio ready (no recordings), PiP |
+| Adhkar and duas | Collections, counter reader with per-collection resume, search, favorites, copy, share, share image, completion, PiP |
 | Global search | Every section, deterministic ranking, source filter, safe typo suggestion |
-| Settings | Reminders, appearance, haptics, text sizes, audio and PiP status, reset, clear favorites, About (sources, licences, privacy) |
+| Settings | Reminders, appearance, haptics, text sizes, audio status, the PiP setting (builds with PiP), reset, clear favorites, About (sources, licences, privacy) |
 | Platform | Tabs (the PiP test tab is Debug only), deep links from reminders, dark mode, RTL, Dynamic Type, VoiceOver |
 
 ## Test Results
@@ -129,11 +130,28 @@ claimed.
 
 ## PiP Status
 
-- The proven sample-buffer path is unchanged, now driven through a small playback-control
-  protocol.
-- PiP is ready for Hisn (tested) and for any queue (tested).
-- It is available only while a recording plays, so it is inactive in this build.
-- Device validation: NOT PERFORMED.
+Unified Production PiP (`UNIFIED_PIP.md`): one engine for the Quran, Hisn, adhkar and duas, on
+the unchanged device-proven sample-buffer path.
+
+- Controls: play/pause, and skip for previous/next (page first, then item). A recording that
+  ends stays on its item.
+- Text-only in this build (no recordings). Long text is paged at a readable size, never
+  shrunk.
+- Unit tests: engine, state, navigation, pages, session, renderer and the four providers.
+
+```
+UNIFIED PiP
+Architecture: PASS (unit tests)
+Quran / Hisn / Adhkar / Dua: PASS in unit tests; device NOT_TESTED
+Release PiP: no test UI, no Debug-only dependency (CI-checked)
+Release availability: HIDDEN until the background-mode decision
+Physical Device: NOT_TESTED
+```
+
+**Release decision (owner).** PiP needs `UIBackgroundModes = audio`, which Release does not
+declare. Release therefore shows no PiP button. Turning PiP on in Release means adding the mode
+and changing the CI rule, at App Review 2.5.4 risk while no audio ships. Debug and the
+device-test IPA have full PiP for device testing.
 
 ## Accessibility
 
@@ -215,9 +233,12 @@ The owner still has to provide the identity, signing and App Store Connect metad
    and there is no team or signing (owner).
 4. ~~**Background audio mode with no audio.**~~ Resolved in hardening: Release has no
    background mode.
-5. **Device testing** of a signed build on iPhone (and iPad, or make it iPhone-only).
+5. **Device testing** of a signed build on iPhone (and iPad, or make it iPhone-only),
+   including the PiP checklist in `UNIFIED_PIP.md` §13 (Debug or device-test IPA).
 6. **App Store Connect:** privacy policy URL, support URL, screenshots, description, privacy
    answers.
+7. **PiP in Release (decision).** Keep it hidden, or add the PiP background mode (see PiP
+   Status).
 
 ## Final Recommendation
 

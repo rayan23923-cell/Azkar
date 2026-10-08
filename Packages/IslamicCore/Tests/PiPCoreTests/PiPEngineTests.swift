@@ -16,8 +16,8 @@ final class PiPEngineTests: XCTestCase {
     }
 
     /// Engine, a registered controller and provider, PiP started and shown by the system.
-    private func running(_ provider: FakeProvider = FakeProvider())
-        -> (PiPEngine, FakePiPController, FakeProvider) {
+    private func running(_ given: FakeProvider? = nil) -> (PiPEngine, FakePiPController, FakeProvider) {
+        let provider = given ?? FakeProvider()
         let engine = makeEngine()
         let controller = FakePiPController()
         engine.register(controller, provider: provider)
