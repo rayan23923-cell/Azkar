@@ -121,8 +121,14 @@ final class HisnRepositoryTests: XCTestCase {
         for item in try await repository.loadBook().allItems {
             for reference in item.references {
                 XCTAssertFalse(reference.originalText.isEmpty, item.id)
+                // Names are indexed on the text without diacritics (e.g. البيهقيّ → البيهقي).
+                let bare = String(String.UnicodeScalarView(reference.originalText.unicodeScalars.filter {
+                    let v = $0.value
+                    return !((0x0610...0x061A).contains(v) || (0x064B...0x065F).contains(v) || v == 0x0670
+                             || (0x06D6...0x06ED).contains(v) || v == 0x0640)
+                }))
                 for name in reference.collections {
-                    XCTAssertTrue(reference.originalText.contains(name), item.id)
+                    XCTAssertTrue(bare.contains(name), "\(item.id): \(name)")
                 }
             }
         }

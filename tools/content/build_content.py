@@ -208,7 +208,7 @@ def build_hisn(surahs):
                 },
                 "references": [{
                     "originalText": reference,
-                    "collections": [c for c in HADITH_COLLECTIONS if c in reference],
+                    "collections": [c for c in HADITH_COLLECTIONS if c in ARABIC_MARKS.sub("", reference)],
                 }] if reference else [],
                 "quranCitations": citations,
                 "quranStatus": check["quran"],
