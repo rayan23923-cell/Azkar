@@ -20,7 +20,7 @@ struct IslamicPiPPOCApp: App {
                 // have changed in system Settings). Never asks for permission here.
                 .task { await AppServices.shared.reminders.apply() }
         }
-        .onChange(of: scenePhase) { phase in
+        .onChange(of: scenePhase) { _, phase in
             engine.log("scenePhase -> \(phase)")
         }
     }

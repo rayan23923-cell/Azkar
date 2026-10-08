@@ -16,6 +16,8 @@ struct DevotionalReaderView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("adhkar.textSize") private var textSize: Double = 24
+    /// Follows the system text size (Dynamic Type) on top of the reader's own size.
+    @ScaledMetric(relativeTo: .body) private var dynamicScale: CGFloat = 1
     @State private var highlighted: Bool
     @State private var sharePayload: HisnSharePayload?
     @State private var notice: String?
@@ -67,7 +69,7 @@ struct DevotionalReaderView: View {
                         .font(.footnote.monospacedDigit())
                         .foregroundStyle(.secondary)
                     Text(item.text)
-                        .font(isQuranText ? QuranTypography.font(size: textSize + 2) : .system(size: textSize))
+                        .font(isQuranText ? QuranTypography.font(size: textSize + 2) : .system(size: CGFloat(textSize) * dynamicScale))
                         .lineSpacing(textSize * 0.4)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(12)
