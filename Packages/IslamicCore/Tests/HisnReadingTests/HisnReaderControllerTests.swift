@@ -16,7 +16,8 @@ final class HisnReaderControllerTests: XCTestCase {
 
     private func makeController(_ chapterId: String, at index: Int = 0,
                                 store: InMemoryHisnReadingPositionStore) async throws -> HisnReaderController {
-        let chapter = try XCTUnwrap(try await library().chapter(id: chapterId))
+        let loaded = try await library()
+        let chapter = try XCTUnwrap(loaded.chapter(id: chapterId))
         let reader = try XCTUnwrap(HisnReader(chapter: chapter, itemIndex: index))
         return HisnReaderController(reader: reader, store: store)
     }

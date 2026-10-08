@@ -131,7 +131,8 @@ final class HisnPersistenceTests: XCTestCase {
     }
 
     func testMissingCursorOpensTheIndex() async throws {
-        XCTAssertNil(HisnResume.position(in: store, library: try await library(), now: date(8, 9), calendar: calendar))
+        let library = try await library()
+        XCTAssertNil(HisnResume.position(in: store, library: library, now: date(8, 9), calendar: calendar))
     }
 
     func testInvalidChapterOrItemOpensTheIndexAndIsCleared() async throws {
@@ -147,7 +148,8 @@ final class HisnPersistenceTests: XCTestCase {
 
     func testCorruptedStoreOpensTheIndex() async throws {
         defaults.set(Data([0xFF, 0x00, 0x13]), forKey: key)
-        XCTAssertNil(HisnResume.position(in: store, library: try await library(), now: date(8, 9), calendar: calendar))
+        let library = try await library()
+        XCTAssertNil(HisnResume.position(in: store, library: library, now: date(8, 9), calendar: calendar))
     }
 
     func testStaleIndexIsCorrectedByItemId() async throws {
