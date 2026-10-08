@@ -9,9 +9,13 @@ start automatically when the app goes to the background, and update the text whi
 
 ## Install on iPhone (from Windows, free Apple ID)
 
-1. In [Codemagic](https://codemagic.io), add this repository and start the `pip-azkar-ipa` workflow
-   (it reads `codemagic.yaml`). Download `IslamicPiPPOC.ipa` from the build's artifacts.
-   The same unsigned IPA is also attached to each GitHub Actions run of `build.yml`.
+1. In [Codemagic](https://codemagic.io), add this repository and start a workflow from
+   `codemagic.yaml`, then download the IPA from the build's artifacts.
+   - `azkar-release-ipa` builds the app as it will ship, as `Azkar-release-unsigned.ipa`. Use it
+     with [the device checklist](docs/PHYSICAL_DEVICE_RELEASE_CHECKLIST.md).
+   - `pip-azkar-ipa` builds Debug with the PiP test tab, as `IslamicPiPPOC.ipa`.
+
+   The same unsigned IPAs are also attached to each GitHub Actions run of `build.yml`.
 2. Install [Sideloadly](https://sideloadly.io) on Windows, connect the iPhone by USB, drag the IPA in,
    sign in with your Apple ID and press Start.
 3. On the iPhone: Settings > General > VPN & Device Management > trust your Apple ID.

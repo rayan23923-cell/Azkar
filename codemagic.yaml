@@ -1,9 +1,63 @@
-# Codemagic: an unsigned Debug build of the PiP azkar POC for a real iPhone.
-# Sign and install it from Windows with Sideloadly and a free Apple ID
+# Codemagic: unsigned builds of Azkar (أذكار) for a real iPhone.
+# Sign and install them from Windows with Sideloadly and a free Apple ID
 # (see README.md, "Install on iPhone").
+#
+#   azkar-release-ipa  the app as it will ship (Release): no PiP test tab,
+#                      no background audio mode. Use it for the device checklist
+#                      in docs/PHYSICAL_DEVICE_RELEASE_CHECKLIST.md.
+#   pip-azkar-ipa      Debug build with the PiP test tab and background audio,
+#                      for testing PiP itself.
+#
+# Neither is signed: App Store signing needs the production bundle ID and Apple
+# Developer credentials, which are not set up yet.
 workflows:
+  azkar-release-ipa:
+    name: Azkar Release (unsigned IPA)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: latest
+      vars:
+        BUNDLE_ID: com.azkar.pippoc
+    scripts:
+      - name: Tools
+        script: xcodebuild -version
+      - name: Set this build's bundle ID
+        script: |
+          sed -i '' "s/com\.example\.IslamicPiPPOC/$BUNDLE_ID/g" IslamicPiPPOC.xcodeproj/project.pbxproj
+          grep -m1 PRODUCT_BUNDLE_IDENTIFIER IslamicPiPPOC.xcodeproj/project.pbxproj
+      - name: Build for iPhone (Release, unsigned)
+        script: |
+          mkdir -p build
+          xcodebuild build \
+            -project IslamicPiPPOC.xcodeproj \
+            -scheme IslamicPiPPOC \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee build/xcodebuild.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" build/xcodebuild.log
+      - name: Package the IPA
+        script: |
+          APP=build/DerivedData/Build/Products/Release-iphoneos/IslamicPiPPOC.app
+          test -d "$APP"
+          if /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist" 2>/dev/null; then
+            echo "Release must not declare background modes"; exit 1
+          fi
+          rm -rf build/ipa && mkdir -p build/ipa/Payload
+          cp -R "$APP" build/ipa/Payload/
+          (cd build/ipa && zip -qry Azkar-release-unsigned.ipa Payload)
+          ls -lh build/ipa/Azkar-release-unsigned.ipa
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Info.plist"
+    artifacts:
+      - build/ipa/*.ipa
+      - build/xcodebuild.log
+
   pip-azkar-ipa:
-    name: Islamic PiP POC (unsigned IPA)
+    name: Azkar Debug with PiP test (unsigned IPA)
     instance_type: mac_mini_m2
     max_build_duration: 30
     environment:
