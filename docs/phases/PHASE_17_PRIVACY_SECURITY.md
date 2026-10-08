@@ -25,7 +25,7 @@ No other permission is requested. The Release Info.plist has no `NS…UsageDescr
 | `CFBundleVersion` | 1 | |
 | `ITSAppUsesNonExemptEncryption` | NO | |
 | `MinimumOSVersion` | 17.0 | |
-| `UIBackgroundModes` | audio | For Hisn and Quran playback and PiP. With no recordings in this build, the mode has no user-visible use. This is a release blocker: either ship licensed audio, or remove the mode before submission (see App Store readiness). |
+| `UIBackgroundModes` | none in Release | Removed in release hardening because no recordings ship. Debug (`Info-Debug.plist`) keeps `audio` for the PiP test screen. CI checks the Release bundle. |
 | `NSAccentColorName` | AccentColor | |
 | `CFBundleIcons` | AppIcon | |
 
@@ -56,4 +56,4 @@ CI lints it in the Release bundle.
 
 ## Gate
 
-PASS_WITH_KNOWN_LIMITATIONS (background audio mode; see readiness).
+PASS. The background audio mode was removed from Release in release hardening; see `RELEASE_HARDENING_REPORT.md`.

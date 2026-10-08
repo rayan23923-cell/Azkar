@@ -1,12 +1,58 @@
-# Release readiness report (Phase 21)
+# Release readiness report (Phase 21, updated after release hardening)
 
-**Branch:** `feature/v1-release`. **Head:** see the release PR. **CI:** run 37794194252 on
-`47942ea`, green.
+**Branch:** `feature/v1-release`. **Head:** see the release PR. **CI:** run 37801563594 on
+`14ae1c4`, green, covering the tests, the Debug and Release builds, the Release archive and the
+IPAs. Hardening details are in `RELEASE_HARDENING_REPORT.md`.
+
+## Release gate
+
+```
+PROJECT STATUS
+CODE: READY
+BUILD: READY
+CONTENT: READY
+RIGHTS: BLOCKED
+SCIENTIFIC REVIEW: BLOCKED
+SIGNING: BLOCKED
+PHYSICAL DEVICE: NOT_TESTED
+APP STORE: BLOCKED
+FINAL STATUS: READY_WITH_EXTERNAL_BLOCKERS
+```
+
+What each line means:
+
+- **CODE: READY.** CI is green. Release has no test screen, no POC engine, no background mode
+  and no development logging.
+- **BUILD: READY.** The Release build, archive and unsigned IPA all succeed in CI. Building
+  unsigned is all that is possible without credentials.
+- **CONTENT: READY.** This line covers integrity only. The Quran is verbatim from Tanzil, and
+  the Hisn, adhkar and dua data pass their counts and hashes. It is not scholarly approval;
+  that is the SCIENTIFIC REVIEW line.
+- **Why FINAL STATUS is READY_WITH_EXTERNAL_BLOCKERS and not BLOCKED.** Every remaining item
+  is a decision or credential only the owner can provide. No code work is outstanding.
+
+The app still cannot be submitted until all of the external blockers below are cleared.
+
+### EXTERNAL_BLOCKERS
+
+1. A production Bundle ID.
+2. Apple Developer signing credentials: team, certificate, profile and App Store Connect
+   access.
+3. A Privacy Policy URL, required by App Store Connect, and a Support URL.
+4. A rights and legal decision for Hisn Al-Muslim (alternatively, release without the Hisn
+   tab).
+5. Scholarly content review:
+   - 302 Hisn items;
+   - 12 open P0 findings;
+   - 7 DEFER decisions;
+   - 33 adhkar and 7 duas.
+6. Physical device testing of a signed build, using `PHYSICAL_DEVICE_RELEASE_CHECKLIST.md`.
+7. App Store Connect metadata and screenshots, using the draft in `APP_STORE_METADATA.md`.
 
 ## Executive Summary
 
-**PROJECT STATUS: BLOCKED.** The engineering work is complete and green. Release is blocked
-only by decisions and actions outside the code:
+**PROJECT STATUS: READY_WITH_EXTERNAL_BLOCKERS.** The engineering work is complete and
+green. Release is blocked only by decisions and actions outside the code:
 
 - rights;
 - content review;
@@ -167,8 +213,8 @@ The owner still has to provide the identity, signing and App Store Connect metad
    - the item-by-item comparison with the canonical edition.
 3. **App identity and signing.** The bundle identifier is still `com.example.IslamicPiPPOC`,
    and there is no team or signing (owner).
-4. **Background audio mode with no audio.** Ship licensed recordings, or remove
-   `UIBackgroundModes: audio` before submission (App Review 2.5.4).
+4. ~~**Background audio mode with no audio.**~~ Resolved in hardening: Release has no
+   background mode.
 5. **Device testing** of a signed build on iPhone (and iPad, or make it iPhone-only).
 6. **App Store Connect:** privacy policy URL, support URL, screenshots, description, privacy
    answers.
@@ -182,7 +228,7 @@ Then, in order:
 1. settle the Hisn rights;
 2. complete the content review;
 3. set the bundle identifier and signing;
-4. decide on the background audio mode;
+4. (the background audio mode is resolved);
 5. run the device checklist;
 6. submit.
 

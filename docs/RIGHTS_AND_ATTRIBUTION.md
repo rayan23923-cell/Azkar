@@ -1,4 +1,6 @@
-# Rights and attribution (Phase 16)
+# Rights and attribution
+
+**STATUS: PENDING_PRE_RELEASE_REVIEW** (an external blocker, not a reason to stop other work).
 
 **No content in this app is claimed to be legally cleared.** This is the record of each source,
 its terms as found, and what remains before release.
@@ -13,6 +15,17 @@ its terms as found, and what remains before release.
 | App icon | Generated for this project | — | Provisional; the owner may replace it |
 | Hisn audio | none | — | PENDING_RIGHTS_AND_ASSETS (empty pack) |
 | Quran / adhkar audio | none | — | PENDING_RIGHTS_AND_ASSETS (empty pack) |
+
+## Code and third-party libraries
+
+- **Swift packages:** none from third parties. The only package is the project's own
+  `Packages/IslamicCore`, which has no dependencies.
+- **Frameworks:** Apple system frameworks only (SwiftUI, UIKit, AVFoundation, AVKit, Core
+  Text, Core Graphics, UserNotifications, CryptoKit).
+- **Icons:** the app icon was generated for this project. In-app symbols are Apple SF Symbols,
+  used through the system APIs as Apple's terms allow.
+- **Build tooling (not shipped):** Python scripts in `tools/content`, and fontTools for a
+  one-off font coverage check.
 
 ## Tanzil requirements and how they are met
 
