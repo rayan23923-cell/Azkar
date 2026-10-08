@@ -1,3 +1,8 @@
+// The PiP technical test screen and its engine (the original proof of concept). Debug builds
+// only: Release builds do not compile them, so no test screen, synthetic chime or second
+// audio-session owner exists in the App Store app.
+#if DEBUG
+
 import AVFoundation
 import AVKit
 import HisnAudioPlayback
@@ -368,3 +373,5 @@ extension PiPEngine: AVPictureInPictureSampleBufferPlaybackDelegate {
         false
     }
 }
+
+#endif

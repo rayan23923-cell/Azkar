@@ -123,8 +123,32 @@ jobs:
           if find "$APP" -iname 'test-*' -o -name '*.device-test.json' | grep .; then echo "test audio in the Release app"; exit 1; fi
           # No permission usage strings: the app asks only for notifications, which need none.
           if plutil -p "$APP/Info.plist" | grep -E 'NS[A-Za-z]+UsageDescription'; then echo "unexpected usage description"; exit 1; fi
+          # No background mode while no production audio ships (App Review 2.5.4).
+          if plutil -p "$APP/Info.plist" | grep -q UIBackgroundModes; then echo "background mode in the Release app"; exit 1; fi
+          # The PiP test screen and its engine are Debug-only.
+          if grep -rlaF 'PiPEngine' "$APP"; then echo "PiP test engine in the Release app"; exit 1; fi
           find "$APP" -name '*.ttf' -o -name '*.json' | sed "s|$APP/||" | sort
           du -sh "$APP"
+
+      - name: Release archive (unsigned) and IPA from the archive
+        run: |
+          set -o pipefail
+          xcodebuild archive -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -archivePath build/IslamicPiPPOC.xcarchive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee archive.log | grep -E 'error|warning:|ARCHIVE' || true
+          grep -q 'ARCHIVE SUCCEEDED' archive.log
+          /usr/libexec/PlistBuddy -c "Print :ApplicationProperties" build/IslamicPiPPOC.xcarchive/Info.plist
+          mkdir -p build/release-ipa/Payload
+          cp -R build/IslamicPiPPOC.xcarchive/Products/Applications/IslamicPiPPOC.app build/release-ipa/Payload/
+          (cd build/release-ipa && zip -qry IslamicPiPPOC-release-unsigned.ipa Payload)
+          ls -lh build/release-ipa/IslamicPiPPOC-release-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED
+          path: build/release-ipa/IslamicPiPPOC-release-unsigned.ipa
 
       # Device-test build for Phase 3C (not for release): compiled with HISN_AUDIO_FIXTURE, it
       # carries the TEST_ONLY synthetic tone and its manifest so Hisn audio and PiP can be
