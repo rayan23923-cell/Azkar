@@ -132,10 +132,10 @@ final class HisnCanonicalTests: XCTestCase {
                    "hisn-119-01", "hisn-125-01", "hisn-131-02"] {
             XCTAssertNil(items[id]?.repetition.count, id)
         }
-        // Medium-confidence proposals are recorded, not applied, until the owner accepts them.
+        // Phase 2F declined the medium-confidence proposal of 1: «مائة مرة» is narrated, not a repeat count.
         for id in ["hisn-130-02", "hisn-130-06"] {
             XCTAssertNil(items[id]?.repetition.count, id)
-            XCTAssertFalse(items[id]?.corrections.open.isEmpty ?? true, id)
+            XCTAssertEqual(items[id]?.editorialReviews.map(\.decision), [.keepNil], id)
         }
     }
 
@@ -174,7 +174,8 @@ final class HisnCanonicalTests: XCTestCase {
         XCTAssertEqual(ContentRightsStatus.allCases, [.pendingPreReleaseReview])
         let corrections = book.provenance.corrections
         XCTAssertEqual(corrections.manifest, "tools/content/hisn.corrections.json")
-        XCTAssertEqual(corrections.total, corrections.accepted + corrections.observationOnly + corrections.pendingDecision)
+        XCTAssertEqual(corrections.total,
+                       corrections.accepted + corrections.observationOnly + corrections.pendingDecision + corrections.rejected)
         XCTAssertGreaterThan(corrections.p0Pending, 0, "text discrepancies stay open for editorial review")
     }
 

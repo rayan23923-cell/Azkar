@@ -265,8 +265,10 @@ final class HisnInvalidContentTests: XCTestCase {
             "crossCheck": {"name": "n", "urls": [], "bookChapters": 1, "bookItems": 1},
             "canonicalEdition": {"name": "n", "url": "u", "sha256": "s", "comparison": "NOT_YET_COMPARED"},
             "corrections": {"manifest": "m", "sha256": "s", "total": 0, "accepted": 0, "observationOnly": 0,
-                            "pendingDecision": 0, "p0Accepted": 0, "p0Pending": 0, "canonicalBookChapters": 1,
-                            "canonicalBookItems": 1, "presentationSections": 1, "displayItems": 1}},
+                            "pendingDecision": 0, "rejected": 0, "p0Accepted": 0, "p0Pending": 0, "canonicalBookChapters": 1,
+                            "canonicalBookItems": 1, "presentationSections": 1, "displayItems": 1},
+            "editorialReview": {"manifest": "m", "sha256": "s", "total": 0, "decisions": {}, "changesApplied": 0,
+                                "independentlyReviewed": 0, "editorialReviewComplete": false}},
           "attribution": {"sourceTitle": "t", "author": "a", "edition": null, "sourceURL": "u", "attributionText": null,
                           "rightsStatus": "PENDING_PRE_RELEASE_REVIEW"}},
          "chapters": \#(chapters)}
@@ -276,13 +278,14 @@ final class HisnInvalidContentTests: XCTestCase {
     private func item(id: String = "i1", chapter: String = "c1", order: Int = 1, text: String = "ذكر",
                       count: String = "1", status: String = "CONTENT_REVIEW_REQUIRED", number: String = "1",
                       relation: String = "DIRECT", citations: String = "[]", quranStatus: String = "NONE",
-                      corrections: String = #"{"applied": [], "open": []}"#) -> String {
+                      corrections: String = #"{"applied": [], "open": []}"#, annotations: String = "[]") -> String {
         #"""
         {"id": "\#(id)", "chapterId": "\#(chapter)", "order": \#(order), "bookItemNumber": \#(number),
          "bookItemRelation": "\#(relation)", "arabicText": "\#(text)",
          "searchText": "ذكر", "repetition": {"count": \#(count), "sourceCount": 1, "bookStatedCounts": [], "reviewStatus": "CONTENT_REVIEW_REQUIRED"},
          "references": [], "quranCitations": \#(citations), "quranStatus": "\#(quranStatus)", "reviewFlags": [],
-         "corrections": \#(corrections), "reviewStatus": "\#(status)"}
+         "corrections": \#(corrections), "nonRecitationText": \#(annotations), "editorialReviews": [],
+         "reviewStatus": "\#(status)"}
         """#
     }
 
@@ -311,6 +314,7 @@ final class HisnInvalidContentTests: XCTestCase {
 
     func testRejectsBrokenContent() async {
         let foreign = #"{"applied": ["X-1"], "open": []}"#
+        let notInText = #"[{"role": "CLOSING", "text": "خاتمة"}]"#
         let cases: [String: String] = [
             "no chapters": "[]",
             "empty chapter": "[\(chapter(items: []))]",
@@ -335,6 +339,7 @@ final class HisnInvalidContentTests: XCTestCase {
             "canonical chapter missing": "[\(chapter(bookChapter: "null", items: [item()]))]",
             "whole-surah citation mid-surah": "[\(chapter(items: [item(citations: citation(fromAyah: 2, wholeSurah: true), quranStatus: "RESOLVED")]))]",
             "foreign correction id": "[\(chapter(items: [item(corrections: foreign)]))]",
+            "non-recitation span not in the text": "[\(chapter(items: [item(annotations: notInText)]))]",
         ]
         for (name, chapters) in cases {
             do {
