@@ -333,6 +333,9 @@ private struct UpstreamChapter: Decodable {
 private func upstreamChapterOrder(_ data: Data) throws -> [String] {
     let object = try JSONSerialization.jsonObject(with: data) as? [String: Any]
     let text = String(decoding: data, as: UTF8.self)
-    let titles = Array((object ?? [:]).keys)
-    return titles.sorted { text.range(of: "\"\($0)\"")!.lowerBound < text.range(of: "\"\($1)\"")!.lowerBound }
+    let offsets = (object ?? [:]).keys.map { title -> (String, Int) in
+        let range = text.range(of: "\"\(title)\"")!
+        return (title, text.utf8.distance(from: text.utf8.startIndex, to: range.lowerBound))
+    }
+    return offsets.sorted { $0.1 < $1.1 }.map(\.0)
 }
