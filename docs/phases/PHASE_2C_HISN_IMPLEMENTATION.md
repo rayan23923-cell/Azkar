@@ -246,7 +246,16 @@ Not touched: `Package.swift`, the Xcode project, PiP and renderer files, Quran, 
 
 ## 15. Commit
 
-`feat(content): add Hisn Al-Muslim domain and bundled content`. The hash and CI run are listed in the PR.
+Branch `feature/v1-phase-2c-hisn-content`, based on `feature/v1-phase-2-content` at `c5344ce`.
+
+| Commit | Message |
+|---|---|
+| `46bb732` | feat(content): add Hisn Al-Muslim domain and bundled content |
+| `1672ebd` | Document Phase 2C Hisn Al-Muslim implementation |
+| `8515b91` | Index hadith collections on reference text without diacritics |
+| `940cef0` | Find upstream chapter order with one search per title |
+
+CI run 37742857199 on `940cef0` passed: `build_content.py --check`, `swift test` (59 tests, 0 failures: 40 existing and 19 new) and the app build job.
 
 ## 16. Final gate
 
