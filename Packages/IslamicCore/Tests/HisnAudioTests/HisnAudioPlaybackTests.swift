@@ -1,0 +1,82 @@
+import XCTest
+import HisnAudioPlayback
+@testable import HisnReading
+
+/// Phase 3B: the AVFoundation engine on the TEST_ONLY fixture (no sound is played), and the
+/// offline / separation guarantees of the audio sources.
+@MainActor
+final class HisnAudioPlaybackTests: XCTestCase {
+    private var fixtureURL: URL { Fixture.audioDirectory.appendingPathComponent("test-silence-1s.wav") }
+
+    func testEngineLoadsDurationAndSeeks() throws {
+        let engine = AVHisnAudioEngine()
+        XCTAssertEqual(engine.duration, 0)
+        try engine.load(url: fixtureURL)
+        XCTAssertEqual(engine.duration, 1, accuracy: 0.01)
+        XCTAssertEqual(engine.currentTime, 0, accuracy: 0.01)
+        engine.seek(to: 0.5)
+        XCTAssertEqual(engine.currentTime, 0.5, accuracy: 0.01)
+        engine.seek(to: 5)
+        XCTAssertLessThanOrEqual(engine.currentTime, 1)
+        engine.stop()
+        XCTAssertEqual(engine.currentTime, 0, accuracy: 0.01)
+        engine.unload()
+        XCTAssertEqual(engine.duration, 0)
+    }
+
+    func testEngineRejectsNonFileAndBrokenFiles() throws {
+        let engine = AVHisnAudioEngine()
+        XCTAssertThrowsError(try engine.load(url: URL(string: "https://example.com/a.mp3")!))
+        let broken = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).wav")
+        try Data("not audio".utf8).write(to: broken)
+        XCTAssertThrowsError(try engine.load(url: broken))
+        XCTAssertEqual(engine.duration, 0)
+    }
+
+    // MARK: Offline and separation
+
+    private func sources(_ target: String) throws -> [(String, String)] {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent() // Tests/HisnAudioTests
+            .deletingLastPathComponent().deletingLastPathComponent()           // Packages/IslamicCore
+            .appendingPathComponent("Sources/\(target)")
+        let files = try XCTUnwrap(FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil))
+        return try files.compactMap { $0 as? URL }.filter { $0.pathExtension == "swift" }.map {
+            ($0.lastPathComponent, try String(contentsOf: $0, encoding: .utf8))
+        }
+    }
+
+    func testAudioCodeHasNoNetworkPath() throws {
+        let forbidden = ["URLSession", "URLRequest", "downloadTask", "dataTask", "AVPlayer(", "AVURLAsset",
+                         "http://", "NWConnection"]
+        for target in ["IslamicCore", "HisnReading", "HisnAudioPlayback"] {
+            let files = try sources(target)
+            XCTAssertFalse(files.isEmpty, target)
+            for (name, text) in files {
+                for word in forbidden {
+                    XCTAssertFalse(text.contains(word), "\(target)/\(name) contains \(word)")
+                }
+            }
+        }
+    }
+
+    func testAudioCodeDoesNotTouchPiP() throws {
+        let forbidden = ["AVPictureInPicture", "AVSampleBufferDisplayLayer", "CMSampleBuffer", "PiPEngine", "AVKit"]
+        for target in ["IslamicCore", "HisnReading", "HisnAudioPlayback"] {
+            for (name, text) in try sources(target) {
+                for word in forbidden {
+                    XCTAssertFalse(text.contains(word), "\(target)/\(name) contains \(word)")
+                }
+            }
+        }
+    }
+
+    func testOnlyThePlaybackTargetImportsAVFoundation() throws {
+        for target in ["IslamicCore", "HisnReading"] {
+            for (name, text) in try sources(target) {
+                XCTAssertFalse(text.contains("import AVFoundation"), "\(target)/\(name)")
+            }
+        }
+        let sessionOwners = try sources("HisnAudioPlayback").filter { $0.1.contains("AVAudioSession.sharedInstance()") }
+        XCTAssertEqual(sessionOwners.map(\.0), ["HisnAudioSessionCoordinator.swift"], "one audio session owner")
+    }
+}
