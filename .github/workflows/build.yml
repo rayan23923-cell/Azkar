@@ -37,6 +37,25 @@ jobs:
           APP=$(find ~/Library/Developer/Xcode/DerivedData -path '*Debug-iphoneos/IslamicPiPPOC.app' | head -1)
           plutil -p "$APP/Info.plist" | tee /dev/stderr | grep -A2 UIBackgroundModes | grep -q audio
 
+      - name: Package unsigned IPA (same steps as codemagic.yaml)
+        run: |
+          set -o pipefail
+          sed -i '' "s/com\.example\.IslamicPiPPOC/com.azkar.pippoc/g" IslamicPiPPOC.xcodeproj/project.pbxproj
+          xcodebuild build -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
+            -configuration Debug -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | tail -3
+          APP=build/DerivedData/Build/Products/Debug-iphoneos/IslamicPiPPOC.app
+          mkdir -p build/ipa/Payload && cp -R "$APP" build/ipa/Payload/
+          (cd build/ipa && zip -qry IslamicPiPPOC.ipa Payload)
+          ls -lh build/ipa/IslamicPiPPOC.ipa
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IslamicPiPPOC-unsigned-ipa
+          path: build/ipa/IslamicPiPPOC.ipa
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,0 +1,47 @@
+# Codemagic: an unsigned Debug build of the PiP azkar POC for a real iPhone.
+# Sign and install it from Windows with Sideloadly and a free Apple ID
+# (see README.md, "Install on iPhone").
+workflows:
+  pip-azkar-ipa:
+    name: Islamic PiP POC (unsigned IPA)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: latest
+      vars:
+        # A bundle ID no other app uses. Change it in Codemagic's environment
+        # variables if Sideloadly says the ID is not available.
+        BUNDLE_ID: com.azkar.pippoc
+    scripts:
+      - name: Tools
+        script: xcodebuild -version
+      - name: Set this build's bundle ID
+        script: |
+          sed -i '' "s/com\.example\.IslamicPiPPOC/$BUNDLE_ID/g" IslamicPiPPOC.xcodeproj/project.pbxproj
+          grep -m1 PRODUCT_BUNDLE_IDENTIFIER IslamicPiPPOC.xcodeproj/project.pbxproj
+      - name: Build for iPhone (Debug, unsigned)
+        script: |
+          mkdir -p build
+          xcodebuild build \
+            -project IslamicPiPPOC.xcodeproj \
+            -scheme IslamicPiPPOC \
+            -configuration Debug \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee build/xcodebuild.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" build/xcodebuild.log
+      - name: Package the IPA
+        script: |
+          APP=build/DerivedData/Build/Products/Debug-iphoneos/IslamicPiPPOC.app
+          test -d "$APP"
+          rm -rf build/ipa && mkdir -p build/ipa/Payload
+          cp -R "$APP" build/ipa/Payload/
+          (cd build/ipa && zip -qry IslamicPiPPOC.ipa Payload)
+          ls -lh build/ipa/IslamicPiPPOC.ipa
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist"
+    artifacts:
+      - build/ipa/*.ipa
+      - build/xcodebuild.log
