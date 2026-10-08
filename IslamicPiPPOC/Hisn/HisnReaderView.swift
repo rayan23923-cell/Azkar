@@ -5,14 +5,23 @@ import HisnReading
 /// One chapter: the item text, its source on demand, the repetition counter and
 /// previous / next. Ends in a completion state; never opens another chapter by itself.
 struct HisnReaderView: View {
-    @Environment(\.dismiss) private var dismiss
-    @StateObject private var model: HisnReaderController
-    @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
+    @StateObject private var screen: HisnReaderScreenModel
 
     init(reader: HisnReader, store: HisnReadingPositionStore, audioRepository: HisnAudioRepository) {
-        _model = StateObject(wrappedValue: HisnReaderController.make(reader: reader, store: store,
-                                                                     audioRepository: audioRepository))
+        _screen = StateObject(wrappedValue: HisnReaderScreenModel(reader: reader, store: store,
+                                                                  audioRepository: audioRepository))
     }
+
+    var body: some View {
+        HisnReaderContent(model: screen.controller, screen: screen)
+    }
+}
+
+private struct HisnReaderContent: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var model: HisnReaderController
+    let screen: HisnReaderScreenModel
+    @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
 
     var body: some View {
         Group {
@@ -26,7 +35,7 @@ struct HisnReaderView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sensoryFeedback(.impact(weight: .light), trigger: model.recitations) { _, _ in hapticsEnabled }
         .sensoryFeedback(.success, trigger: model.reader.isCompleted) { _, completed in hapticsEnabled && completed }
-        .onDisappear { model.close() }
+        .onDisappear { screen.close() }
     }
 
     // MARK: Reading
@@ -69,8 +78,14 @@ struct HisnReaderView: View {
     private var controls: some View {
         let reader = model.reader
         return VStack(spacing: 12) {
+            #if HISN_AUDIO_FIXTURE
+            Text(HisnAudioFixture.notice)
+                .font(.caption.bold())
+                .foregroundStyle(.orange)
+            #endif
             if let audio = model.audio {
                 HisnAudioControls(player: audio)
+                HisnPiPControls(pip: screen.pip, player: audio, surface: screen.surface)
             }
             counter
             HStack {

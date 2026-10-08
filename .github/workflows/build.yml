@@ -89,6 +89,42 @@ jobs:
           name: IslamicPiPPOC-unsigned-ipa
           path: build/ipa/IslamicPiPPOC.ipa
 
+      - name: Production app has no test audio
+        run: |
+          APP=build/DerivedData/Build/Products/Debug-iphoneos/IslamicPiPPOC.app
+          if find "$APP" -iname 'test-*' -o -name 'HisnAudioFixture' -o -name '*.device-test.json' | grep .; then
+            echo "test audio found in the production app"; exit 1
+          fi
+          # Debug builds keep the code in IslamicPiPPOC.debug.dylib, so search every file.
+          if grep -rlaF 'HisnAudioFixture' "$APP"; then
+            echo "fixture code found in the production app"; exit 1
+          fi
+
+      # Device-test build for Phase 3C (not for release): compiled with HISN_AUDIO_FIXTURE, it
+      # carries the TEST_ONLY synthetic tone and its manifest so Hisn audio and PiP can be
+      # tried on a device before any production recording exists.
+      - name: Package unsigned fixture IPA (device testing only)
+        run: |
+          set -o pipefail
+          xcodebuild build -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
+            -configuration Debug -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build/FixtureDerivedData \
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS='DEBUG HISN_AUDIO_FIXTURE' \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | tail -3
+          APP=build/FixtureDerivedData/Build/Products/Debug-iphoneos/IslamicPiPPOC.app
+          FIX=Packages/IslamicCore/Tests/HisnAudioTests/Fixtures
+          grep -rlaF 'HisnAudioFixture' "$APP"   # the fixture code is compiled in
+          mkdir -p "$APP/HisnAudioFixture"
+          cp "$FIX/hisn_audio.device-test.json" "$FIX/HisnAudio/test-tone-30s.wav" "$APP/HisnAudioFixture/"
+          mkdir -p build/fixture-ipa/Payload && cp -R "$APP" build/fixture-ipa/Payload/
+          (cd build/fixture-ipa && zip -qry IslamicPiPPOC-hisn-audio-fixture.ipa Payload)
+          ls -lh build/fixture-ipa/IslamicPiPPOC-hisn-audio-fixture.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IslamicPiPPOC-hisn-audio-fixture-unsigned-ipa-NOT-FOR-RELEASE
+          path: build/fixture-ipa/IslamicPiPPOC-hisn-audio-fixture.ipa
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
