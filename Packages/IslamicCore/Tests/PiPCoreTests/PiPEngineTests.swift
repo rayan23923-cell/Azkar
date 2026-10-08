@@ -5,6 +5,8 @@ import XCTest
 final class PiPEngineTests: XCTestCase {
     private var clock: TestClock!
     private var store: InMemoryPiPSessionStore!
+    /// The test owns the engine, as the app does: providers and controllers only hold it weakly.
+    private var engine: PiPEngine?
 
     private func makeEngine(enabled: Bool = true, declared: Bool = true, wordsPerPage: Int = 3) -> PiPEngine {
         clock = TestClock()
@@ -19,6 +21,7 @@ final class PiPEngineTests: XCTestCase {
     private func running(_ given: FakeProvider? = nil) -> (PiPEngine, FakePiPController, FakeProvider) {
         let provider = given ?? FakeProvider()
         let engine = makeEngine()
+        self.engine = engine
         let controller = FakePiPController()
         engine.register(controller, provider: provider)
         engine.start(provider, on: controller)
