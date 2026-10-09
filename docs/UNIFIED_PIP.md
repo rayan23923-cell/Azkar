@@ -282,8 +282,8 @@ PiP, which are now Debug and Release. Turning it off closes a running window.
 
 ## 12. Tests
 
-98 PiP tests (PiPCore 66, PiPRendering 10, PiPProviders 22). In CI they run with the rest of the
-package: 410 tests, 0 failures.
+103 PiP tests (PiPCore 67, PiPRendering 14, PiPProviders 22). In CI they run with the rest of the
+package: 415 tests, 0 failures.
 
 | Suite | Covers |
 |---|---|
@@ -293,7 +293,7 @@ package: 410 tests, 0 failures.
 | `PiPCoreTests/PiPSessionAndAvailabilityTests` | Info.plist background mode, setting, session store, footer and progress |
 | `PiPCoreTests/PiPEngineTests` | Start and refusals, navigation, play = next page and pause = previous page drawn at once, first/last page, one-page text, button direction, new item and reopen on page 1, counting by skip only, play and pause in audio mode, audio completion, close and session, section switch, heartbeat, return to app |
 | `PiPCoreTests/ReleasePiPConfigurationTests` | No `#if DEBUG` or test-only code on the production PiP path, availability gated only by the declared mode, every reader offers PiP, both plists declare only `audio` |
-| `PiPRenderingTests` | Hisn count footer on one line and RTL up to 1000, one page at 84 pt, longest Hisn item paged at 54 pt and fully drawn, RTL runs with diacritics, Quran font, verse 2:282 paged, light and dark |
+| `PiPRenderingTests` | Layout clear of the system controls in five frame sizes (16:9, 9:16, small, large), whole text drawn readably in every layout, Hisn counter on one line and RTL up to 1000 in both orientations, one page at 84 pt, longest Hisn item paged at 54 pt and fully drawn, RTL runs with diacritics, Quran font, verse 2:282 paged, light and dark |
 | `PiPProvidersTests` | Quran (first, middle, last, next, previous, long ayah, scroll vs jump), Hisn (first, repetition, last, next, previous, long text, completed chapter, only skip forward counts, counts 1/3/100/101/250, finished item kept in view, pause/close/reopen/relaunch keep the count, last item completes the chapter, screen change, skip back, no production audio), Adhkar (first, middle, last, counter), Dua (first, middle, last), Quran → Hisn switch on real content |
 
 ## 13. Physical device status
@@ -302,9 +302,9 @@ package: 410 tests, 0 failures.
 device evidence is the earlier POC run (iPhone12,5, iOS 26.6.2: PiP start, background frames,
 the sample-buffer source). It covers the path, not this feature.
 
-**Build to test:** the Release IPA from CI run 37877594495 on commit `3105f99`
-(`IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED`). It is unsigned, so re-sign it for your own
-iPhone, or build `azkar-release-ipa` on Codemagic from the same commit.
+**Build to test:** `IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED` from the CI run of the PR's
+latest commit. It is unsigned, so re-sign it for your own iPhone, or build `azkar-release-ipa`
+on Codemagic from the same commit.
 
 **Controls per section** (from `SampleBufferPiPController`'s playback delegate: `setPlaying`
 calls `PiPEngine.setPlaying`, `skipByInterval` calls `PiPEngine.skip`):
@@ -349,7 +349,12 @@ NOT_TESTED. Only a result observed on a device changes a row.
 
 ## 14. Limitations
 
-- No custom PiP buttons exist. The skip buttons carry the system's ±seconds icons.
+- No custom PiP buttons exist. The skip buttons carry the system's ±seconds icons, and
+  close, return to app and play/pause are always shown (section 5.1).
+- While the controls are shown, the middle row covers the middle of the text; the header,
+  counter and information line stay clear. Where iOS draws its controls is from the system's
+  standard PiP layout and needs a device check (section 13, rows 15–17).
+- The app draws 16:9 only; portrait is implemented in the renderer but not switched on.
 - Play/pause cannot be hidden in a sample-buffer PiP. In text mode it turns pages, and for a
   one-page text it does nothing. Whether iOS redraws its icon at once after each tap is
   device-only behaviour (the app asks it to with `invalidatePlaybackState`).
