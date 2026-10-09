@@ -265,12 +265,14 @@ public final class PiPEngine: ObservableObject {
     }
 
     private func pageModel(for content: PiPContent) -> PiPPageModel {
-        let key = "\(content.textStyle.rawValue)|\(content.text)"
+        // The counter line takes body space, so it is part of the layout.
+        let withCounter = content.detail != nil || content.repetition != nil
+        let key = "\(content.textStyle.rawValue)|\(withCounter)|\(content.text)"
         let pagination: PiPPagination
         if let cached = paginationCache[key] {
             pagination = cached
         } else {
-            pagination = paginator.paginate(content.text, style: content.textStyle)
+            pagination = paginator.paginate(content.text, style: content.textStyle, withCounter: withCounter)
             if paginationCache.count >= 32 { paginationCache.removeAll() }
             paginationCache[key] = pagination
         }

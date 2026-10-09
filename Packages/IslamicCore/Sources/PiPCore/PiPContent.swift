@@ -123,13 +123,20 @@ public struct PiPFrame: Equatable, Sendable {
         self.rate = rate
     }
 
-    /// The footer line, right to left: the counter first (it is what a reciter looks for), what
-    /// the buttons do next, the position and the page.
-    public var footer: String {
+    /// The counter line, drawn large near the top where no system control sits: the item's
+    /// counter and what skip forward does with it. Nil when the item has no counter.
+    public var counterLine: String? {
         var parts: [String] = []
         if let detail = content.detail { parts.append(detail) }
         // The skip-forward button counts a recitation, then moves on once the count is done.
         if let repetition = content.repetition { parts.append(repetition.isComplete ? "⏩ التالي" : "⏩ عُدّ") }
+        return parts.isEmpty ? nil : parts.joined(separator: "  ·  ")
+    }
+
+    /// The information line above the system progress bar: what play / pause does next, the
+    /// position and the page.
+    public var infoLine: String {
+        var parts: [String] = []
         switch mode {
         case .audio: parts.append(isPlaying ? "▶︎ يُشغَّل" : "⏸ متوقف")
         // The play / pause button turns the pages: say which way its next tap goes.
@@ -138,6 +145,12 @@ public struct PiPFrame: Equatable, Sendable {
         parts.append("\(content.index + 1) من \(content.total)")
         if pageCount > 1 { parts.append("صفحة \(page + 1) من \(pageCount)") }
         return parts.joined(separator: "  ·  ")
+    }
+
+    /// Both lines, right to left: the counter first (it is what a reciter looks for), then the
+    /// information line.
+    public var footer: String {
+        [counterLine, infoLine].compactMap { $0 }.joined(separator: "  ·  ")
     }
 
     /// 0...1 for the progress bar: the recording's position, or the item's place in its container.

@@ -382,6 +382,37 @@ final class PiPEngineTests: XCTestCase {
         XCTAssertEqual(provider.recitations, 1)
     }
 
+    /// What each system button does, per section: play / pause = page, skip = item, and on a
+    /// Hisn item with a count skip forward = one recitation.
+    func testControlToActionMapForEverySection() {
+        let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
+        for type in PiPContentType.allCases {
+            let provider = FakeProvider(type, texts: [long, long, long], index: 1)
+            if type == .hisn { provider.counts = [nil, 2, nil] }
+            let (engine, controller, _) = running(provider)
+            engine.setPlaying(true)
+            XCTAssertEqual(controller.frame?.page, 1, "\(type): play is the next page")
+            engine.setPlaying(false)
+            XCTAssertEqual(controller.frame?.page, 0, "\(type): pause is the previous page")
+            XCTAssertEqual(provider.index, 1, "\(type): pages never change the item")
+            engine.skip(by: 15)
+            if type == .hisn {
+                XCTAssertEqual(provider.recitations, 1, "Hisn: skip forward counts")
+                XCTAssertEqual(provider.index, 1)
+                engine.skip(by: 15)
+                engine.skip(by: 15)
+                XCTAssertEqual(provider.recitations, 2, "only up to the count")
+            } else {
+                XCTAssertEqual(provider.recitations, 0, "\(type): never counts")
+            }
+            XCTAssertEqual(provider.index, 2, "\(type): skip forward is the next item")
+            engine.skip(by: -15)
+            XCTAssertEqual(provider.index, 1, "\(type): skip back is the previous item")
+            engine.stop()
+            controller.systemStops()
+        }
+    }
+
     // MARK: Frames
 
     func testTextFrameShowsThePlaceInTheContainer() {

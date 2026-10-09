@@ -7,25 +7,22 @@ import QuranText
 /// Draws one PiP frame with Core Text and Core Graphics only, so the same code runs in the app
 /// (into the `CVPixelBuffer` the sample buffer wraps) and in `swift test`.
 ///
-/// 1280×720 (16:9, the proven size; the PiP window takes its shape from it). From the top: the
-/// title and subtitle («سورة البقرة · الآية 10»), the page of the text, a progress bar and the
-/// footer (state, counter, «n من m», «صفحة p من q»). Right to left; Arabic shaping and marks by
-/// Core Text; verses in the bundled Quran font.
+/// Content first, laid out by `PiPLayout` around the places iOS draws its controls: the title
+/// and subtitle at the top between the corner buttons, the counter under them in large type,
+/// the page of the text, the information line (position, page, what play / pause does next)
+/// above the system progress bar, and a thin progress line. Right to left; Arabic shaping and
+/// marks by Core Text; verses in the bundled Quran font.
 ///
-/// The text is never changed, shrunk below `minimumFontSize` or cut: the largest size from
-/// `fontSizes` that fits the body box is used, and a text that does not fit at the smallest size
-/// is split into pages (`CoreTextPiPPaginator`), every page drawn at that size.
+/// The text is never changed, shrunk below the layout's smallest body size or cut: the largest
+/// size that fits the body box is used, and a text that does not fit at the smallest size is
+/// split into pages (`CoreTextPiPPaginator`), every page drawn at that size. Each line (header,
+/// counter, information) stays on one line, at a smaller size if it must.
 public enum PiPFrameRenderer {
-    public static let width = 1280
-    public static let height = 720
-    public static let fontSizes: [CGFloat] = [84, 72, 62, 54]
+    /// The production frame size.
+    public static var width: Int { PiPLayout.production.width }
+    public static var height: Int { PiPLayout.production.height }
+    public static var fontSizes: [CGFloat] { PiPLayout.production.bodySizes }
     public static var minimumFontSize: CGFloat { fontSizes.last! }
-
-    /// The body box, in top-left coordinates.
-    static let bodyBox = CGRect(x: 56, y: 100, width: CGFloat(width) - 112, height: 474)
-    static let headerBox = CGRect(x: 48, y: 26, width: CGFloat(width) - 96, height: 60)
-    static let barBox = CGRect(x: 56, y: 600, width: CGFloat(width) - 112, height: 10)
-    static let footerBox = CGRect(x: 48, y: 626, width: CGFloat(width) - 96, height: 60)
 
     public enum Appearance: Sendable {
         case light
@@ -37,72 +34,114 @@ public enum PiPFrameRenderer {
         /// Characters (UTF-16) of the page Core Text placed in the body frame.
         public let bodyCharactersDrawn: Int
         public let bodyFrame: CTFrame
+        /// Where each part was drawn, in top-left coordinates (tests check them against the
+        /// system controls).
+        public let regions: Regions
+    }
+
+    /// The boxes the frame's parts were drawn in (nil when the part was not drawn).
+    public struct Regions {
+        public let header: CGRect
+        public let counter: CGRect?
+        public let body: CGRect
+        public let info: CGRect
+        /// Every one-line part (header, counter, information) kept to one line.
+        public let linesFit: Bool
     }
 
     /// Renders to an image (tests, previews).
-    public static func render(_ frame: PiPFrame, appearance: Appearance, badge: String? = nil) -> Rendered? {
-        guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
-                                      space: CGColorSpace(name: CGColorSpace.sRGB)!,
+    public static func render(_ frame: PiPFrame, appearance: Appearance, badge: String? = nil,
+                              layout: PiPLayout = .production) -> Rendered? {
+        guard let context = CGContext(data: nil, width: layout.width, height: layout.height, bitsPerComponent: 8,
+                                      bytesPerRow: 0, space: CGColorSpace(name: CGColorSpace.sRGB)!,
                                       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
-              let body = draw(frame, appearance: appearance, badge: badge, in: context),
+              let drawn = drawParts(frame, appearance: appearance, badge: badge, layout: layout, in: context),
               let image = context.makeImage() else { return nil }
-        return Rendered(image: image, bodyCharactersDrawn: CTFrameGetVisibleStringRange(body).length, bodyFrame: body)
+        return Rendered(image: image, bodyCharactersDrawn: CTFrameGetVisibleStringRange(drawn.body).length,
+                        bodyFrame: drawn.body, regions: drawn.regions)
     }
 
-    /// Draws into a context of `width`×`height` in Core Graphics coordinates (origin bottom left).
-    /// Returns the body's Core Text frame.
+    /// Draws into a context of the layout's size in Core Graphics coordinates (origin bottom
+    /// left). Returns the body's Core Text frame.
     @discardableResult
     public static func draw(_ frame: PiPFrame, appearance: Appearance, badge: String? = nil,
-                            in context: CGContext) -> CTFrame? {
+                            layout: PiPLayout = .production, in context: CGContext) -> CTFrame? {
+        drawParts(frame, appearance: appearance, badge: badge, layout: layout, in: context)?.body
+    }
+
+    private static func drawParts(_ frame: PiPFrame, appearance: Appearance, badge: String?, layout: PiPLayout,
+                                  in context: CGContext) -> (body: CTFrame, regions: Regions)? {
         let colors = Colors(appearance)
         context.setFillColor(colors.background)
-        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        context.fill(layout.bounds)
+        var linesFit = true
 
-        // Header: «badge · title · subtitle», one line.
+        // Header: «badge · title · subtitle», one line between the corner controls.
         var header = [frame.content.title, frame.content.subtitle].filter { !$0.isEmpty }.joined(separator: " · ")
         if let badge { header = "\(badge) · \(header)" }
-        drawText(header, font: systemFont(size: 38, bold: true), color: colors.accent, lineHeight: 1.1,
-                 alignment: .center, in: headerBox, context: context)
+        let headerLine = oneLine(header, sizes: layout.headerSizes, bold: true, color: colors.accent, in: layout.header)
+        linesFit = linesFit && headerLine.fits
+        drawFrame(headerLine.string, in: layout.header, layout: layout, context: context)
+
+        // Counter: large, under the header, away from every system control.
+        let counterLine = frame.counterLine
+        if let counterLine {
+            let line = oneLine(counterLine, sizes: layout.counterSizes, bold: true, color: colors.primary,
+                               in: layout.counter)
+            linesFit = linesFit && line.fits
+            drawFrame(line.string, in: layout.counter, layout: layout, context: context)
+        }
 
         // Body: the page, centred in its box.
+        let bodyBox = layout.body(withCounter: counterLine != nil)
         let body = bodyString(frame.pageText, style: frame.content.textStyle, size: CGFloat(frame.fontSize),
                               color: colors.primary)
         let measured = measure(body, width: bodyBox.width)
         let top = bodyBox.minY + max(0, (bodyBox.height - measured) / 2)
         let bodyRect = CGRect(x: bodyBox.minX, y: top, width: bodyBox.width, height: min(measured, bodyBox.height))
-        let bodyFrame = drawFrame(body, in: bodyRect, context: context)
+        let bodyFrame = drawFrame(body, in: bodyRect, layout: layout, context: context)
 
-        // Progress bar, filling from the right edge (right to left).
-        let bar = flipped(barBox)
+        // Information line above the system progress bar.
+        let info = oneLine(frame.infoLine, sizes: layout.infoSizes, bold: false, color: colors.secondary,
+                           in: layout.info)
+        linesFit = linesFit && info.fits
+        drawFrame(info.string, in: layout.info, layout: layout, context: context)
+
+        // Progress line, filling from the right edge (right to left).
+        let bar = flipped(layout.progressLine, layout: layout)
+        let radius = bar.height / 2
         context.setFillColor(colors.track)
-        context.addPath(CGPath(roundedRect: bar, cornerWidth: 5, cornerHeight: 5, transform: nil))
+        context.addPath(CGPath(roundedRect: bar, cornerWidth: radius, cornerHeight: radius, transform: nil))
         context.fillPath()
         let filled = bar.width * CGFloat(frame.progress)
         if filled > 0 {
             context.setFillColor(colors.secondary)
             context.addPath(CGPath(roundedRect: CGRect(x: bar.maxX - filled, y: bar.minY, width: filled, height: bar.height),
-                                   cornerWidth: 5, cornerHeight: 5, transform: nil))
+                                   cornerWidth: radius, cornerHeight: radius, transform: nil))
             context.fillPath()
         }
-
-        drawFrame(footerString(frame.footer, color: colors.secondary), in: footerBox, context: context)
-        return bodyFrame
+        return (bodyFrame, Regions(header: layout.header, counter: counterLine == nil ? nil : layout.counter,
+                                   body: bodyRect, info: layout.info, linesFit: linesFit))
     }
 
-    /// Footer sizes, largest first: the footer is one line, so the counter is never cut.
-    static let footerSizes: [CGFloat] = [32, 28, 24, 21]
-
-    /// The footer at the largest size that keeps it on one line.
-    static func footerString(_ text: String, color: CGColor) -> NSAttributedString {
-        let strings = footerSizes.map {
-            attributed(text, font: systemFont(size: $0, bold: false), color: color, lineHeight: 1.1, alignment: .center)
+    /// A line at the largest of `sizes` that keeps it on one line in `box`.
+    static func oneLine(_ text: String, sizes: [CGFloat], bold: Bool, color: CGColor,
+                        in box: CGRect) -> (string: NSAttributedString, fits: Bool) {
+        let strings = sizes.map {
+            attributed(text, font: systemFont(size: $0, bold: bold), color: color, lineHeight: 1.1, alignment: .center)
         }
-        return strings.first { measure($0, width: footerBox.width) <= footerBox.height } ?? strings.last!
+        if let fitting = strings.first(where: { isOneLine($0, in: box) }) { return (fitting, true) }
+        return (strings.last!, false)
     }
 
-    /// The footer fits its box on one line.
-    static func footerFits(_ string: NSAttributedString) -> Bool {
-        measure(string, width: footerBox.width) <= footerBox.height
+    /// One line, inside the box's height.
+    static func isOneLine(_ string: NSAttributedString, in box: CGRect) -> Bool {
+        guard string.length > 0 else { return true }
+        let framesetter = CTFramesetterCreateWithAttributedString(string)
+        let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: 0),
+                                             CGPath(rect: CGRect(origin: .zero, size: box.size), transform: nil), nil)
+        let lines = CTFrameGetLines(frame) as? [CTLine] ?? []
+        return lines.count == 1 && CTFrameGetVisibleStringRange(frame).length == string.length
     }
 
     // MARK: Text
@@ -118,11 +157,11 @@ public enum PiPFrameRenderer {
         }
     }
 
-    /// Whether the whole string fits the body box.
-    static func fits(_ string: NSAttributedString) -> Bool {
+    /// Whether the whole string fits a body box of `size`.
+    static func fits(_ string: NSAttributedString, in size: CGSize) -> Bool {
         guard string.length > 0 else { return true }
         let framesetter = CTFramesetterCreateWithAttributedString(string)
-        let path = CGPath(rect: CGRect(origin: .zero, size: bodyBox.size), transform: nil)
+        let path = CGPath(rect: CGRect(origin: .zero, size: size), transform: nil)
         let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: 0), path, nil)
         return CTFrameGetVisibleStringRange(frame).length == string.length
     }
@@ -176,26 +215,20 @@ public enum PiPFrameRenderer {
         return size.height.rounded(.up) + 4
     }
 
-    private static func drawText(_ text: String, font: CTFont, color: CGColor, lineHeight: CGFloat,
-                                 alignment: CTTextAlignment, in box: CGRect, context: CGContext) {
-        guard !text.isEmpty else { return }
-        let string = attributed(text, font: font, color: color, lineHeight: lineHeight, alignment: alignment)
-        drawFrame(string, in: box, context: context)
-    }
-
     /// `rect` in top-left coordinates.
     @discardableResult
-    private static func drawFrame(_ string: NSAttributedString, in rect: CGRect, context: CGContext) -> CTFrame {
+    private static func drawFrame(_ string: NSAttributedString, in rect: CGRect, layout: PiPLayout,
+                                  context: CGContext) -> CTFrame {
         let framesetter = CTFramesetterCreateWithAttributedString(string)
         let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: 0),
-                                             CGPath(rect: flipped(rect), transform: nil), nil)
+                                             CGPath(rect: flipped(rect, layout: layout), transform: nil), nil)
         CTFrameDraw(frame, context)
         return frame
     }
 
     /// Top-left coordinates to Core Graphics ones.
-    private static func flipped(_ rect: CGRect) -> CGRect {
-        CGRect(x: rect.minX, y: CGFloat(height) - rect.maxY, width: rect.width, height: rect.height)
+    private static func flipped(_ rect: CGRect, layout: PiPLayout) -> CGRect {
+        CGRect(x: rect.minX, y: CGFloat(layout.height) - rect.maxY, width: rect.width, height: rect.height)
     }
 
     // MARK: Colours
@@ -230,20 +263,26 @@ public enum PiPFrameRenderer {
     }
 }
 
-/// Lays out an item's text for the PiP window with the renderer's own fonts and box: the
+/// Lays out an item's text for the PiP window with the renderer's own fonts and layout: the
 /// largest size at which it fits on one page, otherwise pages at the smallest readable size.
 public struct CoreTextPiPPaginator: PiPPaginating {
-    public init() {}
+    public let layout: PiPLayout
 
-    public func paginate(_ text: String, style: PiPTextStyle) -> PiPPagination {
+    public init(layout: PiPLayout = .production) {
+        self.layout = layout
+    }
+
+    public func paginate(_ text: String, style: PiPTextStyle, withCounter: Bool) -> PiPPagination {
         let color = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
-        for size in PiPFrameRenderer.fontSizes
-        where PiPFrameRenderer.fits(PiPFrameRenderer.bodyString(text, style: style, size: size, color: color)) {
+        let box = layout.body(withCounter: withCounter).size
+        for size in layout.bodySizes
+        where PiPFrameRenderer.fits(PiPFrameRenderer.bodyString(text, style: style, size: size, color: color), in: box) {
             return PiPPagination(fontSize: Double(size), pages: [text])
         }
-        let size = PiPFrameRenderer.minimumFontSize
+        let size = layout.bodySizes.last!
         let pages = PiPTextPaginator.pages(text) { slice in
-            PiPFrameRenderer.fits(PiPFrameRenderer.bodyString(String(slice), style: style, size: size, color: color))
+            PiPFrameRenderer.fits(PiPFrameRenderer.bodyString(String(slice), style: style, size: size, color: color),
+                                  in: box)
         }
         return PiPPagination(fontSize: Double(size), pages: pages)
     }

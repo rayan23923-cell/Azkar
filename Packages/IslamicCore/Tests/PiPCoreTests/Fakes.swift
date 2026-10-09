@@ -104,7 +104,7 @@ final class FakeProvider: PiPContentProvider {
 struct FakePaginator: PiPPaginating {
     var wordsPerPage = 3
 
-    func paginate(_ text: String, style: PiPTextStyle) -> PiPPagination {
+    func paginate(_ text: String, style: PiPTextStyle, withCounter: Bool) -> PiPPagination {
         let pages = PiPTextPaginator.pages(text) { slice in
             slice.split(whereSeparator: \.isWhitespace).count <= wordsPerPage
         }

@@ -15,7 +15,8 @@ public struct PiPPagination: Equatable, Sendable {
 /// Measures text for the PiP window. The app and the tests use the Core Text paginator
 /// (`PiPRendering`); engine tests may use a simple fake.
 public protocol PiPPaginating {
-    func paginate(_ text: String, style: PiPTextStyle) -> PiPPagination
+    /// - Parameter withCounter: the frame also shows a counter line, which takes body space.
+    func paginate(_ text: String, style: PiPTextStyle, withCounter: Bool) -> PiPPagination
 }
 
 /// The presentation level of PiP navigation: which page of the current item is shown. It never

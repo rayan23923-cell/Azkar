@@ -27,7 +27,7 @@ final class PiPFrameRendererTests: XCTestCase {
     }
 
     private func frame(_ text: String, style: PiPTextStyle = .standard, page: Int = 0) -> PiPFrame {
-        let pagination = CoreTextPiPPaginator().paginate(text, style: style)
+        let pagination = CoreTextPiPPaginator().paginate(text, style: style, withCounter: true)
         let content = PiPContent(contentType: style == .quran ? .quran : .hisn, contentID: "id", containerID: "c",
                                  title: "أذكار الصباح", subtitle: "الذكر 4", text: text, textStyle: style,
                                  index: 3, total: 10, detail: "التكرار 2 من 3")
@@ -43,27 +43,28 @@ final class PiPFrameRendererTests: XCTestCase {
     // MARK: Pages
 
     func testShortTextIsOnePageAtTheLargestSize() {
-        let pagination = CoreTextPiPPaginator().paginate("سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", style: .standard)
+        let pagination = CoreTextPiPPaginator().paginate("سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", style: .standard, withCounter: false)
         XCTAssertEqual(pagination.pages, ["سُبْحَانَ اللَّهِ وَبِحَمْدِهِ"])
         XCTAssertEqual(pagination.fontSize, Double(PiPFrameRenderer.fontSizes[0]))
     }
 
     func testLongTextIsSplitIntoReadablePagesWithoutChangingIt() async throws {
         let text = try await longestHisnText()
-        let pagination = CoreTextPiPPaginator().paginate(text, style: .standard)
+        let pagination = CoreTextPiPPaginator().paginate(text, style: .standard, withCounter: false)
         XCTAssertGreaterThan(pagination.pages.count, 1, "the longest Hisn item needs pages")
         XCTAssertEqual(pagination.pages.joined(), text, "pages are exact slices of the stored text")
         XCTAssertEqual(pagination.fontSize, Double(PiPFrameRenderer.minimumFontSize), "never below the readable size")
         for page in pagination.pages {
             let body = PiPFrameRenderer.bodyString(page, style: .standard, size: PiPFrameRenderer.minimumFontSize,
                                                    color: CGColor(gray: 0, alpha: 1))
-            XCTAssertTrue(PiPFrameRenderer.fits(body), "every page fits the window")
+            XCTAssertTrue(PiPFrameRenderer.fits(body, in: PiPLayout.production.body(withCounter: false).size),
+                          "every page fits the window")
         }
     }
 
     func testEveryPageIsDrawnInFull() async throws {
         let text = try await longestHisnText()
-        let pageCount = CoreTextPiPPaginator().paginate(text, style: .standard).pages.count
+        let pageCount = CoreTextPiPPaginator().paginate(text, style: .standard, withCounter: true).pages.count
         for page in 0..<pageCount {
             let frame = self.frame(text, page: page)
             let rendered = try XCTUnwrap(PiPFrameRenderer.render(frame, appearance: .dark))
@@ -75,7 +76,7 @@ final class PiPFrameRendererTests: XCTestCase {
     func testMediumTextTakesAMiddleSize() async throws {
         let items = try await hisnItems()
         let paginator = CoreTextPiPPaginator()
-        let sizes = Set(items.prefix(60).map { paginator.paginate($0.arabicText, style: .standard).fontSize })
+        let sizes = Set(items.prefix(60).map { paginator.paginate($0.arabicText, style: .standard, withCounter: false).fontSize })
         XCTAssertGreaterThan(sizes.count, 1, "the size follows the text length")
         XCTAssertTrue(sizes.allSatisfy { $0 >= Double(PiPFrameRenderer.minimumFontSize) })
     }
@@ -96,28 +97,126 @@ final class PiPFrameRendererTests: XCTestCase {
         }
     }
 
-    /// The longest footer PiP can show (a Hisn count above 100 on a paged item) stays on one
-    /// line, right to left, with the count in Arabic order «التكرار 137 من 1000».
-    func testHisnCountFooterFitsAndRunsRightToLeft() throws {
-        for (completed, total) in [(0, 1), (0, 3), (36, 100), (99, 100), (100, 101), (136, 1000), (1000, 1000)] {
-            let repetition = PiPRepetition(completed: completed, total: total)
-            let detail = repetition.isComplete ? "اكتمل ✓ \(total) من \(total)  ·  اكتمل الباب"
-                : "التكرار \(repetition.current) من \(total)"
-            let content = PiPContent(contentType: .hisn, contentID: "id", containerID: "c", title: "أذكار الصباح والمساء",
-                                     subtitle: "الذكر 104", text: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", index: 103, total: 132,
-                                     detail: detail, repetition: repetition)
-            for playing in [false, true] {
-                let frame = PiPFrame(content: content, pageText: "سُبْحَانَ ", page: 11, pageCount: 12, fontSize: 54,
-                                     mode: .text, isPlaying: playing, time: 104, duration: 132, rate: 0)
-                XCTAssertTrue(frame.footer.hasPrefix(detail), "the count comes first")
-                let footer = PiPFrameRenderer.footerString(frame.footer, color: CGColor(gray: 1, alpha: 1))
-                XCTAssertTrue(PiPFrameRenderer.footerFits(footer), "\(completed)/\(total): one line, nothing cut")
-                let line = CTLineCreateWithAttributedString(footer)
-                let runs = CTLineGetGlyphRuns(line) as? [CTRun] ?? []
-                XCTAssertTrue(runs.contains { CTRunGetStatus($0).contains(.rightToLeft) })
-                XCTAssertNotNil(PiPFrameRenderer.render(frame, appearance: .dark))
+    /// The longest counter PiP can show (a Hisn count above 100 on a paged item) stays on one
+    /// line, right to left, in Arabic order «التكرار 137 من 1000», away from the system controls.
+    func testHisnCounterFitsAndRunsRightToLeft() throws {
+        for layout in [PiPLayout.landscape, .portrait] {
+            for (completed, total) in [(0, 1), (0, 3), (36, 100), (99, 100), (100, 101), (136, 1000), (1000, 1000)] {
+                let repetition = PiPRepetition(completed: completed, total: total)
+                let detail = repetition.isComplete ? "اكتمل ✓ \(total) من \(total)  ·  اكتمل الباب"
+                    : "التكرار \(repetition.current) من \(total)"
+                let content = PiPContent(contentType: .hisn, contentID: "id", containerID: "c",
+                                         title: "أذكار الصباح والمساء", subtitle: "الذكر 104",
+                                         text: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", index: 103, total: 132, detail: detail,
+                                         repetition: repetition)
+                for playing in [false, true] {
+                    let frame = PiPFrame(content: content, pageText: "سُبْحَانَ ", page: 11, pageCount: 12,
+                                         fontSize: Double(layout.bodySizes.last!), mode: .text, isPlaying: playing,
+                                         time: 104, duration: 132, rate: 0)
+                    XCTAssertTrue(frame.counterLine?.hasPrefix(detail) == true, "the count comes first")
+                    let rendered = try XCTUnwrap(PiPFrameRenderer.render(frame, appearance: .dark, layout: layout))
+                    XCTAssertTrue(rendered.regions.linesFit, "\(completed)/\(total): one line each, nothing cut")
+                    let counter = try XCTUnwrap(rendered.regions.counter)
+                    for control in layout.systemControls {
+                        XCTAssertFalse(counter.intersects(control), "the counter is never under a system control")
+                    }
+                    let line = PiPFrameRenderer.oneLine(try XCTUnwrap(frame.counterLine), sizes: layout.counterSizes,
+                                                        bold: true, color: CGColor(gray: 1, alpha: 1), in: counter)
+                    let runs = CTLineGetGlyphRuns(CTLineCreateWithAttributedString(line.string)) as? [CTRun] ?? []
+                    XCTAssertTrue(runs.contains { CTRunGetStatus($0).contains(.rightToLeft) })
+                }
             }
         }
+    }
+
+    // MARK: Layout
+
+    private let layouts: [PiPLayout] = [.landscape, .portrait, PiPLayout(width: 640, height: 360),
+                                        PiPLayout(width: 1920, height: 1080), PiPLayout(width: 540, height: 960)]
+
+    /// The header, counter and information line keep clear of every place iOS draws a control;
+    /// everything stays inside the frame.
+    func testContentKeepsClearOfTheSystemControls() {
+        for layout in layouts {
+            for part in [layout.header, layout.counter, layout.info] {
+                XCTAssertTrue(layout.bounds.contains(part), "\(layout)")
+                for control in layout.systemControls {
+                    XCTAssertFalse(part.intersects(control), "\(layout): \(part) under \(control)")
+                }
+            }
+            for withCounter in [false, true] {
+                let body = layout.body(withCounter: withCounter)
+                XCTAssertTrue(layout.bounds.contains(body))
+                XCTAssertGreaterThan(body.height, layout.unit * 0.45, "the text keeps most of the window")
+                for control in layout.cornerControls + [layout.progressControl] {
+                    XCTAssertFalse(body.intersects(control), "\(layout): the text is never under the corners or bar")
+                }
+                XCTAssertFalse(body.intersects(layout.header))
+                XCTAssertFalse(body.intersects(layout.info))
+                if withCounter { XCTAssertFalse(body.intersects(layout.counter)) }
+            }
+            XCTAssertFalse(layout.body(withCounter: true).intersects(layout.counter))
+        }
+    }
+
+    func testLayoutScalesWithTheFrame() {
+        let small = PiPLayout(width: 640, height: 360)
+        let large = PiPLayout(width: 1920, height: 1080)
+        XCTAssertEqual(small.body(withCounter: true).width / CGFloat(small.width),
+                       large.body(withCounter: true).width / CGFloat(large.width), accuracy: 0.01)
+        XCTAssertEqual(small.bodySizes.last! / small.unit, large.bodySizes.last! / large.unit, accuracy: 0.01)
+        XCTAssertTrue(PiPLayout.portrait.isPortrait)
+        XCTAssertFalse(PiPLayout.landscape.isPortrait)
+        XCTAssertEqual(PiPLayout.production, .landscape, "the device-proven 16:9")
+        XCTAssertEqual(PiPFrameRenderer.width, 1280)
+        XCTAssertEqual(PiPFrameRenderer.height, 720)
+    }
+
+    /// Short and long texts, verses, adhkar, duas and Hisn items in every layout: drawn whole,
+    /// inside the frame, right to left, never below the readable size.
+    func testEveryLayoutDrawsWholeTextReadably() async throws {
+        let longHisn = try await longestHisnText()
+        let longVerse = try await verse(2, 282)
+        let shortVerse = try await verse(112, 1)
+        let samples: [(String, PiPTextStyle)] = [("سُبْحَانَ اللَّهِ", .standard), (longHisn, .standard),
+                                                 (shortVerse, .quran), (longVerse, .quran)]
+        for layout in layouts {
+            let paginator = CoreTextPiPPaginator(layout: layout)
+            for (text, style) in samples {
+                for withCounter in [false, true] {
+                    let pagination = paginator.paginate(text, style: style, withCounter: withCounter)
+                    XCTAssertEqual(pagination.pages.joined(), text, "pages are exact slices")
+                    XCTAssertGreaterThanOrEqual(pagination.fontSize, Double(layout.bodySizes.last!))
+                    for (index, page) in pagination.pages.enumerated() {
+                        let content = PiPContent(contentType: style == .quran ? .quran : .hisn, contentID: "id",
+                                                 containerID: "c", title: "سورة البقرة", subtitle: "الآية 282",
+                                                 text: text, textStyle: style, index: 281, total: 286,
+                                                 detail: withCounter ? "التكرار 37 من 100" : nil)
+                        let frame = PiPFrame(content: content, pageText: page, page: index,
+                                             pageCount: pagination.pages.count, fontSize: pagination.fontSize,
+                                             mode: .text, isPlaying: false, time: 1, duration: 286, rate: 0)
+                        let rendered = try XCTUnwrap(PiPFrameRenderer.render(frame, appearance: .dark, layout: layout))
+                        XCTAssertEqual(rendered.image.width, layout.width)
+                        XCTAssertEqual(rendered.image.height, layout.height)
+                        let visible = (page.trimmingCharacters(in: .whitespacesAndNewlines) as NSString).length
+                        XCTAssertGreaterThanOrEqual(rendered.bodyCharactersDrawn, visible, "\(layout) page \(index): cut")
+                        XCTAssertTrue(layout.bounds.contains(rendered.regions.body))
+                        XCTAssertTrue(rendered.regions.linesFit)
+                        let lines = CTFrameGetLines(rendered.bodyFrame) as? [CTLine] ?? []
+                        for line in lines where CTLineGetStringRange(line).length > 1 {
+                            let runs = CTLineGetGlyphRuns(line) as? [CTRun] ?? []
+                            XCTAssertTrue(runs.contains { CTRunGetStatus($0).contains(.rightToLeft) })
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// The readable minimum is larger than before (62 px of 720, was 54).
+    func testSmallestBodySizeStaysReadable() {
+        XCTAssertGreaterThanOrEqual(PiPFrameRenderer.minimumFontSize, 62)
+        XCTAssertEqual(PiPLayout.portrait.bodySizes, PiPLayout.landscape.bodySizes, "same type size either way")
     }
 
     func testQuranVersesUseTheQuranFont() async throws {
@@ -133,7 +232,7 @@ final class PiPFrameRendererTests: XCTestCase {
 
     func testLongestVerseIsPaginated() async throws {
         let text = try await verse(2, 282)
-        let pagination = CoreTextPiPPaginator().paginate(text, style: .quran)
+        let pagination = CoreTextPiPPaginator().paginate(text, style: .quran, withCounter: false)
         XCTAssertGreaterThan(pagination.pages.count, 1)
         XCTAssertEqual(pagination.pages.joined(), text)
     }
