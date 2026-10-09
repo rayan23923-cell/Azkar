@@ -350,9 +350,12 @@ latest commit. It is unsigned and cannot be installed as is; Codemagic's `azkar-
 is unsigned too. To run Release on an iPhone, build it from Xcode with your own team:
 
 1. Check out the PR's head commit and open `IslamicPiPPOC.xcodeproj`.
-2. Target IslamicPiPPOC, Signing & Capabilities: Automatically manage signing, your Team (a
-   free Apple ID works; the app has no entitlements), and a bundle ID of your own in place of
-   `com.example.IslamicPiPPOC`. Do not commit the team or the bundle ID.
+2. Target IslamicPiPPOC, Signing & Capabilities: Automatically manage signing, your Team, and
+   a bundle ID of your own in place of `com.example.IslamicPiPPOC`. Do the same for the
+   AzkarWidgetsExtension target (`<your bundle ID>.Widgets`). Both request the App Group in
+   `AZKAR_APP_GROUP` for the next-prayer widget (`DAILY_COMPANION.md` §8). If your team cannot
+   register it, remove App Groups from both targets for a PiP test: only that widget is
+   affected. Do not commit the team, the bundle ID or the group.
 3. Product › Scheme › Edit Scheme › Run › Build Configuration: Release (Debug adds the PiP test
    tab and is not what ships).
 4. On the iPhone, turn on Settings › Privacy & Security › Developer Mode, connect it and trust

@@ -93,6 +93,15 @@ With the **fixture IPA (Debug, device testing only)**, run the Phase 3C list:
 - return;
 - lifecycle after a lock.
 
+## Prayer times, Qibla, widgets and shortcuts
+
+Run the 15 rows in `DAILY_COMPANION.md` §12. The next-prayer widget needs a build signed with
+the App Group registered on both targets; otherwise mark its rows BLOCKED, not FAIL.
+
+- [ ] Prayer times for a chosen city and for the shared location, with a manual correction.
+- [ ] The Qibla outdoors, away from metal: the turn and «أنت متّجه نحو القبلة».
+- [ ] Location denied: the saved place stays and the message names it.
+
 ## Settings and reminders
 
 - [ ] Appearance: system, light, dark.
