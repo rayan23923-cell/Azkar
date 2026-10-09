@@ -8,15 +8,15 @@ import PrayerTimes
 /// a build signed without the App Group. Nothing here changes the app's settings.
 struct NextPrayerConfiguration: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "الصلاة القادمة"
-    static var description = IntentDescription("اترك الحقول فارغة لتتبع الودجة التطبيق، أو اختر مدينة وطريقة حساب لهذه الودجة.")
+    static var description = IntentDescription("«إعدادات التطبيق» تجعل الودجة تتبع التطبيق، أو اختر مدينة وطريقة حساب لهذه الودجة.")
 
     @Parameter(title: "المدينة")
     var city: WidgetCity?
 
-    @Parameter(title: "طريقة الحساب")
+    @Parameter(title: "طريقة الحساب", default: .app)
     var method: WidgetCalculationMethod?
 
-    @Parameter(title: "صلاة العصر")
+    @Parameter(title: "صلاة العصر", default: .app)
     var asr: WidgetAsrSchool?
 
     var usesCurrentLocation: Bool { city?.id == WidgetCity.currentLocationID }
@@ -39,6 +39,8 @@ struct NextPrayerConfiguration: WidgetConfigurationIntent {
 
 /// «موقعي الحالي», or one of the app's bundled cities (`PrayerCities`), identified by its name.
 struct WidgetCity: AppEntity {
+    /// The default: follow the place saved in the app.
+    static let appID = "إعدادات التطبيق"
     static let currentLocationID = "موقعي الحالي"
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation = "المدينة"
@@ -53,20 +55,28 @@ struct WidgetCity: AppEntity {
 
 struct WidgetCityQuery: EntityQuery {
     func entities(for identifiers: [WidgetCity.ID]) async throws -> [WidgetCity] {
-        identifiers.filter { id in id == WidgetCity.currentLocationID || PrayerCities.all.contains { $0.name == id } }
-            .map(WidgetCity.init(id:))
+        identifiers.filter { id in
+            id == WidgetCity.appID || id == WidgetCity.currentLocationID || PrayerCities.all.contains { $0.name == id }
+        }
+        .map(WidgetCity.init(id:))
     }
 
     func suggestedEntities() async throws -> [WidgetCity] {
-        [WidgetCity(id: WidgetCity.currentLocationID)] + PrayerCities.all.map { WidgetCity(id: $0.name) }
+        [WidgetCity(id: WidgetCity.appID), WidgetCity(id: WidgetCity.currentLocationID)]
+            + PrayerCities.all.map { WidgetCity(id: $0.name) }
     }
+
+    func defaultResult() async -> WidgetCity? { WidgetCity(id: WidgetCity.appID) }
 }
 
 enum WidgetCalculationMethod: String, AppEnum {
+    /// The default: the app's method.
+    case app
     case muslimWorldLeague, ummAlQura, egyptian, karachi, northAmerica, tehran, jafari
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation = "طريقة الحساب"
     static var caseDisplayRepresentations: [WidgetCalculationMethod: DisplayRepresentation] = [
+        .app: "إعدادات التطبيق",
         .muslimWorldLeague: "رابطة العالم الإسلامي",
         .ummAlQura: "أم القرى (مكة المكرمة)",
         .egyptian: "الهيئة المصرية العامة للمساحة",
@@ -80,10 +90,13 @@ enum WidgetCalculationMethod: String, AppEnum {
 }
 
 enum WidgetAsrSchool: String, AppEnum {
+    /// The default: the app's Asr school.
+    case app
     case standard, hanafi
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation = "صلاة العصر"
     static var caseDisplayRepresentations: [WidgetAsrSchool: DisplayRepresentation] = [
+        .app: "إعدادات التطبيق",
         .standard: "الجمهور (الشافعي والمالكي والحنبلي)",
         .hanafi: "الحنفي",
     ]
