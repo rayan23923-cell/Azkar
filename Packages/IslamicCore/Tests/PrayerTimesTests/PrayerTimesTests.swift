@@ -198,6 +198,38 @@ final class PrayerTimesTests: XCTestCase {
         defaults.removePersistentDomain(forName: "prayer.test")
     }
 
+    func testManualCorrectionsMoveEachTimeByWholeMinutes() throws {
+        let baghdad = Coordinates(latitude: 33.3152, longitude: 44.3661)
+        let plain = try XCTUnwrap(PrayerCalculator.times(year: 2026, month: 10, day: 9, at: baghdad))
+        let corrected = try XCTUnwrap(PrayerCalculator.times(
+            year: 2026, month: 10, day: 9, at: baghdad,
+            parameters: PrayerParameters(adjustments: [.fajr: 2, .isha: -3, .dhuhr: 0])))
+        XCTAssertEqual(corrected.fajr.timeIntervalSince(plain.fajr), 120)
+        XCTAssertEqual(corrected.isha.timeIntervalSince(plain.isha), -180)
+        for prayer in [Prayer.sunrise, .dhuhr, .asr, .maghrib] {
+            XCTAssertEqual(corrected.time(of: prayer), plain.time(of: prayer), "\(prayer) not moved")
+        }
+        var parameters = PrayerParameters(adjustments: [.asr: 99, .maghrib: -99, .dhuhr: 0])
+        XCTAssertEqual(parameters.adjustments, [.asr: 30, .maghrib: -30], "kept within ±30, zeros dropped")
+        parameters.adjustments[.fajr] = 45
+        XCTAssertEqual(parameters.adjustment(for: .fajr), 30)
+        parameters.adjustments[.fajr] = 0
+        XCTAssertNil(parameters.adjustments[.fajr])
+    }
+
+    func testCorrectionsAreSaved() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: "prayer.adjust.test"))
+        defaults.removePersistentDomain(forName: "prayer.adjust.test")
+        let store = PrayerSettingsStore(defaults: defaults)
+        store.parameters = PrayerParameters(method: .egyptian, adjustments: [.fajr: -2, .isha: 5])
+        XCTAssertEqual(PrayerSettingsStore(defaults: defaults).parameters.adjustments, [.fajr: -2, .isha: 5])
+        store.parameters = PrayerParameters(method: .egyptian)
+        XCTAssertNil(defaults.object(forKey: PrayerSettingsStore.adjustmentsKey))
+        defaults.set(["fajr": 4, "unknown": 9], forKey: PrayerSettingsStore.adjustmentsKey)
+        XCTAssertEqual(store.parameters.adjustments, [.fajr: 4], "unknown names are ignored")
+        defaults.removePersistentDomain(forName: "prayer.adjust.test")
+    }
+
     func testEveryCityHasValidCoordinatesAndTimeZone() {
         for city in PrayerCities.all {
             XCTAssertTrue(city.coordinates.isValid, city.name)

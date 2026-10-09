@@ -120,12 +120,31 @@ public enum AsrSchool: String, CaseIterable, Codable, Sendable {
 
 /// The calculation settings.
 public struct PrayerParameters: Equatable, Codable, Sendable {
+    /// The largest manual correction, in minutes either way.
+    public static let adjustmentRange = -30...30
+
     public var method: CalculationMethod
     public var asr: AsrSchool
+    /// Minutes added to each computed time (negative: earlier), to match a local timetable.
+    /// Missing prayers are not moved; values are kept within `adjustmentRange`.
+    public var adjustments: [Prayer: Int] {
+        didSet { adjustments = Self.clamped(adjustments) }
+    }
 
-    public init(method: CalculationMethod = .muslimWorldLeague, asr: AsrSchool = .standard) {
+    public init(method: CalculationMethod = .muslimWorldLeague, asr: AsrSchool = .standard,
+                adjustments: [Prayer: Int] = [:]) {
         self.method = method
         self.asr = asr
+        self.adjustments = Self.clamped(adjustments)
+    }
+
+    public func adjustment(for prayer: Prayer) -> Int { adjustments[prayer] ?? 0 }
+
+    static func clamped(_ adjustments: [Prayer: Int]) -> [Prayer: Int] {
+        adjustments.compactMapValues { minutes in
+            let value = min(max(minutes, adjustmentRange.lowerBound), adjustmentRange.upperBound)
+            return value == 0 ? nil : value
+        }
     }
 }
 
@@ -231,8 +250,13 @@ public enum PrayerCalculator {
             let date = midnightUTC.addingTimeInterval(seconds)
             return Date(timeIntervalSince1970: (date.timeIntervalSince1970 / 60).rounded() * 60)
         }
-        return PrayerDay(fajr: instant(t.fajr), sunrise: instant(t.sunrise), dhuhr: instant(t.dhuhr),
-                         asr: instant(t.asr), maghrib: instant(t.maghrib), isha: instant(t.isha))
+        // The user's corrections, after rounding, so a +2 is exactly two minutes later.
+        func adjusted(_ hours: Double, _ prayer: Prayer) -> Date {
+            instant(hours).addingTimeInterval(Double(parameters.adjustment(for: prayer)) * 60)
+        }
+        return PrayerDay(fajr: adjusted(t.fajr, .fajr), sunrise: adjusted(t.sunrise, .sunrise),
+                         dhuhr: adjusted(t.dhuhr, .dhuhr), asr: adjusted(t.asr, .asr),
+                         maghrib: adjusted(t.maghrib, .maghrib), isha: adjusted(t.isha, .isha))
     }
 
     // MARK: Sun

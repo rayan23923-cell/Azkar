@@ -144,6 +144,11 @@ struct PrayerTimesView: View {
                     Text(school.arabicName).tag(school)
                 }
             }
+            NavigationLink {
+                PrayerAdjustmentsView(model: model)
+            } label: {
+                LabeledContent("تصحيح المواقيت", value: model.parameters.adjustments.isEmpty ? "بلا تصحيح" : "مفعّل")
+            }
             Toggle("نظام 24 ساعة", isOn: $model.twentyFourHour)
         } header: {
             Text("الإعدادات")
@@ -164,6 +169,56 @@ struct PrayerTimesView: View {
         case .asr: return "sun.min"
         case .maghrib: return "sunset"
         case .isha: return "moon.stars"
+        }
+    }
+}
+
+/// Minutes added to or taken from each time, to match the local mosque's timetable.
+struct PrayerAdjustmentsView: View {
+    @ObservedObject var model: PrayerModel
+
+    var body: some View {
+        List {
+            Section {
+                ForEach(Prayer.allCases, id: \.self) { prayer in
+                    let minutes = model.parameters.adjustment(for: prayer)
+                    Stepper(value: binding(for: prayer), in: PrayerParameters.adjustmentRange) {
+                        HStack {
+                            Text(prayer.arabicName)
+                            Spacer()
+                            Text(label(minutes))
+                                .monospacedDigit()
+                                .foregroundStyle(minutes == 0 ? .secondary : .primary)
+                        }
+                    }
+                    .accessibilityValue(label(minutes))
+                }
+            } footer: {
+                Text("أضف دقائق أو أنقصها من كل وقت ليطابق تقويم مسجدك، حتى 30 دقيقة. يُطبَّق التصحيح على الشاشة والنافذة العائمة.")
+            }
+            if !model.parameters.adjustments.isEmpty {
+                Section {
+                    Button("إلغاء كل التصحيحات", role: .destructive) {
+                        model.parameters.adjustments = [:]
+                    }
+                }
+            }
+        }
+        .navigationTitle("تصحيح المواقيت")
+        .navigationBarTitleDisplayMode(.inline)
+        .environment(\.layoutDirection, .rightToLeft)
+    }
+
+    private func binding(for prayer: Prayer) -> Binding<Int> {
+        Binding(get: { model.parameters.adjustment(for: prayer) },
+                set: { model.parameters.adjustments[prayer] = $0 })
+    }
+
+    private func label(_ minutes: Int) -> String {
+        switch minutes {
+        case 0: return "بلا تصحيح"
+        case let value where value > 0: return "+\(value) د"
+        default: return "−\(-minutes) د"
         }
     }
 }

@@ -25,6 +25,7 @@ public final class PrayerSettingsStore {
     public static let methodKey = "prayer.method"
     public static let asrKey = "prayer.asr"
     public static let clockKey = "prayer.24h"
+    public static let adjustmentsKey = "prayer.adjustments"
 
     private let defaults: UserDefaults
 
@@ -48,12 +49,27 @@ public final class PrayerSettingsStore {
             PrayerParameters(
                 method: defaults.string(forKey: Self.methodKey).flatMap(CalculationMethod.init(rawValue:))
                     ?? .muslimWorldLeague,
-                asr: defaults.string(forKey: Self.asrKey).flatMap(AsrSchool.init(rawValue:)) ?? .standard)
+                asr: defaults.string(forKey: Self.asrKey).flatMap(AsrSchool.init(rawValue:)) ?? .standard,
+                adjustments: adjustments)
         }
         set {
             defaults.set(newValue.method.rawValue, forKey: Self.methodKey)
             defaults.set(newValue.asr.rawValue, forKey: Self.asrKey)
+            // Stored as {"fajr": 2, "isha": -3}; unknown names are ignored when read.
+            let byName = Dictionary(uniqueKeysWithValues: newValue.adjustments.map { ($0.key.rawValue, $0.value) })
+            if byName.isEmpty {
+                defaults.removeObject(forKey: Self.adjustmentsKey)
+            } else {
+                defaults.set(byName, forKey: Self.adjustmentsKey)
+            }
         }
+    }
+
+    private var adjustments: [Prayer: Int] {
+        let stored = defaults.dictionary(forKey: Self.adjustmentsKey) as? [String: Int] ?? [:]
+        return Dictionary(uniqueKeysWithValues: stored.compactMap { name, minutes in
+            Prayer(rawValue: name).map { ($0, minutes) }
+        })
     }
 
     /// Times as 13:05 rather than 1:05 م.
