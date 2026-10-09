@@ -129,6 +129,11 @@ jobs:
           if grep -rlaF 'PiPTestEngine' "$APP"; then echo "PiP test engine in the Release app"; exit 1; fi
           if grep -rlaF 'PiP Technical Test' "$APP"; then echo "PiP test screen in the Release app"; exit 1; fi
           grep -rlaF 'PiPEngine' "$APP" > /dev/null || { echo "production PiP engine missing"; exit 1; }
+          # The production PiP of every section ships in Release, not behind a Debug switch.
+          for s in 'SampleBufferPiPController' 'PiPFrameRenderer' 'QuranPiPProvider' 'HisnPiPProvider' \
+                   'AdhkarPiPProvider' 'DuaPiPProvider' 'تشغيل في نافذة عائمة' 'إغلاق النافذة العائمة'; do
+            grep -rlaF "$s" "$APP" > /dev/null || { echo "production PiP missing from Release: $s"; exit 1; }
+          done
           find "$APP" -name '*.ttf' -o -name '*.json' | sed "s|$APP/||" | sort
           du -sh "$APP"
 

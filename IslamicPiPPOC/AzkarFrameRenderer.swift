@@ -10,6 +10,9 @@ enum AzkarFrameRenderer {
     static let width = 1280
     static let height = 720
 
+    #if DEBUG
+    /// The POC frame, drawn only by the Debug test engine. Production frames come from
+    /// `PiPFrameRenderer` (PiPRendering).
     static func makePixelBuffer(text: String, footer: String) -> CVPixelBuffer? {
         let attrs: [CFString: Any] = [
             kCVPixelBufferCGImageCompatibilityKey: true,
@@ -75,6 +78,7 @@ enum AzkarFrameRenderer {
 
         return pb
     }
+    #endif
 
     static func makeSampleBuffer(pixelBuffer: CVPixelBuffer, presentationTime: CMTime) -> CMSampleBuffer? {
         var format: CMVideoFormatDescription?
