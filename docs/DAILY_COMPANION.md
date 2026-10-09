@@ -190,6 +190,11 @@ Quick access:
     - With neither, the widget asks for a method («اختر طريقة الحساب من «تعديل الودجة»…»);
       no default is assumed.
     - The widget never writes the app's settings. Tests: `WidgetChoiceTests`.
+    - «موقعي الحالي» is first in that list. The widget reads the device location once per
+      timeline (kilometre accuracy, at most hourly), using the app's "when in use" permission
+      extended to widgets (`NSWidgetWantsLocation`; Settings › أذكار › الموقع › «أثناء استخدام
+      التطبيق أو الودجات»). No new permission prompt and no background location. If it is not
+      allowed, or no fix comes within 10 seconds, the widget says so and shows no times.
   - The entitlement in the source files is not proof the group is registered; only a signed
     install shows it (§12 step 2).
 - **Out-of-date place.** When the saved device location is from another time zone, the widget

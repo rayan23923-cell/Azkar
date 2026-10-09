@@ -143,7 +143,8 @@ jobs:
           echo "Release background modes: $MODES"
           [ "$MODES" = "Array,audio," ] || { echo "Release background modes must be exactly [audio] for PiP"; exit 1; }
           # The widget extension is WidgetKit only: no permission string, no background mode,
-          # its own privacy manifest. The app opens azkarapp:// links from it and from shortcuts.
+          # its own privacy manifest. NSWidgetWantsLocation lets it use the app's "when in use"
+          # location for «موقعي الحالي»; it adds no permission prompt of its own. The app opens azkarapp:// links from it and from shortcuts.
           WIDGET="$APP/PlugIns/AzkarWidgetsExtension.appex"
           test -d "$WIDGET" || { echo "widget extension missing from the Release app"; exit 1; }
           [ "$(/usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "$WIDGET/Info.plist")" = "com.apple.widgetkit-extension" ] \

@@ -1,5 +1,6 @@
 import SwiftUI
 import WidgetKit
+import CoreLocation
 import ContentKit
 import PrayerTimes
 
@@ -12,6 +13,10 @@ struct NextPrayerEntry: TimelineEntry {
         case noPlace
         /// A city was chosen in the widget, but no method is known for it.
         case needsMethod(place: String)
+        /// «موقعي الحالي» was chosen, but the location is not allowed for widgets.
+        case locationNotAllowed
+        /// «موقعي الحالي» was chosen, but no location could be read just now.
+        case locationUnavailable
         /// The sun does not rise or set there today.
         case noTimes(place: String)
     }
@@ -26,17 +31,22 @@ struct NextPrayerProvider: AppIntentTimelineProvider {
     }
 
     func snapshot(for configuration: NextPrayerConfiguration, in context: Context) async -> NextPrayerEntry {
-        entries(configuration, from: Date(), limit: 1).first ?? placeholder(in: context)
+        await entries(configuration, from: Date(), limit: 1).first ?? placeholder(in: context)
     }
 
     /// One entry each time what is shown changes (each prayer and sunrise, and local midnight).
     /// The countdown in between is drawn by the system from the next prayer's date.
     func timeline(for configuration: NextPrayerConfiguration, in context: Context) async -> Timeline<NextPrayerEntry> {
         let now = Date()
-        let entries = entries(configuration, from: now, limit: 16)
+        let entries = await entries(configuration, from: now, limit: 16)
         switch entries.last?.content {
+        case .prayer where configuration.usesCurrentLocation:
+            // The device may move: read the location again within the hour.
+            return Timeline(entries: entries, policy: .after(min(entries.last?.date ?? now, now.addingTimeInterval(3600))))
         case .prayer:
             return Timeline(entries: entries, policy: .atEnd)
+        case .locationUnavailable:
+            return Timeline(entries: entries, policy: .after(now.addingTimeInterval(15 * 60)))
         case .noTimes:
             return Timeline(entries: entries, policy: .after(now.addingTimeInterval(6 * 3600)))
         default:
@@ -45,8 +55,17 @@ struct NextPrayerProvider: AppIntentTimelineProvider {
         }
     }
 
-    private func entries(_ configuration: NextPrayerConfiguration, from now: Date, limit: Int) -> [NextPrayerEntry] {
-        switch NextPrayerWidgetState.resolve(store: WidgetSettings.prayerStore(), choice: configuration.choice,
+    private func entries(_ configuration: NextPrayerConfiguration, from now: Date, limit: Int) async -> [NextPrayerEntry] {
+        var location: CLLocation?
+        if configuration.usesCurrentLocation {
+            switch await WidgetLocation.read() {
+            case .location(let reading): location = reading
+            case .notAllowed: return [NextPrayerEntry(date: now, content: .locationNotAllowed)]
+            case .unavailable: return [NextPrayerEntry(date: now, content: .locationUnavailable)]
+            }
+        }
+        switch NextPrayerWidgetState.resolve(store: WidgetSettings.prayerStore(),
+                                             choice: configuration.choice(currentLocation: location),
                                              deviceTimeZone: .current, now: now, limit: limit) {
         case .sharedSettingsUnavailable:
             return [NextPrayerEntry(date: now, content: .unavailable)]
@@ -130,6 +149,10 @@ struct NextPrayerView: View {
             }
         case .noPlace:
             message("افتح التطبيق واختر مدينتك أو موقعك، أو اختر مدينة من «تعديل الودجة».")
+        case .locationNotAllowed:
+            message("اسمح بالموقع للودجة: الإعدادات › أذكار › الموقع › «أثناء استخدام التطبيق أو الودجات».")
+        case .locationUnavailable:
+            message("تعذّر تحديد موقعك الآن، وستُعاد المحاولة بعد قليل.")
         case .needsMethod(let place):
             message("اختر طريقة الحساب من «تعديل الودجة» لتظهر مواقيت \(place).")
         case .unavailable:
