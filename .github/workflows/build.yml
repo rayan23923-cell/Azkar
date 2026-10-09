@@ -142,6 +142,32 @@ jobs:
           MODES=$(/usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist" 2>/dev/null | tr -d ' {}' | grep . | sort | tr '\n' ',')
           echo "Release background modes: $MODES"
           [ "$MODES" = "Array,audio," ] || { echo "Release background modes must be exactly [audio] for PiP"; exit 1; }
+          # The widget extension is WidgetKit only: no permission string, no background mode,
+          # its own privacy manifest. NSWidgetWantsLocation lets it use the app's "when in use"
+          # location for «موقعي الحالي»; it adds no permission prompt of its own. The app opens azkarapp:// links from it and from shortcuts.
+          WIDGET="$APP/PlugIns/AzkarWidgetsExtension.appex"
+          test -d "$WIDGET" || { echo "widget extension missing from the Release app"; exit 1; }
+          [ "$(/usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "$WIDGET/Info.plist")" = "com.apple.widgetkit-extension" ] \
+            || { echo "unexpected extension point"; exit 1; }
+          if plutil -p "$WIDGET/Info.plist" | grep -E 'UsageDescription|UIBackgroundModes'; then
+            echo "the widget extension must not ask for permissions or background modes"; exit 1
+          fi
+          test -f "$WIDGET/PrivacyInfo.xcprivacy"
+          plutil -lint "$WIDGET/PrivacyInfo.xcprivacy"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleURLTypes:0:CFBundleURLSchemes:0" "$APP/Info.plist" | grep -qx azkarapp \
+            || { echo "azkarapp URL scheme missing"; exit 1; }
+          # Both targets name the same App Group, from the one AZKAR_APP_GROUP setting. Unsigned
+          # builds carry no entitlements, so the source files and Info.plists are what is checked;
+          # registering the group is the owner's (docs/DAILY_COMPANION.md §13).
+          APP_GROUP=$(/usr/libexec/PlistBuddy -c "Print :AzkarAppGroup" "$APP/Info.plist")
+          WIDGET_GROUP=$(/usr/libexec/PlistBuddy -c "Print :AzkarAppGroup" "$WIDGET/Info.plist")
+          echo "App Group: $APP_GROUP"
+          [ -n "$APP_GROUP" ] && [ "$APP_GROUP" = "$WIDGET_GROUP" ] || { echo "app and widget name different App Groups"; exit 1; }
+          case "$APP_GROUP" in group.*) ;; *) echo "an App Group id starts with group."; exit 1 ;; esac
+          for E in IslamicPiPPOC.entitlements AzkarWidgets.entitlements; do
+            [ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.application-groups:0' "$E")" = '$(AZKAR_APP_GROUP)' ] \
+              || { echo "$E must name the group through AZKAR_APP_GROUP"; exit 1; }
+          done
           if find "$APP" \( -iname '*.wav' -o -iname '*.caf' -o -iname '*.m4a' -o -iname '*.mp3' -o -iname '*.aac' -o -iname '*.aiff' \) | grep .; then
             echo "audio file in the Release app: no silent or test audio may keep it in the background"; exit 1
           fi
@@ -175,19 +201,26 @@ jobs:
           xcodebuild archive -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
             -configuration Release -destination 'generic/platform=iOS' \
             -archivePath build/IslamicPiPPOC.xcarchive \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             | tee archive.log | grep -E 'error|warning:|ARCHIVE' || true
           grep -q 'ARCHIVE SUCCEEDED' archive.log
           /usr/libexec/PlistBuddy -c "Print :ApplicationProperties" build/IslamicPiPPOC.xcarchive/Info.plist
           mkdir -p build/release-ipa/Payload
           cp -R build/IslamicPiPPOC.xcarchive/Products/Applications/IslamicPiPPOC.app build/release-ipa/Payload/
-          (cd build/release-ipa && zip -qry IslamicPiPPOC-release-unsigned.ipa Payload)
-          ls -lh build/release-ipa/IslamicPiPPOC-release-unsigned.ipa
+          # The build number (shown in Settings › About) and the file name say which run and
+          # commit this is, so a tester can tell a new IPA from an old one.
+          APP=build/release-ipa/Payload/IslamicPiPPOC.app
+          [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Info.plist")" = "${{ github.run_number }}" ]
+          [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/PlugIns/AzkarWidgetsExtension.appex/Info.plist")" = "${{ github.run_number }}" ]
+          NAME="IslamicPiPPOC-release-unsigned-build${{ github.run_number }}-${GITHUB_SHA::7}.ipa"
+          (cd build/release-ipa && zip -qry "$NAME" Payload)
+          ls -lh "build/release-ipa/$NAME"
 
       - uses: actions/upload-artifact@v4
         with:
           name: IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED
-          path: build/release-ipa/IslamicPiPPOC-release-unsigned.ipa
+          path: build/release-ipa/*.ipa
 
       # Device-test build for Phase 3C (not for release): compiled with HISN_AUDIO_FIXTURE, it
       # carries the TEST_ONLY synthetic tone and its manifest so Hisn audio and PiP can be

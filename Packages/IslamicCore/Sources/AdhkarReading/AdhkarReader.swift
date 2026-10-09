@@ -20,6 +20,8 @@ public protocol DevotionalPositionStore: AnyObject {
     func save(_ position: DevotionalPosition, in collection: ContentRef)
     func clear(_ collection: ContentRef)
     func clearAll()
+    /// Every saved position, by collection.
+    func all() -> [ContentRef: DevotionalPosition]
 }
 
 /// Positions in UserDefaults as `{"positions":{"adhkar:group:morning":{…}},"version":1}`.
@@ -70,6 +72,11 @@ public final class UserDefaultsDevotionalPositionStore: DevotionalPositionStore 
     }
 
     public func clearAll() { defaults.removeObject(forKey: key) }
+
+    public func all() -> [ContentRef: DevotionalPosition] {
+        Dictionary(read().positions.compactMap { key, position in ContentRef(string: key).map { ($0, position) } },
+                   uniquingKeysWith: { first, _ in first })
+    }
 }
 
 public final class InMemoryDevotionalPositionStore: DevotionalPositionStore {
@@ -79,6 +86,7 @@ public final class InMemoryDevotionalPositionStore: DevotionalPositionStore {
     public func save(_ position: DevotionalPosition, in collection: ContentRef) { positions[collection] = position }
     public func clear(_ collection: ContentRef) { positions[collection] = nil }
     public func clearAll() { positions = [:] }
+    public func all() -> [ContentRef: DevotionalPosition] { positions }
 }
 
 /// The adhkar / dua reader: one item at a time with its counter. Counting moves on after the

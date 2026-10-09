@@ -12,6 +12,8 @@ struct HomeView: View {
     @ObservedObject private var router = AppServices.shared.router
     @ObservedObject private var favorites = AppServices.shared.favorites
     @ObservedObject private var prayer = PrayerModel.shared
+    @ObservedObject private var routine = AppServices.shared.routine
+    @State private var resume: ResumeOffer?
     @State private var quranResume: (position: QuranReadingPosition, surah: QuranSurah)?
     @State private var adhkar: AdhkarLibrary?
     @State private var completedToday: Set<ContentRef> = []
@@ -31,6 +33,10 @@ struct HomeView: View {
                     } label: {
                         Label("اتجاه القبلة", systemImage: "location.north.line")
                     }
+                }
+
+                if routine.routine.isEnabled, !routine.routine.activeSteps.isEmpty {
+                    routineSection
                 }
 
                 Section {
@@ -62,23 +68,44 @@ struct HomeView: View {
                 }
 
                 Section("متابعة") {
-                    if let resume = quranResume {
+                    if let resume {
                         Button {
-                            router.open(.quran(resume.position.ref, highlights: false))
+                            router.open(resume.point)
                         } label: {
                             Label {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("القرآن الكريم: \(resume.surah.fullArabicName)")
-                                    Text("الآية \(resume.position.ayah) من \(resume.surah.ayahCount)")
+                                    Text("أكمل من حيث توقفت")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text(resume.title)
+                                    Text(resume.detail)
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
-                            } icon: { Image(systemName: "book") }
+                            } icon: { Image(systemName: resume.systemImage) }
                         }
-                    } else {
-                        Button {
-                            router.tab = .quran
-                        } label: { Label("ابدأ قراءة القرآن الكريم", systemImage: "book") }
+                        .accessibilityLabel("أكمل من حيث توقفت: \(resume.title)، \(resume.detail)")
+                    }
+                    // The Quran row, unless the Quran is already the place offered above.
+                    if resume?.point.section != .quran {
+                        if let resume = quranResume {
+                            Button {
+                                router.open(.quran(resume.position.ref, highlights: false))
+                            } label: {
+                                Label {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("القرآن الكريم: \(resume.surah.fullArabicName)")
+                                        Text("الآية \(resume.position.ayah) من \(resume.surah.ayahCount)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                } icon: { Image(systemName: "book") }
+                            }
+                        } else {
+                            Button {
+                                router.tab = .quran
+                            } label: { Label("ابدأ قراءة القرآن الكريم", systemImage: "book") }
+                        }
                     }
                     Button {
                         router.tab = .hisn
@@ -97,6 +124,13 @@ struct HomeView: View {
                 }
             }
             .navigationTitle("الرئيسية")
+            // A widget or shortcut opens the prayer times or the Qibla here.
+            .navigationDestination(item: $router.homeDestination) { destination in
+                switch destination {
+                case .prayerTimes: PrayerTimesView()
+                case .qibla: QiblaView()
+                }
+            }
         }
         .environment(\.layoutDirection, .rightToLeft)
         .environment(\.locale, Locale(identifier: "ar"))
@@ -123,6 +157,45 @@ struct HomeView: View {
                 Label("مواقيت الصلاة", systemImage: "clock")
             }
         }
+    }
+
+    /// The optional routine: today's chosen steps, each marked when done today. Nothing
+    /// counts days or mentions a missed one.
+    private var routineSection: some View {
+        Section {
+            ForEach(routine.routine.activeSteps, id: \.self) { step in
+                let done = isDone(step)
+                Button {
+                    if let collection = step.collection {
+                        router.open(.devotional(collection: collection, item: nil))
+                    } else {
+                        Task { await router.openQuranAtSavedPosition() }
+                    }
+                } label: {
+                    HStack {
+                        Label(step.arabicTitle, systemImage: icon(for: step))
+                        Spacer()
+                        if done { Image(systemName: "checkmark.circle.fill").foregroundStyle(.green) }
+                    }
+                }
+                .accessibilityLabel(done ? "\(step.arabicTitle)، أُنجز اليوم" : step.arabicTitle)
+            }
+        } header: {
+            Text("وردي اليوم")
+        } footer: {
+            Text("اختياري: لا عدّ للأيام ولا تذكير بما فات. تغيّره من الإعدادات.")
+        }
+    }
+
+    private func isDone(_ step: DailyRoutine.Step) -> Bool {
+        if let collection = step.collection { return completedToday.contains(collection) }
+        // The Quran counts as read today once a verse was reached today.
+        return quranResume.map { Calendar.current.isDateInToday($0.position.savedAt) } ?? false
+    }
+
+    private func icon(for step: DailyRoutine.Step) -> String {
+        if let collection = step.collection { return icon(for: collection) }
+        return "book"
     }
 
     private var progressText: String {
@@ -164,5 +237,6 @@ struct HomeView: View {
             quranResume = nil
         }
         adhkar = try? await AppServices.shared.content.adhkar().library
+        resume = await ResumeFinder.latest()
     }
 }

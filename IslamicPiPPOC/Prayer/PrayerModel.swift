@@ -2,6 +2,7 @@ import CoreLocation
 import Foundation
 import PiPProviders
 import PrayerTimes
+import WidgetKit
 
 /// The prayer screens' state: the saved place and settings, the device location when shared,
 /// and the PiP provider that shows the times over other apps.
@@ -23,27 +24,36 @@ final class PrayerModel: NSObject, ObservableObject {
 
     @Published private(set) var place: PrayerPlace?
     @Published var parameters: PrayerParameters {
-        didSet { store.parameters = parameters; refreshPiP() }
+        didSet { store.parameters = parameters; refreshPiP(); publishToWidgets() }
     }
     @Published var twentyFourHour: Bool {
-        didSet { store.twentyFourHour = twentyFourHour; refreshPiP() }
+        didSet { store.twentyFourHour = twentyFourHour; refreshPiP(); publishToWidgets() }
     }
     @Published private(set) var locationState: LocationState = .idle
 
     private let store: PrayerSettingsStore
+    /// The copy the next-prayer widget reads (App Group); nil when the build has none.
+    private let widgetStore: PrayerSettingsStore?
     private let manager = CLLocationManager()
     /// Made on first use and kept, so a running window follows place and settings changes.
     private var provider: PrayerPiPProvider?
 
-    init(store: PrayerSettingsStore = PrayerSettingsStore()) {
+    init(store: PrayerSettingsStore = PrayerSettingsStore(),
+         widgetStore: PrayerSettingsStore? = SharedContainer.prayerStore()) {
         self.store = store
+        self.widgetStore = widgetStore
         place = store.place
         parameters = store.parameters
         twentyFourHour = store.twentyFourHour
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyKilometer
+        // Settings saved before the widgets existed reach them on the first launch.
+        publishToWidgets()
     }
+
+    /// Saved settings that are present but unreadable; shown, never overwritten by themselves.
+    var unreadableSettings: [PrayerSettingsIssue] { store.unreadableSettings }
 
     var schedule: PrayerSchedule? {
         place.map { PrayerSchedule(coordinates: $0.coordinates, timeZone: $0.timeZone, parameters: parameters) }
@@ -82,6 +92,13 @@ final class PrayerModel: NSObject, ObservableObject {
         place = newPlace
         store.place = newPlace
         refreshPiP()
+        publishToWidgets()
+    }
+
+    /// Copies the place and settings for the widgets and reloads them when anything changed.
+    private func publishToWidgets() {
+        guard let widgetStore, store.copy(to: widgetStore) else { return }
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func refreshPiP() {

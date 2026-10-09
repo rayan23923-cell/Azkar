@@ -43,3 +43,33 @@ public enum Qibla {
         return names[index]
     }
 }
+
+/// How far a compass reading can be trusted, from the error the system reports for it.
+/// Only a good or fair reading confirms that the device faces the Qibla; otherwise the turn is
+/// shown as approximate and the user is asked to calibrate, so no false precision is shown.
+public enum QiblaReadingQuality: Equatable, Sendable {
+    /// Within 10°.
+    case good
+    /// Within 20°.
+    case fair
+    /// Worse than 20°.
+    case poor
+    /// The system gives no error: the compass needs calibrating.
+    case unknown
+    /// Measured from magnetic north (the location is not shared, so iOS cannot give true
+    /// north). The difference, the magnetic declination, is unknown here and can be several
+    /// degrees, so facing the Qibla is never confirmed from it.
+    case magneticOnly
+
+    public init(accuracy: Double?, isTrueNorth: Bool) {
+        guard isTrueNorth else { self = .magneticOnly; return }
+        guard let accuracy, accuracy >= 0 else { self = .unknown; return }
+        switch accuracy {
+        case ...10: self = .good
+        case ...20: self = .fair
+        default: self = .poor
+        }
+    }
+
+    public var confirmsFacing: Bool { self == .good || self == .fair }
+}

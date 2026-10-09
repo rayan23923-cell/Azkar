@@ -36,6 +36,16 @@ final class AppRouter: ObservableObject {
     /// A saved Hisn item (Favorites) to open.
     @Published var hisnItemTarget: String?
     @Published var devotionalTarget: DevotionalRoute?
+    /// The prayer times or the Qibla, pushed on Home's stack (a widget, a shortcut).
+    @Published var homeDestination: HomeDestination?
+    /// Open the Hisn reader at its saved cursor, repetitions included.
+    @Published var hisnResumeRequested = false
+
+    enum HomeDestination: Hashable, Identifiable {
+        case prayerTimes
+        case qibla
+        var id: Self { self }
+    }
 
     func open(_ destination: GlobalSearchResult.Destination) {
         switch destination {
@@ -72,6 +82,58 @@ final class AppRouter: ObservableObject {
             tab = .hisn
         }
     }
+
+    /// A link from a widget, a shortcut or another app. It only opens the place: nothing is
+    /// counted or marked done.
+    func handle(_ link: AppLink) {
+        switch link {
+        case .home:
+            homeDestination = nil
+            tab = .home
+        case .prayerTimes:
+            tab = .home
+            homeDestination = .prayerTimes
+        case .qibla:
+            tab = .home
+            homeDestination = .qibla
+        case .quran:
+            Task { await openQuranAtSavedPosition() }
+        case .resume:
+            Task {
+                if let offer = await ResumeFinder.latest() { open(offer.point) } else { tab = .home }
+            }
+        case .content(let ref):
+            Task {
+                let library = try? await AppServices.shared.content.adhkar().library
+                open(ref, library: library)
+            }
+        }
+    }
+
+    /// The Quran at the saved verse, or its index when nothing (valid) is saved.
+    func openQuranAtSavedPosition() async {
+        if let quran = try? await AppServices.shared.content.quran(),
+           let position = UserDefaultsQuranPositionStore().validPosition(in: quran.library) {
+            open(.quran(position.ref, highlights: false))
+        } else {
+            tab = .quran
+        }
+    }
+
+    /// Where reading stopped, with the repetitions already said.
+    func open(_ point: ResumePoint) {
+        switch point.section {
+        case .quran:
+            if let verse = QuranVerseRef(point.target) { open(.quran(verse, highlights: false)) }
+        case .hisn:
+            hisnResumeRequested = true
+            tab = .hisn
+        case .adhkar, .dua:
+            guard let collection = point.container else { return }
+            devotionalTarget = DevotionalRoute(collection: collection, item: point.target, highlights: false)
+            tab = .adhkar
+        }
+    }
 }
 
 /// The bundled content, loaded and indexed once and shared by every screen. Everything is
@@ -84,6 +146,7 @@ final class ContentStore {
     private var quranTask: Task<Quran, Error>?
     private var adhkarTask: Task<Adhkar, Error>?
     private var globalTask: Task<GlobalSearchEngine, Never>?
+    private var hisnTask: Task<HisnLibrary, Error>?
 
     func quran() async throws -> Quran {
         if quranTask == nil {
@@ -111,6 +174,21 @@ final class ContentStore {
             return try await adhkarTask!.value
         } catch {
             adhkarTask = nil
+            throw error
+        }
+    }
+
+    /// The Hisn book for «أكمل من حيث توقفت» (the Hisn tab loads its own with search).
+    func hisn() async throws -> HisnLibrary {
+        if hisnTask == nil {
+            hisnTask = Task.detached(priority: .userInitiated) {
+                HisnLibrary(book: try await BundledHisnRepository().loadBook())
+            }
+        }
+        do {
+            return try await hisnTask!.value
+        } catch {
+            hisnTask = nil
             throw error
         }
     }
@@ -143,6 +221,8 @@ final class AppServices: ObservableObject {
     let devotionalPositions: DevotionalPositionStore
     /// Each item's count today, in Hisn chapters and adhkar collections.
     let itemCounts: ItemCountStore
+    /// The optional daily routine shown on Home.
+    let routine = RoutineModel()
     let router = AppRouter()
     let content = ContentStore()
     /// The one PiP engine of the app (Quran, Hisn, adhkar and duas).
