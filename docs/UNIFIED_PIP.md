@@ -182,25 +182,32 @@ are an estimate from one device, not a guarantee (section 13, rows 3 and 7).
 | Part | Where | Clear of |
 |---|---|---|
 | Title · subtitle | Top, between the two corner buttons | Close, return to app |
-| Counter («التكرار 37 من 100  ·  ⏩ عُدّ») | Large. Portrait: across the window under the corner buttons. Landscape: under the title, between the corner buttons | Every control |
-| Text, portrait | Two blocks, above and below the middle row | Every control |
+| Counter («التكرار 37 من 100  ·  ⏩ عُدّ») | Large. Portrait: centred below the middle row, above the information line. Landscape: under the title, between the corner buttons | Every control |
+| Text, portrait | The upper half: one block from under the corner buttons to just above the middle row | Every control |
 | Text, landscape | One block between the counter (or title) and the information line | Corners and progress bar. The middle row shows over its centre while the controls are visible |
 | Information («▶︎ الصفحة التالية  ·  4 من 10  ·  صفحة 2 من 3») | Just above the system progress bar | Every control |
 | Thin progress line | Where the system bar shows | Nothing essential |
 
-**Text blocks.** `PiPLayout.textBlocks(withCounter:)` gives the blocks in reading order. There
-are two, above and below the middle row, when each holds at least two lines of a verse at the
-smallest size; that is so in every portrait size tested (360×640 to 1080×1920) and in no
-landscape one, which is too short. A text that fits the upper block is centred there, so a
-short verse is never behind the play button (the screenshot showed «مَٰلِكِ يَوۡمِ ٱلدِّينِ» there).
-A longer one fills the upper block and goes on, from the next line, in the lower one. Lines
-are never split across blocks, and every character is drawn once.
+**Text area.** `PiPLayout.textBlocks(withCounter:)` gives one block. In portrait it is the
+upper half only (owner request, 2026-10-09): from under the corner buttons to just above the
+middle row, so no text is ever behind skip or play/pause (the screenshot showed
+«مَٰلِكِ يَوۡمِ ٱلدِّينِ» there). The counter moved below the row, so it takes nothing from the
+text. A text that fits is centred in the block; a longer one is paged there, so a long text
+takes more pages than with the earlier two-block layout. In landscape the window is too short
+for this, and the text keeps one block from the counter (or title) to the information line.
+
+**Background.** Drawn around the system controls so they look part of the frame: a vertical
+gradient, a soft well under each corner button, a dock with three wells where skip back,
+play/pause and skip forward appear (portrait only; in landscape the text runs behind the
+row), and a track where the progress bar shows. The places are the layout's estimate from
+one screenshot; on another device or window size the real controls may land slightly off
+the wells (section 13).
 
 The header, counter and information line each stay on one line, at a smaller size if they
 must (tested up to «اكتمل ✓ 1000 من 1000»).
 
 **Font size.** The body uses the largest of 97, 86, 76, 68 or 62 px (of 720) at which the whole
-page fits the blocks. Text that does not fit at 62 is split into pages at 62, never shrunk
+page fits the block. Text that does not fit at 62 is split into pages at 62, never shrunk
 further: more pages rather than smaller type. Pages are exact slices of the stored text,
 broken after whitespace, and joined they give back the text (tested on the longest Hisn item,
 verses 2:255 and 2:282, dense marks, long words, digits and punctuation, in seven frame sizes).

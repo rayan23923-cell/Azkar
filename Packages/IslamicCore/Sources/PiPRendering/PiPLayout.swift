@@ -11,10 +11,11 @@ import Foundation
 /// window's width; the controls keep their size in points, so in a smaller window they cover
 /// more and these places are an estimate, not a guarantee.
 ///
-/// The header, the counter and the information line never sit under a control. The text sits
-/// in two blocks, above and below the middle row, when both hold at least two lines (a portrait
-/// window); a landscape window is too short for that, so there the text is one block and the
-/// middle row covers its centre while the controls are shown.
+/// The header, the counter and the information line never sit under a control. In a portrait
+/// window the text is kept to the upper half, between the corner controls and the middle row,
+/// and the counter goes in large type below the middle row; nothing is drawn where a control
+/// shows. A landscape window is too short for that: the text is one block from the header to
+/// the information line, and the middle row covers its centre while the controls are shown.
 ///
 /// Every measure is a fraction of the frame's shorter side, so a layout is the same at any
 /// scale.
@@ -112,10 +113,18 @@ public struct PiPLayout: Equatable, Sendable {
         return CGRect(x: side, y: margin * 0.6, width: CGFloat(width) - 2 * side, height: unit * 0.085)
     }
 
-    /// The counter («التكرار 37 من 100»), in large type above the middle row: in a wide window
-    /// under the header between the corner controls, in a narrow one across the window under
-    /// the corner controls (between them it would have to shrink).
+    /// The counter («التكرار 37 من 100»), in large type. Portrait: centred in the space between
+    /// the middle row and the information line, so the upper half is all text. Landscape: above
+    /// the text, under the header between the corner controls in a wide window, across the
+    /// window under the corner controls in a narrow one (between them it would have to shrink).
     public var counter: CGRect {
+        if isPortrait {
+            let height = unit * 0.13
+            let top = centerControls.maxY + gap
+            let space = info.minY - gap - top
+            return CGRect(x: margin, y: top + max(0, (space - height) / 2), width: CGFloat(width) - 2 * margin,
+                          height: min(height, space))
+        }
         let height = unit * 0.09
         if header.width >= unit * 1.1 {
             return CGRect(x: header.minX, y: header.maxY + gap / 2, width: header.width, height: height)
@@ -136,29 +145,25 @@ public struct PiPLayout: Equatable, Sendable {
         CGRect(x: margin, y: CGFloat(height) - unit * 0.05, width: CGFloat(width) - 2 * margin, height: unit * 0.011)
     }
 
-    /// The whole text area, between the header (and counter) and the information line.
+    /// The text area. Portrait: the upper half, from under the corner controls to just above
+    /// the middle row (the counter is below the row, so it takes nothing from here). Landscape:
+    /// from under the header (and counter) to the information line.
     public func body(withCounter: Bool) -> CGRect {
+        if isPortrait {
+            let top = max(header.maxY, cornersBottom) + gap
+            return CGRect(x: margin, y: top, width: CGFloat(width) - 2 * margin,
+                          height: centerControls.minY - gap - top)
+        }
         let top = max(withCounter ? counter.maxY : header.maxY, cornersBottom) + gap
         return CGRect(x: margin, y: top, width: CGFloat(width) - 2 * margin, height: info.minY - gap - top)
     }
 
-    /// Where the text is drawn, in reading order: above and below the middle control row when
-    /// both parts hold two lines at the smallest size, otherwise the whole text area.
-    public func textBlocks(withCounter: Bool) -> [CGRect] {
-        let body = body(withCounter: withCounter)
-        let center = centerControls
-        let top = CGRect(x: body.minX, y: body.minY, width: body.width, height: center.minY - gap - body.minY)
-        let bottom = CGRect(x: body.minX, y: center.maxY + gap, width: body.width,
-                            height: body.maxY - center.maxY - gap)
-        guard top.height >= minimumBlockHeight, bottom.height >= minimumBlockHeight else { return [body] }
-        return [top, bottom]
-    }
+    /// Where the text is drawn: the one text area. Kept as a list for the renderer and the
+    /// paginator, which place text block by block.
+    public func textBlocks(withCounter: Bool) -> [CGRect] { [body(withCounter: withCounter)] }
 
-    /// The text avoids the middle control row (two blocks).
-    public var textAvoidsCenterControls: Bool { textBlocks(withCounter: true).count == 2 }
-
-    /// Two lines of the tallest line style (verses, 1.5 line height) at the smallest size.
-    var minimumBlockHeight: CGFloat { bodySizes.last! * 1.5 * 2 + 8 }
+    /// The text is clear of the middle control row (portrait).
+    public var textAvoidsCenterControls: Bool { body(withCounter: true).maxY <= centerControls.minY }
 
     // MARK: Type sizes, largest first
 
@@ -166,6 +171,10 @@ public struct PiPLayout: Equatable, Sendable {
     /// smallest, which stays readable in a small window.
     public var bodySizes: [CGFloat] { [0.135, 0.12, 0.105, 0.095, 0.086].map { (unit * $0).rounded() } }
     var headerSizes: [CGFloat] { [0.05, 0.044, 0.038, 0.032].map { (unit * $0).rounded() } }
-    var counterSizes: [CGFloat] { [0.064, 0.056, 0.048, 0.041, 0.034].map { (unit * $0).rounded() } }
+    var counterSizes: [CGFloat] {
+        // Portrait has a band of its own for the counter, so it is drawn larger there.
+        (isPortrait ? [0.09, 0.078, 0.066, 0.056, 0.046, 0.038] : [0.064, 0.056, 0.048, 0.041, 0.034])
+            .map { (unit * $0).rounded() }
+    }
     var infoSizes: [CGFloat] { [0.042, 0.037, 0.032, 0.028].map { (unit * $0).rounded() } }
 }
