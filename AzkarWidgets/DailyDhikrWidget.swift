@@ -52,7 +52,7 @@ struct DailyDhikrWidget: Widget {
             DailyDhikrView(entry: entry)
         }
         .configurationDisplayName("ذكر اليوم")
-        .description("ذكر من أذكار التطبيق كل يوم. يفتحه في مكانه دون أن يُعدّ.")
+        .description("ذكر كل يوم من الأذكار التي اكتملت مراجعتها العلمية فقط، يفتحه في مكانه دون أن يُعدّ. وإلى أن يتوفر منها شيء يفتح التطبيق.")
         .supportedFamilies([.systemMedium, .systemLarge])
     }
 }
@@ -84,8 +84,13 @@ struct DailyDhikrView: View {
                 }
                 .widgetURL(AppLink.content(dhikr.ref).url)
             } else {
-                Text("افتح التطبيق لقراءة الأذكار.")
-                    .font(.footnote)
+                // No reviewed dhikr to show: a neutral link, never an unreviewed text.
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("الأذكار", systemImage: "hands.sparkles")
+                        .font(.caption.bold())
+                    Text("افتح التطبيق لقراءة الأذكار.")
+                        .font(.footnote)
+                }
                     .widgetURL(AppLink.home.url)
             }
         }

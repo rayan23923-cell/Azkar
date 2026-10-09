@@ -4,7 +4,14 @@ import ContentKit
 
 /// The dhikr of the day for the widget: one bundled dhikr, the same all day and for everyone,
 /// chosen in turn from the adhkar short enough to be shown whole (the text is never cut).
-/// Quranic text is left out: it is shown only in the readers, with the bundled Quran font.
+///
+/// Content gate: only items whose stored status is `REVIEWED` (approved by a named qualified
+/// reviewer, see docs/CONTENT_REVIEW_GATE.md) are ever chosen automatically. Items still
+/// `CONTENT_REVIEW_REQUIRED` are never picked, and Quranic text is left out (it is shown only
+/// in the readers, with the bundled Quran font). No bundled item is `REVIEWED` yet, so today
+/// the pool is empty and the widget shows a neutral placeholder. The readers still show every
+/// item as before; this gate only governs what is chosen without the user asking.
+/// A code gate is not scholarly review or rights clearance.
 public enum DailyDhikr {
     /// Longest text, in characters, that a medium widget shows in full.
     public static let maximumLength = 160
@@ -13,8 +20,15 @@ public enum DailyDhikr {
     /// on every device whatever order the collections load in.
     public static func pool(in library: AdhkarLibrary, maximumLength: Int = DailyDhikr.maximumLength) -> [DevotionalItem] {
         library.adhkar.flatMap(\.items)
-            .filter { !$0.text.isEmpty && $0.text.count <= maximumLength && $0.reviewStatus != .quranVerbatimTanzil }
+            .filter { isEligible($0, maximumLength: maximumLength) }
             .sorted { $0.ref < $1.ref }
+    }
+
+    /// Approved for automatic display: `REVIEWED` only, never Quranic text, and short enough to
+    /// show whole.
+    public static func isEligible(_ item: DevotionalItem, maximumLength: Int = DailyDhikr.maximumLength) -> Bool {
+        item.reviewStatus == .reviewed && item.ref.kind == .adhkar
+            && !item.text.isEmpty && item.text.count <= maximumLength
     }
 
     /// The day's dhikr: the pool taken in turn, one a day. Nil only when nothing is eligible.
