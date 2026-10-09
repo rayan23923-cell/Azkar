@@ -119,6 +119,29 @@ button drawn in the frame could never work. That is why counting uses skip forwa
 to another item stops the recording and loads the new one without playing it (the reader's
 rule). Seeking inside a recording is in-app only, since the skip buttons are navigation.
 
+### 5.1 What iOS lets this app configure (audit)
+
+The app uses `AVPictureInPictureController(contentSource:
+.init(sampleBufferDisplayLayer:playbackDelegate:))` with an `AVSampleBufferDisplayLayer`
+(`SampleBufferPiPController`).
+
+| Control | Who decides | This app |
+|---|---|---|
+| Close, return to app | iOS, always shown | Cannot be hidden or moved |
+| Play / pause button | iOS, always shown in sample-buffer PiP | Its icon only, from `pictureInPictureControllerIsPlaybackPaused`; taps reach `setPlaying(_:)` |
+| Skip back / forward | Shown while `requiresLinearPlayback == false` and the time range is finite | Kept, as they carry item navigation and the Hisn count. `requiresLinearPlayback = true` would remove them and the scrubbing together |
+| Skip interval icon (±10/15 s) | iOS | Cannot be relabelled; the sign gives the direction |
+| Progress bar | iOS, from `timeRangeForPlayback` and the timebase | A finite range (place in the container). A live range (infinite) changes the system UI and is not used, untested |
+| Show and hide of the controls | iOS (shown on a tap, hidden again) | Cannot be changed |
+| Custom buttons, taps on the frame | Not available | None: taps on the frame do not reach the app |
+| Window aspect | The enqueued frames' size | 16:9 (section 7) |
+
+So a single visible control is not possible through public API. Close, return to app and
+play/pause are always there, and removing the skip buttons removes counting and item
+navigation. Ordinary video-player PiP (`AVPlayerLayer` or `AVPlayerViewController`) has the
+same system buttons, driven by the player's state instead of a delegate. It adds no way to
+hide them, and it needs a video to play. No private API or key-value workaround is used.
+
 ## 6. Sections
 
 | Section | Title | Subtitle | Counter | Previous / next |
@@ -135,16 +158,40 @@ bundled Quran font.
 
 ## 7. Rendering
 
-`PiPFrameRenderer` draws a 1280×720 frame (16:9) with Core Text into the `CVPixelBuffer`. From
-the top: the title and subtitle, the page of the text, a progress bar filling from the right,
-and the footer (state, counter, «n من m», «صفحة p من q»). Everything is right to left, and
-Core Text handles Arabic shaping and diacritics. Dark and light palettes follow the app's
-appearance setting or the system's. The dark one is the POC's proven green.
+`PiPFrameRenderer` draws the frame with Core Text into the `CVPixelBuffer`. `PiPLayout` places
+every part from the frame's size, as fractions of its shorter side, so the same layout works
+at any size and in either orientation. The app draws 1280×720 (16:9), the size proven on a
+device. Everything is right to left, and Core Text handles Arabic shaping and diacritics. Dark
+and light palettes follow the app's appearance setting or the system's. The dark one is the
+POC's proven green.
 
-**Long text.** The body uses the largest of 84, 72, 62 or 54 pt that fits. Text that does not
-fit at 54 pt is split into pages at 54 pt, never shrunk further. Pages are exact slices of the
-stored text, broken after whitespace, and joined they give back the text (tested on the
-longest Hisn item and on verse 2:282).
+**Content first, around the system controls.** iOS draws its controls over the window and the
+app cannot move or remove them (section 5.1). The layout keeps every essential line out of
+their places:
+
+| Part | Where | Clear of |
+|---|---|---|
+| Title · subtitle | Top, between the two corner buttons | Close, return to app |
+| Counter («التكرار 37 من 100  ·  ⏩ عُدّ») | Large, across the window under the corner buttons, above the middle row | Every control |
+| Text | Between the counter (or header) and the information line | Corners and progress bar. The middle row (skip, play/pause) shows over it only while the controls are visible |
+| Information («▶︎ الصفحة التالية  ·  4 من 10  ·  صفحة 2 من 3») | Just above the system progress bar | Every control |
+| Thin progress line | Where the system bar shows | Nothing essential |
+
+The header, counter and information line each stay on one line, at a smaller size if they
+must (tested up to «اكتمل ✓ 1000 من 1000»).
+
+**Long text.** The body uses the largest of 86, 76, 68 or 62 px (of 720) that fits; the minimum
+was 54. Text that does not fit at 62 is split into pages at 62, never shrunk further. Pages are
+exact slices of the stored text, broken after whitespace, and joined they give back the text
+(tested on the longest Hisn item and on verse 2:282, in five frame sizes and both
+orientations). Larger type means more pages for long items.
+
+**Portrait.** A sample-buffer PiP window takes the aspect ratio of the frames enqueued, and the
+API sets no orientation limit, so a 9:16 frame gives a portrait window. `PiPLayout.portrait`
+is implemented and tested in the renderer. The app does not switch to it yet: only 16:9 has
+device evidence, and the window's portrait size and resizing on an iPhone are unverified.
+Switching is `PiPLayout.production` plus the inline preview's aspect ratio. Nothing switches
+orientation by itself.
 
 **Progress bar.** With a recording, the system's progress follows it (rate 1 while playing).
 Without one, the time range is the container's item count, and the bar shows the place in the
@@ -292,6 +339,10 @@ calls `PiPEngine.setPlaying`, `skipByInterval` calls `PiPEngine.skip`):
 | 12 | Arabic RTL and diacritics, dark mode, VoiceOver on the PiP button, lock/unlock | NOT_TESTED |
 | 13 | Another audio app (music, podcast) playing, then start PiP, then a phone call. Check what pauses, and that iOS's own play/pause calls (interruptions) do not turn pages unexpectedly | NOT_TESTED |
 | 14 | No black or frozen frame, no stale content after switching | NOT_TESTED |
+| 15 | Which controls show, and when: tap the window, note close, return, skip ±, play/pause and the progress bar, and how long they stay | NOT_TESTED |
+| 16 | With the controls shown, the title, the counter and the information line stay readable; only the text's middle is under the middle row | NOT_TESTED |
+| 17 | The smallest and largest window sizes (pinch): the text, counter and page line are readable and nothing is cut | NOT_TESTED |
+| 18 | The window is landscape (16:9) in portrait and landscape phone orientations | NOT_TESTED |
 
 Record each result (PASS or FAIL, with the iPhone model and iOS version) in place of
 NOT_TESTED. Only a result observed on a device changes a row.

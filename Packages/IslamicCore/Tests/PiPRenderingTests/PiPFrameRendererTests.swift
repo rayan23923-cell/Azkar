@@ -202,10 +202,19 @@ final class PiPFrameRendererTests: XCTestCase {
                         XCTAssertGreaterThanOrEqual(rendered.bodyCharactersDrawn, visible, "\(layout) page \(index): cut")
                         XCTAssertTrue(layout.bounds.contains(rendered.regions.body))
                         XCTAssertTrue(rendered.regions.linesFit)
+                        // Every line with Arabic letters runs right to left (a line of only
+                        // digits or punctuation has no direction of its own).
                         let lines = CTFrameGetLines(rendered.bodyFrame) as? [CTLine] ?? []
-                        for line in lines where CTLineGetStringRange(line).length > 1 {
+                        for line in lines {
+                            let range = CTLineGetStringRange(line)
+                            let slice = (page as NSString).substring(with: NSRange(location: range.location,
+                                                                                    length: range.length))
+                            guard slice.unicodeScalars.contains(where: { (0x0621...0x064A).contains($0.value) }) else {
+                                continue
+                            }
                             let runs = CTLineGetGlyphRuns(line) as? [CTRun] ?? []
-                            XCTAssertTrue(runs.contains { CTRunGetStatus($0).contains(.rightToLeft) })
+                            XCTAssertTrue(runs.contains { CTRunGetStatus($0).contains(.rightToLeft) },
+                                          "\(layout) page \(index): «\(slice)»")
                         }
                     }
                 }
