@@ -4,6 +4,7 @@ import ContentKit
 import QuranReading
 import HisnReading
 import PiPCore
+import PiPRendering
 
 /// The app's appearance setting, applied at the root.
 enum AppAppearance: String, CaseIterable {
@@ -36,6 +37,7 @@ struct SettingsView: View {
     @AppStorage("quran.textSize") private var quranTextSize: Double = 26
     @AppStorage("adhkar.textSize") private var adhkarTextSize: Double = 24
     @AppStorage(PiPAvailability.settingKey) private var pipEnabled = true
+    @AppStorage(PiPLayout.orientationKey) private var pipOrientation: PiPLayout.Orientation = .landscape
     @ObservedObject private var favorites = AppServices.shared.favorites
     @State private var confirmsReset = false
     @State private var confirmsFavorites = false
@@ -102,12 +104,20 @@ struct SettingsView: View {
                 if pipInBuild {
                     Toggle("العرض العائم", isOn: $pipEnabled)
                         .onChange(of: pipEnabled) { _, enabled in AppServices.shared.pip.setUserEnabled(enabled) }
+                    Picker("اتجاه النافذة العائمة", selection: $pipOrientation) {
+                        ForEach(PiPLayout.Orientation.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }
+                    if pipOrientation.layout != AppServices.shared.pipLayout {
+                        Text("يُطبَّق الاتجاه الجديد بعد إغلاق التطبيق وفتحه من جديد.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             } header: {
                 Text(pipInBuild ? "الصوت والعرض العائم" : "الصوت")
             } footer: {
                 Text(pipInBuild
-                     ? "يعرض الآية أو الذكر أو الدعاء الحالي في نافذة عائمة فوق التطبيقات الأخرى، مع السابق والتالي. يُفتح من زر «نافذة عائمة» في كل قسم. لا تُضمَّن تسجيلات صوتية في هذا الإصدار حتى تُستوفى حقوقها."
+                     ? "يعرض الآية أو الذكر أو الدعاء الحالي في نافذة عائمة فوق التطبيقات الأخرى. التشغيل والإيقاف يقلّبان الصفحات، والتقديم والرجوع ينتقلان بين العناصر، وفي حصن المسلم يعدّ التقديم التكرار. يُفتح من زر «نافذة عائمة» في كل قسم. لا تُضمَّن تسجيلات صوتية في هذا الإصدار حتى تُستوفى حقوقها."
                      : "لا تُضمَّن تسجيلات صوتية في هذا الإصدار حتى تُستوفى حقوقها.")
             }
 

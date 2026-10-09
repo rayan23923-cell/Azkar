@@ -167,18 +167,19 @@ final class SampleBufferPiPController: NSObject, PiPController {
             kCVPixelBufferCGBitmapContextCompatibilityKey: true,
             kCVPixelBufferIOSurfacePropertiesKey: [:] as [String: Any],
         ]
+        let layout = AppServices.shared.pipLayout
         var pixelBuffer: CVPixelBuffer?
-        guard CVPixelBufferCreate(kCFAllocatorDefault, PiPFrameRenderer.width, PiPFrameRenderer.height,
+        guard CVPixelBufferCreate(kCFAllocatorDefault, layout.width, layout.height,
                                   kCVPixelFormatType_32BGRA, attrs as CFDictionary, &pixelBuffer) == kCVReturnSuccess,
               let pb = pixelBuffer else { return nil }
         CVPixelBufferLockBaseAddress(pb, [])
         defer { CVPixelBufferUnlockBaseAddress(pb, []) }
-        guard let context = CGContext(data: CVPixelBufferGetBaseAddress(pb), width: PiPFrameRenderer.width,
-                                      height: PiPFrameRenderer.height, bitsPerComponent: 8,
+        guard let context = CGContext(data: CVPixelBufferGetBaseAddress(pb), width: layout.width,
+                                      height: layout.height, bitsPerComponent: 8,
                                       bytesPerRow: CVPixelBufferGetBytesPerRow(pb), space: CGColorSpaceCreateDeviceRGB(),
                                       bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
                                           | CGBitmapInfo.byteOrder32Little.rawValue) else { return nil }
-        PiPFrameRenderer.draw(frame, appearance: appearance, badge: badge, in: context)
+        PiPFrameRenderer.draw(frame, appearance: appearance, badge: badge, layout: layout, in: context)
         return pb
     }
 

@@ -142,19 +142,23 @@ final class AppServices: ObservableObject {
     let content = ContentStore()
     /// The one PiP engine of the app (Quran, Hisn, adhkar and duas).
     let pip: PiPEngine
+    /// The PiP frame's size and layout, from the orientation setting read at launch (pages and
+    /// frames must agree, so a change applies the next time the app opens).
+    let pipLayout: PiPLayout
 
     private init() {
         reminders = ReminderController(store: UserDefaultsReminderStore(), scheduler: SystemReminderScheduler())
         dailyProgress = UserDefaultsDailyProgressStore()
         favorites = FavoritesModel(store: UserDefaultsFavoritesStore())
         devotionalPositions = UserDefaultsDevotionalPositionStore()
-        // PiP is offered only when this build declares the PiP background mode (Debug and the
-        // device-test build do; Release does not yet, see docs/UNIFIED_PIP.md) and the user's
+        // PiP is offered only when this build declares the PiP background mode (see
+        // docs/UNIFIED_PIP.md) and the user's
         // «العرض العائم» setting is on. It always starts from a button, never automatically.
         let availability = PiPAvailability(
             backgroundModeDeclared: PiPAvailability.backgroundModeDeclared(in: Bundle.main.infoDictionary),
             userEnabled: UserDefaults.standard.object(forKey: PiPAvailability.settingKey) as? Bool ?? true)
-        pip = PiPEngine(paginator: CoreTextPiPPaginator(), sessionStore: UserDefaultsPiPSessionStore(),
+        pipLayout = PiPLayout.saved()
+        pip = PiPEngine(paginator: CoreTextPiPPaginator(layout: pipLayout), sessionStore: UserDefaultsPiPSessionStore(),
                         availability: availability)
         pip.onRestoreUserInterface = { [router] type in
             // "Return to app" in the window opens the section it shows.

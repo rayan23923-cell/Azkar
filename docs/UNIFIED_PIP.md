@@ -187,11 +187,11 @@ exact slices of the stored text, broken after whitespace, and joined they give b
 orientations). Larger type means more pages for long items.
 
 **Portrait.** A sample-buffer PiP window takes the aspect ratio of the frames enqueued, and the
-API sets no orientation limit, so a 9:16 frame gives a portrait window. `PiPLayout.portrait`
-is implemented and tested in the renderer. The app does not switch to it yet: only 16:9 has
-device evidence, and the window's portrait size and resizing on an iPhone are unverified.
-Switching is `PiPLayout.production` plus the inline preview's aspect ratio. Nothing switches
-orientation by itself.
+API sets no orientation limit, so a 9:16 frame gives a portrait window. Settings has
+«اتجاه النافذة العائمة»: أفقي (the default, 16:9, the device-proven size) or عمودي (تجريبي,
+9:16). The choice is read when the app opens (`PiPLayout.saved()`), so the pages and the frames
+always agree; a change applies after the app is closed and opened again. Portrait has not
+been run on a device. Nothing switches orientation by itself.
 
 **Progress bar.** With a recording, the system's progress follows it (rate 1 while playing).
 Without one, the time range is the container's item count, and the bar shows the place in the
@@ -342,7 +342,7 @@ calls `PiPEngine.setPlaying`, `skipByInterval` calls `PiPEngine.skip`):
 | 15 | Which controls show, and when: tap the window, note close, return, skip ±, play/pause and the progress bar, and how long they stay | NOT_TESTED |
 | 16 | With the controls shown, the title, the counter and the information line stay readable; only the text's middle is under the middle row | NOT_TESTED |
 | 17 | The smallest and largest window sizes (pinch): the text, counter and page line are readable and nothing is cut | NOT_TESTED |
-| 18 | The window is landscape (16:9) in portrait and landscape phone orientations | NOT_TESTED |
+| 18 | Landscape setting: the window is 16:9. Portrait setting (after reopening the app): the window is tall, the text wraps and pages, and the controls do not cover the counter. In both phone orientations | NOT_TESTED |
 
 Record each result (PASS or FAIL, with the iPhone model and iOS version) in place of
 NOT_TESTED. Only a result observed on a device changes a row.
@@ -354,7 +354,7 @@ NOT_TESTED. Only a result observed on a device changes a row.
 - While the controls are shown, the middle row covers the middle of the text; the header,
   counter and information line stay clear. Where iOS draws its controls is from the system's
   standard PiP layout and needs a device check (section 13, rows 15–17).
-- The app draws 16:9 only; portrait is implemented in the renderer but not switched on.
+- Portrait is a setting, off by default and not yet run on a device; it applies after reopening the app.
 - Play/pause cannot be hidden in a sample-buffer PiP. In text mode it turns pages, and for a
   one-page text it does nothing. Whether iOS redraws its icon at once after each tap is
   device-only behaviour (the app asks it to with `invalidatePlaybackState`).

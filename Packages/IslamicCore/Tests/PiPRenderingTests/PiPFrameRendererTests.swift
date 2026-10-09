@@ -222,6 +222,22 @@ final class PiPFrameRendererTests: XCTestCase {
         }
     }
 
+    /// The «اتجاه النافذة العائمة» setting: landscape unless portrait is picked.
+    func testOrientationSetting() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: "pip.orientation.test"))
+        defaults.removePersistentDomain(forName: "pip.orientation.test")
+        XCTAssertEqual(PiPLayout.saved(in: defaults), .landscape, "default")
+        defaults.set("portrait", forKey: PiPLayout.orientationKey)
+        XCTAssertEqual(PiPLayout.saved(in: defaults), .portrait)
+        XCTAssertEqual(CoreTextPiPPaginator(layout: PiPLayout.saved(in: defaults)).layout, .portrait)
+        defaults.set("sideways", forKey: PiPLayout.orientationKey)
+        XCTAssertEqual(PiPLayout.saved(in: defaults), .landscape, "unknown value")
+        defaults.set("landscape", forKey: PiPLayout.orientationKey)
+        XCTAssertEqual(PiPLayout.saved(in: defaults), .landscape)
+        XCTAssertEqual(PiPLayout.Orientation.allCases.map(\.layout), [.landscape, .portrait])
+        defaults.removePersistentDomain(forName: "pip.orientation.test")
+    }
+
     /// The readable minimum is larger than before (62 px of 720, was 54).
     func testSmallestBodySizeStaysReadable() {
         XCTAssertGreaterThanOrEqual(PiPFrameRenderer.minimumFontSize, 62)

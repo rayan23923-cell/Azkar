@@ -23,11 +23,40 @@ public struct PiPLayout: Equatable, Sendable {
 
     /// 16:9, the size the sample-buffer PiP path was proven with on a device.
     public static let landscape = PiPLayout(width: 1280, height: 720)
-    /// 9:16. The window takes the shape of the frames, so this gives a portrait window, but
-    /// it has not been run on a device.
+    /// 9:16. The window takes the shape of the frames, so this gives a portrait window. Not
+    /// yet run on a device.
     public static let portrait = PiPLayout(width: 720, height: 1280)
-    /// What the app draws.
+    /// The default: what the app draws unless the user picks portrait.
     public static let production = landscape
+
+    /// The window shape the user picks in Settings («اتجاه النافذة العائمة»). Landscape is the
+    /// default; portrait is offered for testing on a device.
+    public enum Orientation: String, CaseIterable, Sendable {
+        case landscape
+        case portrait
+
+        public var title: String {
+            switch self {
+            case .landscape: return "أفقي"
+            case .portrait: return "عمودي (تجريبي)"
+            }
+        }
+
+        public var layout: PiPLayout {
+            switch self {
+            case .landscape: return .landscape
+            case .portrait: return .portrait
+            }
+        }
+    }
+
+    /// The UserDefaults key of the orientation setting.
+    public static let orientationKey = "pip.orientation"
+
+    /// The layout for the saved setting; landscape when it is missing or unknown.
+    public static func saved(in defaults: UserDefaults = .standard) -> PiPLayout {
+        (defaults.string(forKey: orientationKey).flatMap(Orientation.init(rawValue:)) ?? .landscape).layout
+    }
 
     public var isPortrait: Bool { height > width }
     public var size: CGSize { CGSize(width: width, height: height) }

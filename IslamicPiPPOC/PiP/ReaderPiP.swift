@@ -60,7 +60,8 @@ struct PiPEntryView: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 12) {
                     PiPLayerView(controller: pip.controller)
-                        .aspectRatio(16 / 9, contentMode: .fit)
+                        .aspectRatio(CGFloat(AppServices.shared.pipLayout.width)
+                                     / CGFloat(AppServices.shared.pipLayout.height), contentMode: .fit)
                         .frame(height: 44)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                         .accessibilityHidden(true)
