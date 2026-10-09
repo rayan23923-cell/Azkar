@@ -1,13 +1,16 @@
 import Foundation
 
-/// The two levels of PiP navigation behind the one pair of system skip buttons.
+/// What the system PiP buttons do. A sample-buffer PiP window has three: play / pause and skip
+/// back / forward. Nothing drawn inside the window can be tapped.
 ///
-/// - Presentation: the pages of a long item.
-/// - Content: the previous / next item (verse, dhikr, dua, Hisn item).
+/// - Presentation (play / pause, text without a recording): play shows the next page of a long
+///   item, pause the previous one. They stop at the first and last page and never change the
+///   item; a one-page item has nothing to turn.
+/// - Content (skip back / forward): the previous / next item (verse, dhikr, dua, Hisn item).
+///   Skip forward on an item PiP counts (`PiPContent.repetition`) records one recitation until
+///   the count is complete; only then does it move on.
 ///
-/// Next shows the next page while the item has one, and only then the next item; previous
-/// mirrors it. A single-page item has no page step. Nothing moves past the first or last item:
-/// PiP never completes a chapter or opens another surah or collection.
+/// Nothing moves past the first or last item: PiP never opens another surah or collection.
 public enum PiPNavigation {
     public enum Direction: Equatable, Sendable {
         case previous
@@ -25,17 +28,27 @@ public enum PiPNavigation {
         case nextPage
         case previousItem
         case nextItem
-        /// At the first / last page of the first / last item.
+        case countRepetition
+        /// At a boundary, or nothing to do (a one-page item has no page step).
         case none
     }
 
-    public static func resolve(_ direction: Direction, pages: PiPPageModel, content: PiPContent) -> Action {
+    /// Play / pause in text mode: play → next page, pause → previous page.
+    public static func page(playing: Bool, pages: PiPPageModel) -> Action {
+        if playing { return pages.isLastPage ? .none : .nextPage }
+        return pages.isFirstPage ? .none : .previousPage
+    }
+
+    /// Skip back / forward.
+    public static func resolve(_ direction: Direction, content: PiPContent) -> Action {
         switch direction {
         case .next:
-            if !pages.isLastPage { return .nextPage }
+            if let repetition = content.repetition {
+                // Counting first; a complete count moves on (the provider decides what is next).
+                return repetition.isComplete ? .nextItem : .countRepetition
+            }
             return content.isLast ? .none : .nextItem
         case .previous:
-            if !pages.isFirstPage { return .previousPage }
             return content.isFirst ? .none : .previousItem
         }
     }

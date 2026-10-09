@@ -281,7 +281,7 @@ extension SampleBufferPiPController: AVPictureInPictureSampleBufferPlaybackDeleg
                                                 completion completionHandler: @escaping () -> Void) {
         let seconds = CMTimeGetSeconds(skipInterval)
         onMain { pip in
-            // Previous / next page, then item (PiPNavigation); never a seek, never audio-driven.
+            // Previous / next item, or one Hisn recitation (PiPNavigation); never a seek.
             pip.commands?.skip(by: seconds.isFinite ? seconds : 0)
             completionHandler()
         }

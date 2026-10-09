@@ -9,11 +9,13 @@ import Foundation
 ///   `PiPContentProvider`. At most one of them runs PiP at a time.
 /// - **Switching sections**: starting PiP from another screen stops the running session first,
 ///   saves it, and starts the new one when the system reports the old window closed.
-/// - **Controls**: play / pause drives the item's recording when one is loaded; without one it
-///   turns the pages of a long text (never the item). Skip back / forward is `PiPNavigation`:
-///   page first, then item. A recording that ends stays on its item.
-/// - **Progress**: PiP navigates through the section's own reader, which saves its position;
-///   PiP never counts a repetition. The session itself is saved in `PiPSessionStore`.
+/// - **Controls** (`PiPNavigation`): play / pause drives the item's recording when one is
+///   loaded; without one, play shows the next page of a long text and pause the previous one
+///   (never the item). Skip back / forward changes the item; on a Hisn item with a count, skip
+///   forward records one recitation until the count is complete. A recording that ends stays
+///   on its item.
+/// - **Progress**: PiP navigates and counts through the section's own reader, which saves its
+///   position and its count at once. The session itself is saved in `PiPSessionStore`.
 @MainActor
 public final class PiPEngine: ObservableObject {
     @Published public private(set) var state: PiPState = .inactive
@@ -22,9 +24,6 @@ public final class PiPEngine: ObservableObject {
     @Published public private(set) var activeContentType: PiPContentType?
     /// Called when the user taps "return to app" in the window, with the section shown.
     public var onRestoreUserInterface: ((PiPContentType) -> Void)?
-    /// Seconds each page of a long text stays when its pages turn by themselves.
-    public let pageTurnInterval: TimeInterval
-
     private let paginator: PiPPaginating
     private let sessionStore: PiPSessionStore
     private let now: () -> Date
@@ -33,8 +32,9 @@ public final class PiPEngine: ObservableObject {
     private var active: Pair?
     private var pending: Pair?
     private var pages: PiPPageModel?
-    private var textPlaying = false
-    private var lastPageTurn: Date?
+    /// Text mode: the play / pause button's next tap goes back a page (it shows pause). Set on
+    /// reaching the last page, cleared on reaching the first, so every tap turns a page.
+    private var pagingBack = false
     private var subscription: AnyCancellable?
     private var visibleControllers: Set<ObjectIdentifier> = []
     /// The provider of the last start request, so only its screen shows a failure.
@@ -42,11 +42,10 @@ public final class PiPEngine: ObservableObject {
     private var paginationCache: [String: PiPPagination] = [:]
 
     public init(paginator: PiPPaginating, sessionStore: PiPSessionStore, availability: PiPAvailability,
-                pageTurnInterval: TimeInterval = 8, now: @escaping () -> Date = Date.init) {
+                now: @escaping () -> Date = Date.init) {
         self.paginator = paginator
         self.sessionStore = sessionStore
         self.availability = availability
-        self.pageTurnInterval = pageTurnInterval
         self.now = now
     }
 
@@ -139,8 +138,7 @@ public final class PiPEngine: ObservableObject {
         active = (provider, controller)
         activeContentType = content.contentType
         pages = pageModel(for: content)
-        textPlaying = false
-        lastPageTurn = nil
+        pagingBack = false
         state = state.applying(.startRequested)
         subscription = provider.changes
             .receive(on: DispatchQueue.main)
@@ -162,8 +160,7 @@ public final class PiPEngine: ObservableObject {
         active = nil
         activeContentType = nil
         pages = nil
-        textPlaying = false
-        lastPageTurn = nil
+        pagingBack = false
         updateHeartbeat(finished.controller)
     }
 
@@ -218,8 +215,7 @@ public final class PiPEngine: ObservableObject {
         }
         if pages?.contentID != content.contentID {
             pages = pageModel(for: content)
-            textPlaying = false
-            lastPageTurn = nil
+            pagingBack = false
         }
         state = state.applying(.playingChanged(isPlaying))
         saveSession()
@@ -238,22 +234,23 @@ public final class PiPEngine: ObservableObject {
     public func frame(for provider: PiPContentProvider) -> PiPFrame? {
         guard let content = provider.current else { return nil }
         let isActive = active?.provider === provider
-        if isActive { turnPageIfDue() }
         var model = pageModel(for: content)
         if isActive, let pages, pages.contentID == content.contentID { model = pages }
         let playback = provider.playback.flatMap { $0.isAvailable ? $0 : nil }
-        let playing = isActive ? isPlaying : (playback?.isPlaying ?? false)
         if let playback {
+            let playing = isActive ? isPlaying : playback.isPlaying
             return PiPFrame(content: content, pageText: model.pageText, page: model.currentPage,
                             pageCount: model.totalPages, fontSize: model.pagination.fontSize, mode: .audio,
                             isPlaying: playing, time: playback.currentTime, duration: playback.duration ?? 0,
                             rate: playing ? 1 : 0)
         }
-        // Text: the system progress bar shows the place in the container.
+        // Text: the play / pause button shows pause while its next tap goes back a page.
+        let showsPause = isActive && pagingBack && model.hasPages
+        // The system progress bar shows the place in the container.
         let time = Double(content.index) + Double(model.currentPage + 1) / Double(model.totalPages)
         return PiPFrame(content: content, pageText: model.pageText, page: model.currentPage,
                         pageCount: model.totalPages, fontSize: model.pagination.fontSize, mode: .text,
-                        isPlaying: playing, time: time, duration: Double(content.total), rate: 0)
+                        isPlaying: showsPause, time: time, duration: Double(content.total), rate: 0)
     }
 
     /// The running session's page (0-based) and page count.
@@ -261,10 +258,10 @@ public final class PiPEngine: ObservableObject {
         pages.map { ($0.currentPage, $0.totalPages) }
     }
 
+    /// A recording plays. Text never plays: its pages turn only on a tap.
     private var isPlaying: Bool {
-        guard let provider = active?.provider else { return false }
-        if let playback = provider.playback, playback.isAvailable { return playback.isPlaying }
-        return textPlaying
+        guard let playback = active?.provider.playback, playback.isAvailable else { return false }
+        return playback.isPlaying
     }
 
     private func pageModel(for content: PiPContent) -> PiPPageModel {
@@ -278,21 +275,6 @@ public final class PiPEngine: ObservableObject {
             paginationCache[key] = pagination
         }
         return PiPPageModel(contentID: content.contentID, pagination: pagination)
-    }
-
-    /// Text playing: the next page after `pageTurnInterval`; stops (paused) on the last page.
-    /// Never moves to the next item.
-    private func turnPageIfDue() {
-        guard textPlaying, var model = pages, let last = lastPageTurn,
-              now().timeIntervalSince(last) >= pageTurnInterval else { return }
-        model.nextPage()
-        pages = model
-        lastPageTurn = now()
-        if model.isLastPage {
-            textPlaying = false
-            state = state.applying(.playingChanged(false))
-        }
-        saveSession()
     }
 
     private func saveSession(_ status: PiPSession.Status? = nil) {
@@ -313,50 +295,49 @@ public final class PiPEngine: ObservableObject {
 // MARK: - System buttons
 
 extension PiPEngine: PiPCommandHandling {
-    /// Play / pause. With a recording: the recording. Without one: the pages of a long text
-    /// turn by themselves until its last page; a one-page text has nothing to play.
+    /// Play / pause. With a recording: the recording. Without one: play shows the next page of a
+    /// long text, pause the previous one, stopping at the first and last page; a one-page text
+    /// has nothing to turn. The page is drawn at once.
     public func setPlaying(_ playing: Bool) {
-        guard let active, active.provider.current != nil else { return }
+        guard let active, let content = active.provider.current else { return }
         if let playback = active.provider.playback, playback.isAvailable {
             if playing { playback.play() } else { playback.pause() }
-        } else if playing {
-            let model = pages
-            textPlaying = (model?.hasPages ?? false) && !(model?.isLastPage ?? true)
-            lastPageTurn = now()
+            state = state.applying(.playingChanged(isPlaying))
         } else {
-            textPlaying = false
+            if pages?.contentID != content.contentID {
+                pages = pageModel(for: content)
+                pagingBack = false
+            }
+            guard var model = pages else { return }
+            switch PiPNavigation.page(playing: playing, pages: model) {
+            case .nextPage: model.nextPage()
+            case .previousPage: model.previousPage()
+            default: break
+            }
+            pages = model
+            if model.isLastPage && model.hasPages { pagingBack = true }
+            if model.isFirstPage { pagingBack = false }
         }
-        state = state.applying(.playingChanged(isPlaying))
         saveSession()
+        // Also when nothing moved: the system shows its own guess of the button until asked.
         active.controller.refresh()
     }
 
-    /// Skip back / forward: previous / next page, then previous / next item.
+    /// Skip back / forward: the previous / next item, or one recitation of a Hisn item.
     public func skip(by seconds: TimeInterval) {
         guard let direction = PiPNavigation.Direction(skip: seconds), let active,
               let content = active.provider.current else { return }
-        if pages?.contentID != content.contentID { pages = pageModel(for: content) }
-        guard var model = pages else { return }
-        switch PiPNavigation.resolve(direction, pages: model, content: content) {
-        case .nextPage:
-            model.nextPage()
-            pages = model
-            lastPageTurn = now()
-            if model.isLastPage && textPlaying {
-                textPlaying = false
-                state = state.applying(.playingChanged(isPlaying))
-            }
-        case .previousPage:
-            model.previousPage()
-            pages = model
-            lastPageTurn = now()
+        switch PiPNavigation.resolve(direction, content: content) {
+        case .countRepetition:
+            active.provider.recordRepetition()
+            contentChanged()
         case .nextItem:
             active.provider.goToNext()
             contentChanged()
         case .previousItem:
             active.provider.goToPrevious()
             contentChanged()
-        case .none:
+        case .nextPage, .previousPage, .none:
             break
         }
         saveSession()

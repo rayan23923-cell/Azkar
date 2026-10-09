@@ -25,6 +25,22 @@ public enum PiPTextStyle: String, Codable, Sendable {
     case quran
 }
 
+/// A repetition counter PiP can advance (Hisn Al-Muslim): the item's required count and how
+/// many recitations are done. Read from the section's own counter, never from display text.
+public struct PiPRepetition: Equatable, Sendable {
+    public let completed: Int
+    public let total: Int
+
+    public init(completed: Int, total: Int) {
+        self.total = max(1, total)
+        self.completed = min(max(0, completed), self.total)
+    }
+
+    public var isComplete: Bool { completed >= total }
+    /// The recitation in progress (1-based), or the total once complete.
+    public var current: Int { min(completed + 1, total) }
+}
+
 /// The item a section puts in the PiP window, read from the section's own reader. PiP owns none
 /// of it: the text is the stored one, unchanged.
 public struct PiPContent: Equatable, Sendable {
@@ -44,10 +60,12 @@ public struct PiPContent: Equatable, Sendable {
     public let total: Int
     /// A counter line such as «التكرار 2 من 3», or nil when the item has none.
     public let detail: String?
+    /// The counter the skip-forward button advances in PiP; nil when PiP does not count this item.
+    public let repetition: PiPRepetition?
 
     public init(contentType: PiPContentType, contentID: String, containerID: String, title: String,
                 subtitle: String, text: String, textStyle: PiPTextStyle = .standard, index: Int, total: Int,
-                detail: String? = nil) {
+                detail: String? = nil, repetition: PiPRepetition? = nil) {
         self.contentType = contentType
         self.contentID = contentID
         self.containerID = containerID
@@ -58,6 +76,7 @@ public struct PiPContent: Equatable, Sendable {
         self.index = index
         self.total = max(1, total)
         self.detail = detail
+        self.repetition = repetition
     }
 
     public var isFirst: Bool { index <= 0 }
@@ -67,7 +86,7 @@ public struct PiPContent: Equatable, Sendable {
 /// What the window draws for one frame: the item, the page of its text, and the playback state.
 public struct PiPFrame: Equatable, Sendable {
     public enum Mode: Equatable, Sendable {
-        /// No recording: text only. Play turns the pages of a long text.
+        /// No recording: text only. Play shows the next page of a long text, pause the previous.
         case text
         /// A production recording is loaded for the item.
         case audio
@@ -82,6 +101,8 @@ public struct PiPFrame: Equatable, Sendable {
     /// The point size the body is drawn at (the same for every page of an item).
     public let fontSize: Double
     public let mode: Mode
+    /// What the system play / pause button shows: pause while this is true. With a recording,
+    /// whether it plays. In text mode, true while the button's next tap goes back a page.
     public let isPlaying: Bool
     /// Where the system PiP progress bar stands: seconds, and the rate it moves at.
     public let time: Double
@@ -102,14 +123,18 @@ public struct PiPFrame: Equatable, Sendable {
         self.rate = rate
     }
 
-    /// The footer line: state, counter, position and page, right to left.
+    /// The footer line, right to left: the counter first (it is what a reciter looks for), what
+    /// the buttons do next, the position and the page.
     public var footer: String {
         var parts: [String] = []
+        if let detail = content.detail { parts.append(detail) }
+        // The skip-forward button counts a recitation, then moves on once the count is done.
+        if let repetition = content.repetition { parts.append(repetition.isComplete ? "⏩ التالي" : "⏩ عُدّ") }
         switch mode {
         case .audio: parts.append(isPlaying ? "▶︎ يُشغَّل" : "⏸ متوقف")
-        case .text: if pageCount > 1 && isPlaying { parts.append("▶︎ تقليب الصفحات") }
+        // The play / pause button turns the pages: say which way its next tap goes.
+        case .text: if pageCount > 1 { parts.append(isPlaying ? "⏸ الصفحة السابقة" : "▶︎ الصفحة التالية") }
         }
-        if let detail = content.detail { parts.append(detail) }
         parts.append("\(content.index + 1) من \(content.total)")
         if pageCount > 1 { parts.append("صفحة \(page + 1) من \(pageCount)") }
         return parts.joined(separator: "  ·  ")

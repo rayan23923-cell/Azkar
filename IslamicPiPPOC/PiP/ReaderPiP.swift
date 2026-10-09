@@ -78,7 +78,7 @@ struct PiPEntryView: View {
                     .accessibilityLabel(pip.isRunning ? "إغلاق النافذة العائمة" : startTitle)
                     .accessibilityHint(pip.isRunning
                         ? "يغلق النافذة العائمة ويبقى موضع القراءة كما هو"
-                        : "يعرض النص الحالي في نافذة عائمة فوق التطبيقات الأخرى، مع السابق والتالي")
+                        : "يعرض النص الحالي في نافذة عائمة فوق التطبيقات الأخرى. التشغيل والإيقاف يقلّبان الصفحات، والتقديم والرجوع ينتقلان بين العناصر")
                     Spacer(minLength: 0)
                 }
                 .buttonStyle(.bordered)

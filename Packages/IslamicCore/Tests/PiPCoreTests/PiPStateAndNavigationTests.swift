@@ -117,9 +117,9 @@ final class PiPPageModelTests: XCTestCase {
 }
 
 final class PiPNavigationTests: XCTestCase {
-    private func content(_ index: Int, of total: Int) -> PiPContent {
+    private func content(_ index: Int, of total: Int, repetition: PiPRepetition? = nil) -> PiPContent {
         PiPContent(contentType: .dhikr, contentID: "\(index)", containerID: "c", title: "t", subtitle: "s",
-                   text: "x", index: index, total: total)
+                   text: "x", index: index, total: total, repetition: repetition)
     }
 
     private func pages(_ count: Int, at page: Int = 0) -> PiPPageModel {
@@ -127,26 +127,53 @@ final class PiPNavigationTests: XCTestCase {
                      currentPage: page)
     }
 
-    func testSinglePageItemsMoveBetweenItems() {
-        XCTAssertEqual(PiPNavigation.resolve(.next, pages: pages(1), content: content(1, of: 4)), .nextItem)
-        XCTAssertEqual(PiPNavigation.resolve(.previous, pages: pages(1), content: content(1, of: 4)), .previousItem)
+    func testSkipMovesBetweenItems() {
+        XCTAssertEqual(PiPNavigation.resolve(.next, content: content(1, of: 4)), .nextItem)
+        XCTAssertEqual(PiPNavigation.resolve(.previous, content: content(1, of: 4)), .previousItem)
     }
 
     func testEndsDoNotMove() {
-        XCTAssertEqual(PiPNavigation.resolve(.previous, pages: pages(1), content: content(0, of: 4)), .none)
-        XCTAssertEqual(PiPNavigation.resolve(.next, pages: pages(1), content: content(3, of: 4)), .none)
-        XCTAssertEqual(PiPNavigation.resolve(.next, pages: pages(1), content: content(0, of: 1)), .none)
+        XCTAssertEqual(PiPNavigation.resolve(.previous, content: content(0, of: 4)), .none)
+        XCTAssertEqual(PiPNavigation.resolve(.next, content: content(3, of: 4)), .none)
+        XCTAssertEqual(PiPNavigation.resolve(.next, content: content(0, of: 1)), .none)
     }
 
-    func testPagesComeBeforeItems() {
-        XCTAssertEqual(PiPNavigation.resolve(.next, pages: pages(3, at: 0), content: content(1, of: 4)), .nextPage)
-        XCTAssertEqual(PiPNavigation.resolve(.next, pages: pages(3, at: 1), content: content(1, of: 4)), .nextPage)
-        XCTAssertEqual(PiPNavigation.resolve(.next, pages: pages(3, at: 2), content: content(1, of: 4)), .nextItem)
-        XCTAssertEqual(PiPNavigation.resolve(.previous, pages: pages(3, at: 2), content: content(1, of: 4)), .previousPage)
-        XCTAssertEqual(PiPNavigation.resolve(.previous, pages: pages(3, at: 0), content: content(1, of: 4)), .previousItem)
-        // The last item's pages still turn; only past its last page is there nothing.
-        XCTAssertEqual(PiPNavigation.resolve(.next, pages: pages(2, at: 0), content: content(3, of: 4)), .nextPage)
-        XCTAssertEqual(PiPNavigation.resolve(.next, pages: pages(2, at: 1), content: content(3, of: 4)), .none)
+    func testPlayIsTheNextPageAndPauseThePrevious() {
+        XCTAssertEqual(PiPNavigation.page(playing: true, pages: pages(3, at: 0)), .nextPage)
+        XCTAssertEqual(PiPNavigation.page(playing: true, pages: pages(3, at: 1)), .nextPage)
+        XCTAssertEqual(PiPNavigation.page(playing: true, pages: pages(3, at: 2)), .none, "no wrap")
+        XCTAssertEqual(PiPNavigation.page(playing: false, pages: pages(3, at: 2)), .previousPage)
+        XCTAssertEqual(PiPNavigation.page(playing: false, pages: pages(3, at: 1)), .previousPage)
+        XCTAssertEqual(PiPNavigation.page(playing: false, pages: pages(3, at: 0)), .none, "no wrap")
+        XCTAssertEqual(PiPNavigation.page(playing: true, pages: pages(1)), .none, "one page: nothing to turn")
+        XCTAssertEqual(PiPNavigation.page(playing: false, pages: pages(1)), .none)
+    }
+
+    func testSkipForwardCountsBeforeMovingOn() {
+        for total in [1, 3, 100, 101, 1000] {
+            for completed in 0..<min(total, 3) {
+                let item = content(1, of: 4, repetition: PiPRepetition(completed: completed, total: total))
+                XCTAssertEqual(PiPNavigation.resolve(.next, content: item), .countRepetition, "\(completed)/\(total)")
+                XCTAssertEqual(PiPNavigation.resolve(.previous, content: item), .previousItem, "back never counts")
+            }
+            let last = content(1, of: 4, repetition: PiPRepetition(completed: total - 1, total: total))
+            XCTAssertEqual(PiPNavigation.resolve(.next, content: last), .countRepetition)
+            let done = content(1, of: 4, repetition: PiPRepetition(completed: total, total: total))
+            XCTAssertEqual(PiPNavigation.resolve(.next, content: done), .nextItem)
+        }
+        // The last item is counted too; the provider decides what follows.
+        XCTAssertEqual(PiPNavigation.resolve(.next, content: content(3, of: 4, repetition: PiPRepetition(completed: 0, total: 3))),
+                       .countRepetition)
+    }
+
+    func testRepetitionHasNoUpperLimit() {
+        let large = PiPRepetition(completed: 136, total: 1000)
+        XCTAssertEqual(large.current, 137)
+        XCTAssertFalse(large.isComplete)
+        XCTAssertEqual(PiPRepetition(completed: 101, total: 101).current, 101)
+        XCTAssertTrue(PiPRepetition(completed: 101, total: 101).isComplete)
+        XCTAssertEqual(PiPRepetition(completed: 500, total: 101).completed, 101, "never past the total")
+        XCTAssertEqual(PiPRepetition(completed: -1, total: 3).completed, 0)
     }
 
     func testSkipSignGivesTheDirection() {

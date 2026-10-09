@@ -19,6 +19,14 @@ public protocol PiPContentProvider: AnyObject {
     var changes: AnyPublisher<Void, Never> { get }
     /// Saves the reader's position (PiP is closing).
     func persist()
+    /// Counts one recitation of `current` (its `repetition` is not complete), through the
+    /// section's own counter. Only the skip-forward button calls it, never navigation or display.
+    func recordRepetition()
+}
+
+public extension PiPContentProvider {
+    /// Sections whose items PiP does not count.
+    func recordRepetition() {}
 }
 
 /// A loaded recording, as PiP sees it. A recording that ends stays on its item: PiP never moves

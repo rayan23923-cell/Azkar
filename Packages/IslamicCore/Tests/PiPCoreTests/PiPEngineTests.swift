@@ -14,7 +14,7 @@ final class PiPEngineTests: XCTestCase {
         let clock = clock!
         return PiPEngine(paginator: FakePaginator(wordsPerPage: wordsPerPage), sessionStore: store,
                          availability: PiPAvailability(backgroundModeDeclared: declared, userEnabled: enabled),
-                         pageTurnInterval: 8, now: { clock.date })
+                         now: { clock.date })
     }
 
     /// Engine, a registered controller and provider, PiP started and shown by the system.
@@ -125,35 +125,26 @@ final class PiPEngineTests: XCTestCase {
         XCTAssertTrue(provider.navigations.isEmpty)
     }
 
-    func testLongTextTurnsPagesBeforeItems() {
+    func testSkipChangesTheItemEvenOnALongText() {
         let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
         let (engine, controller, provider) = running(FakeProvider(texts: ["أ", long, "ج"], index: 1))
         XCTAssertEqual(controller.frame?.pageCount, 3)
-        XCTAssertEqual(controller.frame?.page, 0)
-        engine.skip(by: 15)
-        XCTAssertEqual(provider.index, 1, "next page, same item")
+        engine.setPlaying(true)
         XCTAssertEqual(engine.currentPage?.page, 1)
         engine.skip(by: 15)
-        XCTAssertEqual(engine.currentPage?.page, 2)
-        XCTAssertEqual(controller.frame?.pageText, "سبعة")
-        engine.skip(by: 15)
-        XCTAssertEqual(provider.index, 2, "past the last page: the next item")
+        XCTAssertEqual(provider.index, 2, "skip is the item, never the page")
         XCTAssertEqual(engine.currentPage?.page, 0)
-        XCTAssertEqual(engine.currentPage?.total, 1)
         engine.skip(by: -15)
         XCTAssertEqual(provider.index, 1)
         XCTAssertEqual(engine.currentPage?.page, 0, "an item opens on its first page")
-        engine.skip(by: 15)
-        engine.skip(by: -15)
-        XCTAssertEqual(engine.currentPage?.page, 0)
-        XCTAssertEqual(provider.index, 1)
         XCTAssertEqual(controller.frame?.pageText, "واحد اثنان ثلاثة ")
+        XCTAssertEqual(provider.navigations, ["next", "previous"])
     }
 
     func testItemChangedOnScreenResetsThePage() async {
         let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
         let (engine, controller, provider) = running(FakeProvider(texts: [long, "ب"], index: 0))
-        engine.skip(by: 15)
+        engine.setPlaying(true)
         XCTAssertEqual(engine.currentPage?.page, 1)
         provider.index = 1
         provider.subject.send()
@@ -164,41 +155,123 @@ final class PiPEngineTests: XCTestCase {
 
     // MARK: Play / pause
 
-    func testPlayDoesNothingForAOnePageText() {
-        let (engine, _, provider) = running()
+    func testPlayAndPauseDoNothingForAOnePageText() {
+        let (engine, controller, provider) = running()
+        let refreshes = controller.refreshes
         engine.setPlaying(true)
         XCTAssertEqual(engine.state, .paused, "nothing to play")
+        XCTAssertEqual(engine.currentPage?.page, 0)
+        XCTAssertEqual(controller.frame?.isPlaying, false, "the button stays play: no page was turned")
+        XCTAssertEqual(controller.frame?.footer.contains("الصفحة"), false, "no page hint on a one-page text")
+        engine.setPlaying(false)
+        XCTAssertEqual(engine.currentPage?.page, 0)
         XCTAssertEqual(provider.index, 0)
+        XCTAssertTrue(provider.navigations.isEmpty)
+        XCTAssertEqual(controller.refreshes, refreshes + 2, "the system button is corrected at once")
     }
 
-    func testPlayTurnsPagesButNeverTheItem() {
+    func testPlayShowsTheNextPageAtOnce() {
         let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
         let (engine, controller, provider) = running(FakeProvider(texts: [long, "ب"], index: 0))
-        engine.setPlaying(true)
-        XCTAssertEqual(engine.state, .active)
-        XCTAssertEqual(controller.frame?.isPlaying, true)
-        clock.advance(4)
         XCTAssertEqual(controller.frame?.page, 0)
-        clock.advance(4)
-        XCTAssertEqual(controller.frame?.page, 1)
-        clock.advance(8)
-        XCTAssertEqual(controller.frame?.page, 2)
-        XCTAssertEqual(engine.state, .paused, "stops on the last page")
-        clock.advance(60)
-        XCTAssertEqual(controller.frame?.page, 2)
-        XCTAssertEqual(provider.index, 0, "never the next item")
+        XCTAssertEqual(controller.frame?.isPlaying, false)
+        XCTAssertTrue(controller.frame?.footer.contains("▶︎ الصفحة التالية") == true)
+        let refreshes = controller.refreshes
         engine.setPlaying(true)
-        XCTAssertEqual(engine.state, .paused, "nothing left to turn")
+        XCTAssertEqual(controller.refreshes, refreshes + 1, "drawn at once")
+        XCTAssertEqual(controller.frame?.page, 1, "no timer: the page turns on the tap")
+        XCTAssertEqual(controller.frame?.pageText, "أربعة خمسة ستة ")
+        XCTAssertEqual(store.session?.page, 1)
+        XCTAssertEqual(engine.state, .paused, "text never plays")
+        XCTAssertEqual(provider.index, 0, "never the next item")
+        XCTAssertTrue(provider.navigations.isEmpty)
     }
 
-    func testPauseStopsPageTurning() {
+    func testPauseShowsThePreviousPage() {
         let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
         let (engine, controller, _) = running(FakeProvider(texts: [long], index: 0))
         engine.setPlaying(true)
+        engine.setPlaying(true)
+        XCTAssertEqual(controller.frame?.page, 2)
         engine.setPlaying(false)
-        XCTAssertEqual(engine.state, .paused)
-        clock.advance(30)
+        XCTAssertEqual(controller.frame?.page, 1)
+        engine.setPlaying(false)
         XCTAssertEqual(controller.frame?.page, 0)
+    }
+
+    func testPagesStopAtTheFirstAndLastPage() {
+        let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
+        let (engine, controller, provider) = running(FakeProvider(texts: [long, "ب"], index: 0))
+        engine.setPlaying(false)
+        XCTAssertEqual(controller.frame?.page, 0, "nothing before the first page")
+        for _ in 0..<5 { engine.setPlaying(true) }
+        XCTAssertEqual(controller.frame?.page, 2, "nothing after the last page")
+        XCTAssertEqual(controller.frame?.pageText, "سبعة")
+        XCTAssertEqual(provider.index, 0, "no wrap into the next item")
+        XCTAssertTrue(provider.navigations.isEmpty)
+        clock.advance(600)
+        XCTAssertEqual(controller.frame?.page, 2, "nothing turns by itself")
+    }
+
+    /// The system button always means its next tap: play (forward) until the last page, then
+    /// pause (back) until the first, so every tap turns a page.
+    func testTheButtonShowsWhichWayItsNextTapGoes() {
+        let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
+        let (engine, controller, _) = running(FakeProvider(texts: [long], index: 0))
+        XCTAssertEqual(controller.frame?.isPlaying, false)
+        engine.setPlaying(true)
+        XCTAssertEqual(controller.frame?.isPlaying, false, "still play: more pages ahead")
+        engine.setPlaying(true)
+        XCTAssertEqual(controller.frame?.page, 2)
+        XCTAssertEqual(controller.frame?.isPlaying, true, "last page: the button shows pause, back")
+        XCTAssertTrue(controller.frame?.footer.contains("⏸ الصفحة السابقة") == true)
+        engine.setPlaying(false)
+        XCTAssertEqual(controller.frame?.page, 1)
+        XCTAssertEqual(controller.frame?.isPlaying, true, "still back")
+        engine.setPlaying(false)
+        XCTAssertEqual(controller.frame?.page, 0)
+        XCTAssertEqual(controller.frame?.isPlaying, false, "first page: play again")
+        XCTAssertEqual(engine.state, .paused)
+    }
+
+    func testANewItemOpensOnItsFirstPageWithPlay() {
+        let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
+        let (engine, controller, provider) = running(FakeProvider(texts: [long, long], index: 0))
+        engine.setPlaying(true)
+        engine.setPlaying(true)
+        XCTAssertEqual(controller.frame?.isPlaying, true)
+        engine.skip(by: 15)
+        XCTAssertEqual(provider.index, 1)
+        XCTAssertEqual(controller.frame?.page, 0)
+        XCTAssertEqual(controller.frame?.isPlaying, false)
+        engine.setPlaying(true)
+        XCTAssertEqual(controller.frame?.page, 1, "pages of the new item")
+    }
+
+    func testPagesSurviveAnUnrelatedRefresh() async {
+        let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
+        let (engine, controller, provider) = running(FakeProvider(texts: [long], index: 0))
+        engine.setPlaying(true)
+        provider.subject.send() // the same item changed (e.g. its counter)
+        await settle()
+        XCTAssertEqual(controller.frame?.page, 1)
+        XCTAssertEqual(engine.currentPage?.page, 1)
+    }
+
+    func testReopeningStartsOnTheFirstPage() {
+        let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
+        let (engine, controller, provider) = running(FakeProvider(texts: [long], index: 0))
+        engine.setPlaying(true)
+        engine.setPlaying(true)
+        engine.stop()
+        controller.systemStops()
+        XCTAssertEqual(store.session?.page, 2)
+        engine.start(provider, on: controller)
+        controller.systemStarts()
+        XCTAssertEqual(controller.frame?.page, 0)
+        XCTAssertEqual(controller.frame?.isPlaying, false)
+        engine.setPlaying(true)
+        XCTAssertEqual(controller.frame?.page, 1)
     }
 
     func testRecordingPlaysAndPauses() {
@@ -256,6 +329,59 @@ final class PiPEngineTests: XCTestCase {
         XCTAssertEqual(controller.frame?.mode, .text)
     }
 
+    // MARK: Counting
+
+    func testSkipForwardCountsUntilTheCountIsDone() {
+        let provider = FakeProvider(.hisn, texts: ["أ", "ب"], index: 0)
+        provider.counts = [3, nil]
+        let (engine, controller, _) = running(provider)
+        XCTAssertEqual(controller.frame?.content.repetition, PiPRepetition(completed: 0, total: 3))
+        XCTAssertTrue(controller.frame?.footer.contains("⏩ عُدّ") == true)
+        engine.skip(by: 15)
+        XCTAssertEqual(provider.recitations, 1)
+        XCTAssertEqual(controller.frame?.content.repetition?.completed, 1, "drawn at once")
+        engine.skip(by: 15)
+        engine.skip(by: 15)
+        XCTAssertEqual(provider.recitations, 3)
+        XCTAssertEqual(provider.index, 0, "the engine never moves on by itself")
+        XCTAssertTrue(provider.navigations.isEmpty)
+        XCTAssertTrue(controller.frame?.footer.contains("⏩ التالي") == true)
+        engine.skip(by: 15)
+        XCTAssertEqual(provider.recitations, 3, "a complete count is not counted again")
+        XCTAssertEqual(provider.navigations, ["next"])
+        XCTAssertEqual(provider.index, 1)
+    }
+
+    func testPlayAndPauseNeverCount() {
+        let provider = FakeProvider(.hisn, texts: ["واحد اثنان ثلاثة أربعة خمسة ستة سبعة"], index: 0)
+        provider.counts = [3]
+        let (engine, controller, _) = running(provider)
+        engine.setPlaying(true)
+        engine.setPlaying(false)
+        XCTAssertEqual(provider.recitations, 0)
+        XCTAssertEqual(controller.frame?.content.repetition?.completed, 0)
+    }
+
+    func testSkipBackNeverCounts() {
+        let provider = FakeProvider(.hisn, texts: ["أ", "ب"], index: 1)
+        provider.counts = [nil, 3]
+        let (engine, _, _) = running(provider)
+        engine.skip(by: -15)
+        XCTAssertEqual(provider.recitations, 0)
+        XCTAssertEqual(provider.index, 0)
+    }
+
+    func testCountingKeepsThePage() {
+        let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
+        let provider = FakeProvider(.hisn, texts: [long], index: 0)
+        provider.counts = [100]
+        let (engine, controller, _) = running(provider)
+        engine.setPlaying(true)
+        engine.skip(by: 15)
+        XCTAssertEqual(controller.frame?.page, 1, "the same item: its page stays")
+        XCTAssertEqual(provider.recitations, 1)
+    }
+
     // MARK: Frames
 
     func testTextFrameShowsThePlaceInTheContainer() {
@@ -271,7 +397,8 @@ final class PiPEngineTests: XCTestCase {
     func testPreviewOfAnotherScreenIsItsFirstPageNotPlaying() {
         let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
         let (engine, _, _) = running(FakeProvider(texts: [long], index: 0))
-        engine.skip(by: 15)
+        engine.setPlaying(true)
+        engine.setPlaying(true)
         let other = FakeProvider(.quran, texts: [long])
         let otherController = FakePiPController()
         engine.register(otherController, provider: other)
@@ -313,7 +440,7 @@ final class PiPEngineTests: XCTestCase {
     func testSessionRecordsThePage() {
         let long = "واحد اثنان ثلاثة أربعة خمسة ستة سبعة"
         let (engine, _, _) = running(FakeProvider(texts: [long], index: 0))
-        engine.skip(by: 15)
+        engine.setPlaying(true)
         XCTAssertEqual(store.session?.page, 1)
         XCTAssertEqual(store.session?.containerID, "dhikr:list")
     }

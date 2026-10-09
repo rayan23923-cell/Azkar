@@ -157,11 +157,18 @@ final class QuranPiPProviderTests: XCTestCase {
         controller.systemStarts()
         let frame = try XCTUnwrap(controller.frame)
         XCTAssertGreaterThan(frame.pageCount, 1)
-        engine.skip(by: 15)
-        XCTAssertEqual(provider.current?.subtitle, "الآية 282", "next page first")
+        engine.setPlaying(true)
+        XCTAssertEqual(provider.current?.subtitle, "الآية 282", "play: the next page of the ayah")
         XCTAssertEqual(controller.frame?.page, 1)
-        for _ in 1..<frame.pageCount { engine.skip(by: 15) }
-        XCTAssertEqual(provider.current?.subtitle, "الآية 283", "then the next ayah")
+        for _ in 0..<(frame.pageCount + 2) { engine.setPlaying(true) }
+        XCTAssertEqual(controller.frame?.page, frame.pageCount - 1, "stops on the last page")
+        XCTAssertEqual(provider.current?.subtitle, "الآية 282", "pages never change the ayah")
+        engine.setPlaying(false)
+        XCTAssertEqual(controller.frame?.page, frame.pageCount - 2, "pause: the previous page")
+        engine.skip(by: 15)
+        XCTAssertEqual(provider.current?.subtitle, "الآية 283", "skip: the next ayah")
+        XCTAssertEqual(controller.frame?.page, 0)
+        XCTAssertNil(controller.frame?.content.repetition, "an ayah is never counted")
     }
 }
 
@@ -204,22 +211,184 @@ final class HisnPiPProviderTests: XCTestCase {
         XCTAssertEqual(provider.current?.detail, "التكرار 2 من \(total)", "the count comes from the reader's button")
     }
 
-    func testPiPNeverCountsARepetition() async throws {
-        let (chapter, index) = try await countedChapter()
-        let controller = try self.controller(chapter, at: index)
+    /// A real chapter with its first items' counts set for the test (the bundled book is not
+    /// changed; it has no count above 100). Every other field is the stored one.
+    private func chapter(counts: [Int?]) async throws -> HisnChapter {
+        let library = try await Content.hisnLibrary()
+        let source = try XCTUnwrap(library.book.chapters.first { $0.items.count >= max(counts.count, 3) })
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(source)) as? [String: Any])
+        var items = try XCTUnwrap(json["items"] as? [[String: Any]])
+        for (index, count) in counts.enumerated() {
+            var repetition = try XCTUnwrap(items[index]["repetition"] as? [String: Any])
+            repetition["count"] = count ?? NSNull()
+            items[index]["repetition"] = repetition
+        }
+        json["items"] = items
+        let chapter = try JSONDecoder().decode(HisnChapter.self, from: JSONSerialization.data(withJSONObject: json))
+        for index in chapter.items.indices {
+            XCTAssertEqual(chapter.items[index].arabicText, source.items[index].arabicText)
+            XCTAssertEqual(chapter.items[index].id, source.items[index].id)
+            XCTAssertEqual(chapter.items[index].reviewStatus, source.items[index].reviewStatus)
+        }
+        return chapter
+    }
+
+    /// PiP running on a Hisn reader, as the app runs it.
+    private func running(_ controller: HisnReaderController)
+        -> (PiPEngine, StubPiPController, HisnPiPProvider) {
         let provider = HisnPiPProvider(controller: controller)
         let engine = makeEngine()
         let pip = StubPiPController()
         engine.register(pip, provider: provider)
         engine.start(provider, on: pip)
         pip.systemStarts()
+        return (engine, pip, provider)
+    }
+
+    func testOnlySkipForwardCounts() async throws {
+        let (chapter, index) = try await countedChapter()
+        let controller = try self.controller(chapter, at: index)
+        let total = try XCTUnwrap(chapter.items[index].repetition.count)
+        let (engine, pip, _) = running(controller)
         XCTAssertEqual(controller.recitations, 0, "opening PiP changes nothing")
         XCTAssertEqual(controller.reader.completedRepetitions, 0)
         engine.setPlaying(true)
         engine.setPlaying(false)
-        pip.systemStops()
-        XCTAssertEqual(controller.recitations, 0)
+        XCTAssertEqual(controller.recitations, 0, "play / pause never counts")
+        engine.skip(by: 15)
+        XCTAssertEqual(controller.recitations, 1)
+        XCTAssertEqual(controller.reader.completedRepetitions, 1)
+        XCTAssertEqual(store.position?.completedRepetitions, 1, "saved by the reader at once")
+        XCTAssertEqual(pip.frame?.content.detail, "التكرار 2 من \(total)", "drawn at once")
+        XCTAssertEqual(pip.frame?.content.repetition, PiPRepetition(completed: 1, total: total))
         XCTAssertEqual(controller.reader.itemIndex, index)
+        pip.systemStops()
+        XCTAssertEqual(controller.recitations, 1, "closing does not count")
+        XCTAssertEqual(store.position?.completedRepetitions, 1)
+    }
+
+    /// 1, 3, 100 and above 100: each skip forward is one recitation, the display follows the
+    /// reader's count, and the full count moves the reader on (its own behaviour) while the
+    /// window keeps the finished item until the next skip.
+    func testCountsOfAnySize() async throws {
+        for total in [1, 3, 100, 101, 250] {
+            let chapter = try await self.chapter(counts: [total, 3])
+            let controller = try self.controller(chapter, at: 0)
+            let (engine, pip, _) = running(controller)
+            for done in 0..<(total - 1) {
+                XCTAssertEqual(pip.frame?.content.detail, "التكرار \(done + 1) من \(total)")
+                engine.skip(by: 15)
+                XCTAssertEqual(controller.reader.completedRepetitions, done + 1, "\(total)")
+                XCTAssertEqual(pip.frame?.content.repetition?.completed, done + 1)
+            }
+            XCTAssertEqual(pip.frame?.content.detail, "التكرار \(total) من \(total)")
+            XCTAssertEqual(controller.reader.itemIndex, 0, "nothing moves before the count")
+            XCTAssertEqual(controller.recitations, total - 1)
+
+            engine.skip(by: 15) // the last recitation
+            XCTAssertEqual(controller.recitations, total)
+            XCTAssertEqual(controller.reader.itemIndex, 1, "the reader moves on, as on the screen")
+            XCTAssertEqual(store.position?.itemIndex, 1)
+            XCTAssertEqual(pip.frame?.content.contentID, chapter.items[0].id, "the finished item stays in view")
+            XCTAssertEqual(pip.frame?.content.detail, "اكتمل ✓ \(total) من \(total)")
+            XCTAssertEqual(pip.frame?.content.text, chapter.items[0].arabicText)
+            XCTAssertTrue(pip.frame?.footer.contains("⏩ التالي") == true)
+            XCTAssertEqual(pip.calls, ["start"], "the window stays open")
+
+            engine.skip(by: 15) // on to the next item, nothing counted
+            XCTAssertEqual(controller.recitations, total)
+            XCTAssertEqual(pip.frame?.content.contentID, chapter.items[1].id)
+            XCTAssertEqual(pip.frame?.content.detail, "التكرار 1 من 3")
+            XCTAssertEqual(controller.reader.completedRepetitions, 0)
+            pip.systemStops()
+        }
+    }
+
+    func testCountIsKeptAcrossPauseCloseAndReopen() async throws {
+        let chapter = try await self.chapter(counts: [100, 3])
+        let controller = try self.controller(chapter, at: 0)
+        let (engine, pip, provider) = running(controller)
+        for _ in 0..<37 { engine.skip(by: 15) }
+        XCTAssertEqual(pip.frame?.content.detail, "التكرار 38 من 100")
+        engine.setPlaying(false)
+        engine.setPlaying(true)
+        XCTAssertEqual(controller.reader.completedRepetitions, 37)
+        pip.systemStops()
+        XCTAssertEqual(store.position?.completedRepetitions, 37)
+
+        // Reopened on the same screen.
+        engine.start(provider, on: pip)
+        pip.systemStarts()
+        XCTAssertEqual(pip.frame?.content.detail, "التكرار 38 من 100")
+        pip.systemStops()
+
+        // The app relaunched: the reader comes back from its saved position.
+        let saved = try XCTUnwrap(store.position)
+        let book = try await Content.hisnLibrary().book
+        let library = HisnLibrary(book: HisnBook(id: book.id, titleArabic: book.titleArabic, author: book.author,
+                                                 provenance: book.provenance, attribution: book.attribution,
+                                                 chapters: [chapter]))
+        let reader = try XCTUnwrap(HisnResume.reader(for: saved, in: library))
+        let relaunched = HisnReaderController(reader: reader, store: InMemoryHisnReadingPositionStore())
+        let (again, pipAgain, _) = running(relaunched)
+        XCTAssertEqual(pipAgain.frame?.content.detail, "التكرار 38 من 100")
+        again.skip(by: 15)
+        XCTAssertEqual(relaunched.reader.completedRepetitions, 38)
+    }
+
+    func testTheLastItemCompletesTheChapterAndStaysInView() async throws {
+        let library = try await Content.hisnLibrary()
+        let source = try XCTUnwrap(library.book.chapters.first { $0.items.count >= 3 })
+        var counts: [Int?] = source.items.map(\.repetition.count)
+        counts[counts.count - 1] = 3
+        let chapter = try await self.chapter(counts: counts)
+        let last = chapter.items.count - 1
+        let controller = try self.controller(chapter, at: last)
+        let (engine, pip, _) = running(controller)
+        for _ in 0..<3 { engine.skip(by: 15) }
+        XCTAssertTrue(controller.reader.isCompleted, "the full count completes the chapter, as on the screen")
+        XCTAssertNil(store.position, "a completed chapter has no resume point")
+        XCTAssertEqual(pip.frame?.content.contentID, chapter.items[last].id)
+        XCTAssertEqual(pip.frame?.content.detail, "اكتمل ✓ 3 من 3  ·  اكتمل الباب")
+        XCTAssertFalse(pip.frame?.footer.contains("⏩") == true, "nothing left to count or open")
+        engine.skip(by: 15)
+        XCTAssertEqual(pip.calls, ["start"], "the window stays until the user closes it")
+        XCTAssertEqual(controller.recitations, 3)
+        XCTAssertTrue(controller.reader.isCompleted, "never another chapter")
+        engine.skip(by: -15)
+        XCTAssertFalse(controller.reader.isCompleted, "back to the last item")
+        XCTAssertEqual(controller.reader.itemIndex, last)
+    }
+
+    func testAChangeOnTheScreenReplacesTheFinishedItem() async throws {
+        let chapter = try await self.chapter(counts: [1, 3, 3])
+        let controller = try self.controller(chapter, at: 0)
+        let (engine, pip, provider) = running(controller)
+        engine.skip(by: 15)
+        XCTAssertEqual(provider.current?.contentID, chapter.items[0].id)
+        controller.recite() // the reader's own count button
+        XCTAssertEqual(provider.current?.contentID, chapter.items[1].id)
+        XCTAssertEqual(provider.current?.detail, "التكرار 2 من 3")
+        XCTAssertEqual(pip.frame?.content.detail, "التكرار 2 من 3")
+    }
+
+    func testSkipBackFromTheFinishedItem() async throws {
+        let chapter = try await self.chapter(counts: [nil, 1, 3])
+        let controller = try self.controller(chapter, at: 1)
+        let (engine, pip, _) = running(controller)
+        engine.skip(by: 15)
+        XCTAssertEqual(controller.reader.itemIndex, 2)
+        XCTAssertEqual(pip.frame?.content.contentID, chapter.items[1].id)
+        engine.skip(by: -15)
+        XCTAssertEqual(controller.reader.itemIndex, 1, "back to the item shown")
+        XCTAssertEqual(pip.frame?.content.contentID, chapter.items[1].id)
+        XCTAssertEqual(pip.frame?.content.detail, "التكرار 1 من 1")
+        engine.skip(by: -15)
+        XCTAssertEqual(controller.reader.itemIndex, 0)
+        XCTAssertNil(pip.frame?.content.repetition, "no stated count: nothing to count")
+        engine.skip(by: 15)
+        XCTAssertEqual(controller.reader.itemIndex, 1, "an item without a count moves on")
+        XCTAssertEqual(controller.recitations, 1)
     }
 
     func testFirstItemNextPreviousAndLastItem() async throws {
@@ -344,6 +513,7 @@ final class DevotionalPiPProviderTests: XCTestCase {
         engine.start(provider, on: pip)
         pip.systemStarts()
         engine.setPlaying(true)
+        XCTAssertNil(pip.frame?.content.repetition, "PiP counts only Hisn items")
         pip.systemStops()
         XCTAssertEqual(controller.cursor.completedRepetitions, 1, "PiP adds no repetition")
         XCTAssertEqual(store.position(in: controller.collection.ref)?.repetitions, 1, "and keeps the saved one")

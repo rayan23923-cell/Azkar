@@ -96,6 +96,30 @@ final class PiPFrameRendererTests: XCTestCase {
         }
     }
 
+    /// The longest footer PiP can show (a Hisn count above 100 on a paged item) stays on one
+    /// line, right to left, with the count in Arabic order «التكرار 137 من 1000».
+    func testHisnCountFooterFitsAndRunsRightToLeft() throws {
+        for (completed, total) in [(0, 1), (0, 3), (36, 100), (99, 100), (100, 101), (136, 1000), (1000, 1000)] {
+            let repetition = PiPRepetition(completed: completed, total: total)
+            let detail = repetition.isComplete ? "اكتمل ✓ \(total) من \(total)  ·  اكتمل الباب"
+                : "التكرار \(repetition.current) من \(total)"
+            let content = PiPContent(contentType: .hisn, contentID: "id", containerID: "c", title: "أذكار الصباح والمساء",
+                                     subtitle: "الذكر 104", text: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", index: 103, total: 132,
+                                     detail: detail, repetition: repetition)
+            for playing in [false, true] {
+                let frame = PiPFrame(content: content, pageText: "سُبْحَانَ ", page: 11, pageCount: 12, fontSize: 54,
+                                     mode: .text, isPlaying: playing, time: 104, duration: 132, rate: 0)
+                XCTAssertTrue(frame.footer.hasPrefix(detail), "the count comes first")
+                let footer = PiPFrameRenderer.footerString(frame.footer, color: CGColor(gray: 1, alpha: 1))
+                XCTAssertTrue(PiPFrameRenderer.footerFits(footer), "\(completed)/\(total): one line, nothing cut")
+                let line = CTLineCreateWithAttributedString(footer)
+                let runs = CTLineGetGlyphRuns(line) as? [CTRun] ?? []
+                XCTAssertTrue(runs.contains { CTRunGetStatus($0).contains(.rightToLeft) })
+                XCTAssertNotNil(PiPFrameRenderer.render(frame, appearance: .dark))
+            }
+        }
+    }
+
     func testQuranVersesUseTheQuranFont() async throws {
         let text = try await verse(2, 255)
         let rendered = try XCTUnwrap(PiPFrameRenderer.render(frame(text, style: .quran), appearance: .light))

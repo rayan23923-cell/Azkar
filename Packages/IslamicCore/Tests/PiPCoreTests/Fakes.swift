@@ -59,6 +59,10 @@ final class FakeProvider: PiPContentProvider {
     let subject = PassthroughSubject<Void, Never>()
     var persists = 0
     var navigations: [String] = []
+    /// Required count per item (nil: PiP does not count it) and recitations done on the current item.
+    var counts: [Int?] = []
+    var completedRepetitions = 0
+    var recitations = 0
 
     init(_ type: PiPContentType = .dhikr, texts: [String] = ["أ", "ب", "ج", "د"], index: Int = 0) {
         contentType = type
@@ -70,11 +74,28 @@ final class FakeProvider: PiPContentProvider {
         guard !completed else { return nil }
         return PiPContent(contentType: contentType, contentID: "\(contentType.rawValue):\(index)",
                           containerID: "\(contentType.rawValue):list", title: "العنوان",
-                          subtitle: "العنصر \(index + 1)", text: texts[index], index: index, total: texts.count)
+                          subtitle: "العنصر \(index + 1)", text: texts[index], index: index, total: texts.count,
+                          repetition: repetition)
     }
 
-    func goToPrevious() { navigations.append("previous"); index = max(0, index - 1); subject.send() }
-    func goToNext() { navigations.append("next"); index = min(texts.count - 1, index + 1); subject.send() }
+    private var repetition: PiPRepetition? {
+        guard index < counts.count, let total = counts[index] else { return nil }
+        return PiPRepetition(completed: completedRepetitions, total: total)
+    }
+
+    func recordRepetition() {
+        recitations += 1
+        completedRepetitions += 1
+        subject.send()
+    }
+
+    func goToPrevious() {
+        navigations.append("previous"); index = max(0, index - 1); completedRepetitions = 0; subject.send()
+    }
+
+    func goToNext() {
+        navigations.append("next"); index = min(texts.count - 1, index + 1); completedRepetitions = 0; subject.send()
+    }
     var changes: AnyPublisher<Void, Never> { subject.eraseToAnyPublisher() }
     func persist() { persists += 1 }
 }

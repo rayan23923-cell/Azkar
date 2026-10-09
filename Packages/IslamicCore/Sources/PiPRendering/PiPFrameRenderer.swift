@@ -85,9 +85,24 @@ public enum PiPFrameRenderer {
             context.fillPath()
         }
 
-        drawText(frame.footer, font: systemFont(size: 32, bold: false), color: colors.secondary, lineHeight: 1.1,
-                 alignment: .center, in: footerBox, context: context)
+        drawFrame(footerString(frame.footer, color: colors.secondary), in: footerBox, context: context)
         return bodyFrame
+    }
+
+    /// Footer sizes, largest first: the footer is one line, so the counter is never cut.
+    static let footerSizes: [CGFloat] = [32, 28, 24, 21]
+
+    /// The footer at the largest size that keeps it on one line.
+    static func footerString(_ text: String, color: CGColor) -> NSAttributedString {
+        let strings = footerSizes.map {
+            attributed(text, font: systemFont(size: $0, bold: false), color: color, lineHeight: 1.1, alignment: .center)
+        }
+        return strings.first { measure($0, width: footerBox.width) <= footerBox.height } ?? strings.last!
+    }
+
+    /// The footer fits its box on one line.
+    static func footerFits(_ string: NSAttributedString) -> Bool {
+        measure(string, width: footerBox.width) <= footerBox.height
     }
 
     // MARK: Text
