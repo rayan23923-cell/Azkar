@@ -225,11 +225,20 @@ final class PiPSessionAndAvailabilityTests: XCTestCase {
                                  subtitle: "الذكر 4", text: "نص", index: 3, total: 10, detail: "التكرار 2 من 3")
         let text = PiPFrame(content: content, pageText: "نص", page: 1, pageCount: 3, fontSize: 54, mode: .text,
                             isPlaying: false, time: 3.5, duration: 10, rate: 0)
-        XCTAssertEqual(text.footer, "التكرار 2 من 3  ·  4 من 10  ·  صفحة 2 من 3")
+        XCTAssertEqual(text.footer, "التكرار 2 من 3  ·  ▶︎ الصفحة التالية  ·  4 من 10  ·  صفحة 2 من 3")
+        let back = PiPFrame(content: content, pageText: "نص", page: 2, pageCount: 3, fontSize: 54, mode: .text,
+                            isPlaying: true, time: 4, duration: 10, rate: 0)
+        XCTAssertEqual(back.footer, "التكرار 2 من 3  ·  ⏸ الصفحة السابقة  ·  4 من 10  ·  صفحة 3 من 3")
+        let counted = PiPContent(contentType: .hisn, contentID: "i", containerID: "c", title: "أذكار الصباح",
+                                 subtitle: "الذكر 4", text: "نص", index: 3, total: 10, detail: "التكرار 37 من 100",
+                                 repetition: PiPRepetition(completed: 36, total: 100))
+        let counting = PiPFrame(content: counted, pageText: "نص", page: 0, pageCount: 1, fontSize: 84, mode: .text,
+                                isPlaying: false, time: 4, duration: 10, rate: 0)
+        XCTAssertEqual(counting.footer, "التكرار 37 من 100  ·  ⏩ عُدّ  ·  4 من 10", "no page hint on one page")
         XCTAssertEqual(text.progress, 0.35, accuracy: 0.0001)
         let audio = PiPFrame(content: content, pageText: "نص", page: 0, pageCount: 1, fontSize: 84, mode: .audio,
                              isPlaying: true, time: 40, duration: 20, rate: 1)
-        XCTAssertEqual(audio.footer, "▶︎ يُشغَّل  ·  التكرار 2 من 3  ·  4 من 10")
+        XCTAssertEqual(audio.footer, "التكرار 2 من 3  ·  ▶︎ يُشغَّل  ·  4 من 10")
         XCTAssertEqual(audio.progress, 1)
         let empty = PiPFrame(content: content, pageText: "", page: 0, pageCount: 0, fontSize: 84, mode: .audio,
                              isPlaying: false, time: 0, duration: 0, rate: 0)

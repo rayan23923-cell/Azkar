@@ -29,7 +29,7 @@ PiPEngine (PiPCore)                 one per app, AppServices.shared.pip
  ├── PiPRenderer                    PiPFrameRenderer + CoreTextPiPPaginator (PiPRendering)
  ├── PiPPlaybackController          a loaded recording (Hisn audio player adapter)
  ├── PiPContentProvider (protocol)  what a section shows and how it moves
- ├── PiPPageModel / PiPNavigation   pages of a long text, then items
+ ├── PiPPageModel / PiPNavigation   pages (play / pause), items and Hisn counting (skip)
  └── PiPSession / PiPSessionStore   the last session
 Providers (PiPProviders)
  ├── QuranPiPProvider               QuranReaderController
@@ -87,17 +87,33 @@ chevrons.
 
 | Button | With a loaded recording | Without one (this build) |
 |---|---|---|
-| Play / Pause | Plays, pauses or resumes the recording | Turns the pages of a long text every 8 s and stops on the last page. A one-page text has nothing to play, so the button stays paused |
-| Skip forward | Next page, then next item | Same |
-| Skip back | Previous page, then previous item | Same |
+| Play | Plays or resumes the recording | The next page of a long text, at once. Stops on the last page, never the next item |
+| Pause | Pauses the recording | The previous page, at once. Stops on the first page |
+| Skip forward | Next item (Hisn: counts first, see below) | Same |
+| Skip back | Previous item | Same |
+
+A one-page text has nothing to turn: play and pause do nothing and the button stays on play.
+The button always shows what its next tap does: play (forward) until the last page, then
+pause (back) until the first page, so every tap turns a page. The footer says it too
+(«▶︎ الصفحة التالية» or «⏸ الصفحة السابقة»). Nothing turns by itself.
 
 **Navigation model** (`PiPNavigation`):
 
-- Presentation level: the next page while the item has one.
-- Content level: the next item only after its last page.
-- Previous mirrors it, and an item always opens on its first page.
-- Nothing moves past the first or last item. PiP never completes a Hisn chapter or a
-  collection, and never opens another surah.
+- Presentation level, play / pause: the page of the current item. Never the item.
+- Content level, skip: the item. Never the page. An item always opens on its first page.
+- Hisn counting, skip forward: on an item with a stated count, one recitation per tap until
+  the count is complete (`PiPRepetition`, from `HisnReader.Repetition.counted(completed:total:)`
+  and `completedRepetitions`; no upper limit). The reader's own `recite()` records it and saves
+  it at once. The full count moves the reader to the next item, as the screen's count button
+  does, but the window keeps the finished item, marked «اكتمل ✓ m من m», until the next skip
+  forward shows the next item. The chapter's last item completes the chapter (as on the screen)
+  and the window keeps «اكتمل الباب» until the user closes it. Skip back never counts.
+- Nothing moves past the first or last item. Skip forward never completes a chapter or a
+  collection without counting, and PiP never opens another surah or chapter.
+
+What iOS allows: a sample-buffer PiP window has only the system's play/pause, skip ±, close and
+return-to-app buttons. Taps on the video itself are not delivered to the app, so a count
+button drawn in the frame could never work. That is why counting uses skip forward.
 
 **Audio completion is not Next.** A recording that ends leaves PiP on its item, paused. Moving
 to another item stops the recording and loads the new one without playing it (the reader's
@@ -108,12 +124,12 @@ rule). Seeking inside a recording is in-app only, since the skip buttons are nav
 | Section | Title | Subtitle | Counter | Previous / next |
 |---|---|---|---|---|
 | Quran | سورة البقرة | الآية 10 | none | Verse within the surah. PiP follows the reader's jumps and surah changes, not plain scrolling |
-| Hisn | Chapter title | الذكر 4 | التكرار 2 من 3 | The reader's own; stops at the last item |
+| Hisn | Chapter title | الذكر 4 | التكرار 37 من 100, counted by skip forward | The reader's own; stops at the last item |
 | Adhkar | Collection title | الذكر 3 | التكرار 1 من 3 | The reader's own |
 | Duas | Category title | الدعاء 2 | none (said once) | The reader's own |
 
-PiP never counts a repetition, and opening it changes nothing. The counter moves only from the
-reader's count button. Previous/next behave exactly like the reader's own buttons, which
+Only Hisn items are counted in PiP, only by skip forward, and opening PiP changes nothing. The
+Adhkar counter moves only from the reader's count button (skip there is the next dhikr). Previous/next behave exactly like the reader's own buttons, which
 start the new item's count at zero. Verses, and adhkar marked `quranVerbatimTanzil`, use the
 bundled Quran font.
 
@@ -226,12 +242,12 @@ package: 393 tests, 0 failures.
 |---|---|
 | `PiPCoreTests/PiPStateTests` | Every transition, failure and retry, rejection while running |
 | `PiPCoreTests/PiPPageModelTests` | Pages, clamping, exact slices, oversize words |
-| `PiPCoreTests/PiPNavigationTests` | Page before item, ends, skip sign |
+| `PiPCoreTests/PiPNavigationTests` | Play/pause pages and their bounds, skip items and ends, counting before moving on for counts 1, 3, 100, 101, 1000, skip sign |
 | `PiPCoreTests/PiPSessionAndAvailabilityTests` | Info.plist background mode, setting, session store, footer and progress |
-| `PiPCoreTests/PiPEngineTests` | Start and refusals, navigation, long text, play and pause in text and audio modes, audio completion, close and session, section switch, heartbeat, return to app |
+| `PiPCoreTests/PiPEngineTests` | Start and refusals, navigation, play = next page and pause = previous page drawn at once, first/last page, one-page text, button direction, new item and reopen on page 1, counting by skip only, play and pause in audio mode, audio completion, close and session, section switch, heartbeat, return to app |
 | `PiPCoreTests/ReleasePiPConfigurationTests` | No `#if DEBUG` or test-only code on the production PiP path, availability gated only by the declared mode, every reader offers PiP, both plists declare only `audio` |
-| `PiPRenderingTests` | One page at 84 pt, longest Hisn item paged at 54 pt and fully drawn, RTL runs with diacritics, Quran font, verse 2:282 paged, light and dark |
-| `PiPProvidersTests` | Quran (first, middle, last, next, previous, long ayah, scroll vs jump), Hisn (first, repetition, last, next, previous, long text, completed chapter, no counting, no production audio), Adhkar (first, middle, last, counter), Dua (first, middle, last), Quran → Hisn switch on real content |
+| `PiPRenderingTests` | Hisn count footer on one line and RTL up to 1000, one page at 84 pt, longest Hisn item paged at 54 pt and fully drawn, RTL runs with diacritics, Quran font, verse 2:282 paged, light and dark |
+| `PiPProvidersTests` | Quran (first, middle, last, next, previous, long ayah, scroll vs jump), Hisn (first, repetition, last, next, previous, long text, completed chapter, only skip forward counts, counts 1/3/100/101/250, finished item kept in view, pause/close/reopen/relaunch keep the count, last item completes the chapter, screen change, skip back, no production audio), Adhkar (first, middle, last, counter), Dua (first, middle, last), Quran → Hisn switch on real content |
 
 ## 13. Physical device status
 
@@ -243,16 +259,20 @@ To test, use the Release IPA (`azkar-release-ipa` on Codemagic), signed for your
 
 1. Quran, Hisn, Adhkar, Dua: open an item and tap «نافذة عائمة». Check that the window shows
    the title, subtitle and text.
-2. Skip forward and back: the page, then the item. Check the ends.
-3. Play on a long Hisn item: the pages turn and it stops on the last page.
-4. Home, another app, return to the app via the window, close the window. Then check the
+2. Skip forward and back on a Quran verse, a dhikr and a dua: the item. Check the ends.
+3. Play and pause on a long Hisn item: each tap shows the next / previous page at once, stopping
+   on the last and first page; the button flips at the ends. On a short item nothing changes.
+4. A Hisn item with a count (3, or 100): skip forward counts, «التكرار n من m» follows each
+   tap, the full count shows «اكتمل ✓», and the next skip shows the next item. Close and
+   reopen mid-count: the count is kept. Check the reader screen shows the same count.
+5. Home, another app, return to the app via the window, close the window. Then check the
    reader is on the item PiP showed.
-5. Quran PiP, then open the app, go to Hisn and start PiP: the Quran window closes and Hisn
+6. Quran PiP, then open the app, go to Hisn and start PiP: the Quran window closes and Hisn
    opens.
-6. Lock/unlock, dark mode, the longest Hisn item, VoiceOver on the PiP row, a phone call
+7. Lock/unlock, dark mode, the longest Hisn item, VoiceOver on the PiP row, a phone call
    interruption.
 
-7. Release IPA: Settings shows «العرض العائم»; the four readers show the button; the window
+8. Release IPA: Settings shows «العرض العائم»; the four readers show the button; the window
    starts, and keeps updating while another app is in front.
 
 Watch for black or frozen frames, stale content after switching, two windows, and other apps'
@@ -262,7 +282,12 @@ audio pausing.
 
 - No custom PiP buttons exist. The skip buttons carry the system's ±seconds icons.
 - Play/pause cannot be hidden in a sample-buffer PiP. In text mode it turns pages, and for a
-  one-page text it does nothing.
+  one-page text it does nothing. Whether iOS redraws its icon at once after each tap is
+  device-only behaviour (the app asks it to with `invalidatePlaybackState`).
+- With a recording loaded (device-test build only), play/pause drives the recording, so a long
+  item's later pages are not reachable in PiP.
+- Counting uses the skip-forward button, whose system icon shows seconds, not a count.
+- The «اكتمل ✓» view of a finished item lasts until the next skip or a change on the screen.
 - Without recordings, the system progress bar shows the place in the container, not time.
 - Seeking a recording is in-app only.
 - Release declares the audio background mode for PiP; App Review 2.5.4 risk (section 9).
