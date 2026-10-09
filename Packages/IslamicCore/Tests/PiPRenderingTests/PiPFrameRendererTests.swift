@@ -219,7 +219,16 @@ final class PiPFrameRendererTests: XCTestCase {
                 let pagination = CoreTextPiPPaginator(layout: layout).paginate(text, style: .quran,
                                                                                withCounter: withCounter)
                 XCTAssertEqual(pagination.pages, [text])
-                XCTAssertEqual(pagination.fontSize, Double(layout.bodySizes[0]), "the largest size")
+                // The largest size at which the verse fits the blocks: every larger one leaves
+                // text over (the Quran font's lines are tall), and it is above the paging size.
+                let size = CGFloat(pagination.fontSize)
+                XCTAssertGreaterThan(size, layout.bodySizes.last!, "\(layout): not the paging size")
+                for larger in layout.bodySizes where larger > size {
+                    let string = PiPFrameRenderer.bodyString(text, style: .quran, size: larger,
+                                                             color: CGColor(gray: 0, alpha: 1))
+                    XCTAssertFalse(PiPFrameRenderer.place(string, in: layout.textBlocks(withCounter: withCounter)).complete,
+                                   "\(layout): \(larger) would have fitted")
+                }
                 let content = PiPContent(contentType: .quran, contentID: "1:4", containerID: "1", title: "سورة الفاتحة",
                                          subtitle: "الآية 4", text: text, textStyle: .quran, index: 3, total: 7,
                                          detail: withCounter ? "التكرار 2 من 3" : nil)

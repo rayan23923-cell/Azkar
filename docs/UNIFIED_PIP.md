@@ -166,32 +166,66 @@ and light palettes follow the app's appearance setting or the system's. The dark
 POC's proven green.
 
 **Content first, around the system controls.** iOS draws its controls over the window and the
-app cannot move or remove them (section 5.1). The layout keeps every essential line out of
-their places:
+app cannot move or remove them (section 5.1). The places the layout keeps for them were
+measured on an iPhone screenshot of the portrait window (2026-10-09), as fractions of the
+window's width, with a margin:
+
+| Control | Measured on the device | Kept by the layout (of the shorter side) |
+|---|---|---|
+| Close, return to app | Buttons 0.13 wide, bottom at 0.18 | Each corner 0.22 × 0.19 |
+| Skip back, play/pause, skip forward | 0.05 to 0.95 across, 0.26 tall, centred | 0.96 of the width (at most 1.0) × 0.29, centred |
+| Progress bar | Top 0.14 above the bottom | Bottom 0.15 |
+
+iOS keeps its controls' size in points, so in a smaller window they cover more. These places
+are an estimate from one device, not a guarantee (section 13, rows 3 and 7).
 
 | Part | Where | Clear of |
 |---|---|---|
 | Title · subtitle | Top, between the two corner buttons | Close, return to app |
-| Counter («التكرار 37 من 100  ·  ⏩ عُدّ») | Large, across the window under the corner buttons, above the middle row | Every control |
-| Text | Between the counter (or header) and the information line | Corners and progress bar. The middle row (skip, play/pause) shows over it only while the controls are visible |
+| Counter («التكرار 37 من 100  ·  ⏩ عُدّ») | Large. Portrait: across the window under the corner buttons. Landscape: under the title, between the corner buttons | Every control |
+| Text, portrait | Two blocks, above and below the middle row | Every control |
+| Text, landscape | One block between the counter (or title) and the information line | Corners and progress bar. The middle row shows over its centre while the controls are visible |
 | Information («▶︎ الصفحة التالية  ·  4 من 10  ·  صفحة 2 من 3») | Just above the system progress bar | Every control |
 | Thin progress line | Where the system bar shows | Nothing essential |
+
+**Text blocks.** `PiPLayout.textBlocks(withCounter:)` gives the blocks in reading order. There
+are two, above and below the middle row, when each holds at least two lines of a verse at the
+smallest size; that is so in every portrait size tested (360×640 to 1080×1920) and in no
+landscape one, which is too short. A text that fits the upper block is centred there, so a
+short verse is never behind the play button (the screenshot showed «مَٰلِكِ يَوۡمِ ٱلدِّينِ» there).
+A longer one fills the upper block and goes on, from the next line, in the lower one. Lines
+are never split across blocks, and every character is drawn once.
 
 The header, counter and information line each stay on one line, at a smaller size if they
 must (tested up to «اكتمل ✓ 1000 من 1000»).
 
-**Long text.** The body uses the largest of 86, 76, 68 or 62 px (of 720) that fits; the minimum
-was 54. Text that does not fit at 62 is split into pages at 62, never shrunk further. Pages are
-exact slices of the stored text, broken after whitespace, and joined they give back the text
-(tested on the longest Hisn item and on verse 2:282, in five frame sizes and both
-orientations). Larger type means more pages for long items.
+**Font size.** The body uses the largest of 97, 86, 76, 68 or 62 px (of 720) at which the whole
+page fits the blocks. Text that does not fit at 62 is split into pages at 62, never shrunk
+further: more pages rather than smaller type. Pages are exact slices of the stored text,
+broken after whitespace, and joined they give back the text (tested on the longest Hisn item,
+verses 2:255 and 2:282, dense marks, long words, digits and punctuation, in seven frame sizes).
+No line is wider than its block, so nothing is squeezed.
 
 **Portrait.** A sample-buffer PiP window takes the aspect ratio of the frames enqueued, and the
 API sets no orientation limit, so a 9:16 frame gives a portrait window. Settings has
 «اتجاه النافذة العائمة»: أفقي (the default, 16:9, the device-proven size) or عمودي (تجريبي,
 9:16). The choice is read when the app opens (`PiPLayout.saved()`), so the pages and the frames
-always agree; a change applies after the app is closed and opened again. Portrait has not
-been run on a device. Nothing switches orientation by itself.
+always agree; a change applies after the app is closed and opened again. The pixel buffer
+enqueued on the `AVSampleBufferDisplayLayer` is the chosen layout's size (720×1280 or
+1280×720, `makePixelBuffer`), shown with `resizeAspect`. Nothing switches orientation by itself.
+
+Device evidence (one screenshot, 2026-10-09): the portrait setting gives a 9:16 window, and
+the system controls are where the table above puts them. That run predates the two text
+blocks, so the new layout itself is not yet seen on a device. Portrait stays an experimental
+setting and landscape the default until the checklist in section 13 passes.
+
+**Frame previews.** `PiPFramePreviewTests` writes PNGs of rendered frames when
+`PIP_PREVIEW_DIR` is set, and CI uploads them as the `pip-frame-previews` artifact: portrait
+and landscape, a short and a long verse, Hisn counters (37 of 100, 1000 of 1000, a long item
+counted 3), dense marks, light mode and the smallest frame (360×640). Each has a `-zones`
+copy with the kept control places outlined in red and the text blocks in green. They are
+renderer output, not device captures, and the red outlines are the layout's estimate, not
+the real iOS controls. Nothing of this is in the app.
 
 **Progress bar.** With a recording, the system's progress follows it (rate 1 while playing).
 Without one, the time range is the container's item count, and the bar shows the place in the
@@ -282,8 +316,8 @@ PiP, which are now Debug and Release. Turning it off closes a running window.
 
 ## 12. Tests
 
-103 PiP tests (PiPCore 67, PiPRendering 14, PiPProviders 22). In CI they run with the rest of the
-package: 415 tests, 0 failures.
+108 PiP tests (PiPCore 67, PiPRendering 19, PiPProviders 22). In CI they run with the rest of the
+package: 420 tests, 0 failures.
 
 | Suite | Covers |
 |---|---|
@@ -293,14 +327,16 @@ package: 415 tests, 0 failures.
 | `PiPCoreTests/PiPSessionAndAvailabilityTests` | Info.plist background mode, setting, session store, footer and progress |
 | `PiPCoreTests/PiPEngineTests` | Start and refusals, navigation, play = next page and pause = previous page drawn at once, first/last page, one-page text, button direction, new item and reopen on page 1, counting by skip only, play and pause in audio mode, audio completion, close and session, section switch, heartbeat, return to app |
 | `PiPCoreTests/ReleasePiPConfigurationTests` | No `#if DEBUG` or test-only code on the production PiP path, availability gated only by the declared mode, every reader offers PiP, both plists declare only `audio` |
-| `PiPRenderingTests` | Layout clear of the system controls in five frame sizes (16:9, 9:16, small, large), whole text drawn readably in every layout, Hisn counter on one line and RTL up to 1000 in both orientations, one page at 84 pt, longest Hisn item paged at 54 pt and fully drawn, RTL runs with diacritics, Quran font, verse 2:282 paged, light and dark |
+| `PiPRenderingTests` | Layout clear of the system controls in seven frame sizes (16:9 and 9:16, 360×640 to 1920×1080); portrait text blocks clear of every control and landscape one block; the short verse 1:4 drawn above the play button (screenshot regression); long texts flowing across both blocks with every character drawn once; whole text drawn readably in every layout, no line wider than its block, RTL on every Arabic line, dense marks, long words, digits and punctuation; Hisn counter on one line, RTL and clear of the text up to 1000 in both orientations; one page at the largest size; longest Hisn item paged at 62 px; Quran font; verse 2:282 paged; light and dark; frame previews (`PiPFramePreviewTests`) |
 | `PiPProvidersTests` | Quran (first, middle, last, next, previous, long ayah, scroll vs jump), Hisn (first, repetition, last, next, previous, long text, completed chapter, only skip forward counts, counts 1/3/100/101/250, finished item kept in view, pause/close/reopen/relaunch keep the count, last item completes the chapter, screen change, skip back, no production audio), Adhkar (first, middle, last, counter), Dua (first, middle, last), Quran → Hisn switch on real content |
 
 ## 13. Physical device status
 
-**NOT_TESTED.** No iPhone was available, and nothing in this phase ran on a device. The only
-device evidence is the earlier POC run (iPhone12,5, iOS 26.6.2: PiP start, background frames,
-the sample-buffer source). It covers the path, not this feature.
+**NOT_TESTED.** No check below has been run on a device. The device evidence so far is the
+earlier POC run (iPhone12,5, iOS 26.6.2: PiP start, background frames, the sample-buffer
+source) and one owner screenshot of the portrait setting (2026-10-09, before the two text
+blocks): a 9:16 window, the system controls where section 7 puts them, and a short verse
+behind play/pause, which this layout fixes in the renderer.
 
 **Build to test:** `IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED` from the CI run of the PR's
 latest commit. It is unsigned, so re-sign it for your own iPhone, or build `azkar-release-ipa`
@@ -323,38 +359,43 @@ calls `PiPEngine.setPlaying`, `skipByInterval` calls `PiPEngine.skip`):
 - Count 100: «أذكار الصباح», الذكر 18.
 - The book has no count above 100; tests cover 101, 250 and 1000.
 
+Each row is PASS, FAIL, BLOCKED or NOT_TESTED. Only a result observed on an iPhone changes a
+row; tests and frame previews never do.
+
 | # | Check | Status |
 |---|---|---|
-| 1 | Release build: «نافذة عائمة» shows and starts PiP in Quran, Hisn, Adhkar and Dua; the window shows the title, subtitle and text | NOT_TESTED |
-| 2 | Long Hisn item: each Play shows the next page and each Pause the previous one, at once; the item does not change | NOT_TESTED |
-| 3 | The play/pause icon follows the pages (play until the last page, pause back to the first), without waiting or flickering | NOT_TESTED |
-| 4 | Short item: Play and Pause change nothing. On the first and last page, the extra tap changes nothing | NOT_TESTED |
-| 5 | Count 3: three skip-forwards show «التكرار 2 من 3», «التكرار 3 من 3», then «اكتمل ✓ 3 من 3». The next skip shows الذكر 2 | NOT_TESTED |
-| 6 | Count 100: 100 skip-forwards show each step up to «اكتمل ✓ 100 من 100», and nothing is skipped or counted twice on fast taps | NOT_TESTED |
-| 7 | Close PiP mid-count (for example at 37 of 100) and reopen it: «التكرار 38 من 100» | NOT_TESTED |
-| 8 | PiP and the reader agree: the reader shows the PiP count, and counting on the reader updates the window | NOT_TESTED |
-| 9 | Background and return: Home, another app, return via the window and close it. The reader is on the item PiP showed | NOT_TESTED |
-| 10 | Quran, Adhkar and Dua: skip moves one item and stops at the first and last item | NOT_TESTED |
-| 11 | Quran PiP, then start Hisn PiP: one window, Quran position kept | NOT_TESTED |
-| 12 | Arabic RTL and diacritics, dark mode, VoiceOver on the PiP button, lock/unlock | NOT_TESTED |
-| 13 | Another audio app (music, podcast) playing, then start PiP, then a phone call. Check what pauses, and that iOS's own play/pause calls (interruptions) do not turn pages unexpectedly | NOT_TESTED |
-| 14 | No black or frozen frame, no stale content after switching | NOT_TESTED |
-| 15 | Which controls show, and when: tap the window, note close, return, skip ±, play/pause and the progress bar, and how long they stay | NOT_TESTED |
-| 16 | With the controls shown, the title, the counter and the information line stay readable; only the text's middle is under the middle row | NOT_TESTED |
-| 17 | The smallest and largest window sizes (pinch): the text, counter and page line are readable and nothing is cut | NOT_TESTED |
-| 18 | Landscape setting: the window is 16:9. Portrait setting (after reopening the app): the window is tall, the text wraps and pages, and the controls do not cover the counter. In both phone orientations | NOT_TESTED |
+| 1 | Entry: «نافذة عائمة» shows and starts PiP from Quran, Hisn, Adhkar and Dua, in Release | NOT_TESTED |
+| 2 | Portrait setting: the window is 9:16 and the text is readable with the system controls hidden | NOT_TESTED (an earlier build gave a 9:16 window, 2026-10-09 screenshot) |
+| 3 | Portrait with the controls shown: no text behind skip, play/pause or skip; the title, counter and information line stay readable | NOT_TESTED (the 2026-10-09 screenshot, before this layout, had a short verse behind play/pause: FAIL then) |
+| 4 | No overlap between the text, the header and the counter | NOT_TESTED |
+| 5 | Short text (Quran 1:4, «الدعاء لمن لبس ثوباً جديداً» الذكر 2) and long text (Quran 2:282, «أذكار الاستيقاظ من النوم» الذكر 4) | NOT_TESTED |
+| 6 | Diacritics and RTL: marks on their letters, nothing clipped, lines right to left | NOT_TESTED |
+| 7 | Resize the window (pinch, smallest and largest): nothing clipped, the text clear of the controls | NOT_TESTED |
+| 8 | Pages: each Play shows the next page and each Pause the previous one, at once, stopping at the first and last; the icon follows | NOT_TESTED |
+| 9 | Hisn counter: count 3 («دعاء الركوع» الذكر 1) and 100 («أذكار الصباح» الذكر 18) up to «اكتمل ✓», then the next item; the reader shows the same count, and counting on the reader updates the window | NOT_TESTED |
+| 10 | Close mid-count (37 of 100) and reopen: «التكرار 38 من 100» | NOT_TESTED |
+| 11 | Background, lock and return to the app: the reader is on the item PiP showed | NOT_TESTED |
+| 12 | Dark mode, and VoiceOver on the PiP button | NOT_TESTED |
+| 13 | Calls and audio interruptions (music, podcast, a phone call): what pauses, and that iOS's own play/pause calls do not turn pages unexpectedly | NOT_TESTED |
+| 14 | No black or frozen frame, no stale content after switching sections | NOT_TESTED |
+| 15 | Portrait compared with landscape: the same item in both settings, in both phone orientations | NOT_TESTED |
+| 16 | Quran, Adhkar and Dua: skip moves one item and stops at the first and last | NOT_TESTED |
+| 17 | Quran PiP, then Hisn PiP: one window, Quran position kept | NOT_TESTED |
 
-Record each result (PASS or FAIL, with the iPhone model and iOS version) in place of
-NOT_TESTED. Only a result observed on a device changes a row.
+Record each result with the iPhone model and iOS version.
 
 ## 14. Limitations
 
 - No custom PiP buttons exist. The skip buttons carry the system's ±seconds icons, and
   close, return to app and play/pause are always shown (section 5.1).
-- While the controls are shown, the middle row covers the middle of the text; the header,
-  counter and information line stay clear. Where iOS draws its controls is from the system's
-  standard PiP layout and needs a device check (section 13, rows 15–17).
-- Portrait is a setting, off by default and not yet run on a device; it applies after reopening the app.
+- In portrait the text avoids the middle row; in landscape the window is too short for two
+  blocks, so the middle row covers the text's centre while the controls are shown. The kept
+  control places come from one screenshot of one iPhone; on another model or in a smaller
+  window the controls may reach further (section 13, rows 3 and 7).
+- The text blocks leave the space behind the middle row empty, so a portrait page holds less
+  text and a long item has more pages.
+- Portrait is a setting, off by default; it applies after reopening the app. Its layout with
+  two text blocks has not been seen on a device.
 - Play/pause cannot be hidden in a sample-buffer PiP. In text mode it turns pages, and for a
   one-page text it does nothing. Whether iOS redraws its icon at once after each tap is
   device-only behaviour (the app asks it to with `invalidatePlaybackState`).
