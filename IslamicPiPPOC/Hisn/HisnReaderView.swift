@@ -43,6 +43,7 @@ private struct HisnReaderContent: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var sharePayload: HisnSharePayload?
     @State private var notice: String?
+    @ObservedObject private var favorites = AppServices.shared.favorites
     @ObservedObject var model: HisnReaderController
     let screen: HisnReaderScreenModel
     let nextSection: HisnSectionEntry?
@@ -63,6 +64,7 @@ private struct HisnReaderContent: View {
         .toolbar {
             if !model.reader.isCompleted {
                 ToolbarItem(placement: .primaryAction) { actionsMenu }
+                ToolbarItem(placement: .primaryAction) { favoriteButton }
             }
         }
         .sheet(item: $sharePayload) { payload in
@@ -95,6 +97,18 @@ private struct HisnReaderContent: View {
     }
 
     // MARK: Item actions
+
+    /// The star: saves the item on screen to Favorites (shown in Hisn's index and on Home).
+    private var favoriteButton: some View {
+        let ref = ContentRef.hisnItem(model.reader.currentItem.id)
+        let saved = favorites.contains(ref)
+        return Button {
+            show(favorites.toggle(ref) ? "أُضيف إلى المفضلة" : "أُزيل من المفضلة")
+        } label: {
+            Image(systemName: saved ? "star.fill" : "star")
+        }
+        .accessibilityLabel(saved ? "إزالة من المفضلة" : "إضافة إلى المفضلة")
+    }
 
     private var actionsMenu: some View {
         Menu {

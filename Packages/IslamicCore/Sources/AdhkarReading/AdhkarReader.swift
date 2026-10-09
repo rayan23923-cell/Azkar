@@ -91,12 +91,15 @@ public final class DevotionalReaderController: ObservableObject {
     public let collection: DevotionalCollection
     private let store: DevotionalPositionStore
     private let dailyProgress: DailyProgressStore?
+    private let counts: ItemCountStore?
     private let now: () -> Date
 
     /// Opens at `start` when given (a search result or favorite; no repetitions), otherwise at
-    /// the saved position, otherwise at the first item. Nil for an empty collection.
+    /// the saved position, otherwise at the first item. Nil for an empty collection. Each
+    /// item's count today comes back from `counts`, so a finished item gone back to shows it.
     public init?(collection: DevotionalCollection, start: ContentRef? = nil, store: DevotionalPositionStore,
-                 dailyProgress: DailyProgressStore? = nil, now: @escaping () -> Date = Date.init) {
+                 dailyProgress: DailyProgressStore? = nil, counts: ItemCountStore? = nil,
+                 now: @escaping () -> Date = Date.init) {
         guard var cursor = SessionCursor(items: collection.items) else { return nil }
         if let start, let index = collection.items.firstIndex(where: { $0.ref == start }) {
             cursor.jump(to: index)
@@ -108,10 +111,19 @@ public final class DevotionalReaderController: ObservableObject {
             cursor.jump(to: index)
             Self.restore(saved.repetitions, in: &cursor)
         }
+        if let counts {
+            let saved = counts.counts(in: collection.ref, on: DayKey(date: now()))
+            var byIndex: [Int: Int] = [:]
+            for (index, item) in collection.items.enumerated() {
+                if let count = saved[item.ref.string] { byIndex[index] = count }
+            }
+            cursor.restoreCounts(byIndex)
+        }
         self.cursor = cursor
         self.collection = collection
         self.store = store
         self.dailyProgress = dailyProgress
+        self.counts = counts
         self.now = now
     }
 
@@ -134,6 +146,8 @@ public final class DevotionalReaderController: ObservableObject {
             isComplete = true
             dailyProgress?.markCompleted(collection.ref, on: DayKey(date: now()))
             store.clear(collection.ref)
+            // Done for today: the next opening starts afresh.
+            counts?.clear(collection.ref)
         } else {
             persist()
         }
@@ -157,6 +171,7 @@ public final class DevotionalReaderController: ObservableObject {
         cursor.restart()
         isComplete = false
         store.clear(collection.ref)
+        counts?.clear(collection.ref)
     }
 
     public func persist() {
@@ -165,5 +180,8 @@ public final class DevotionalReaderController: ObservableObject {
         let repetitions = cursor.remainingRepetitions == 0 ? 0 : cursor.completedRepetitions
         store.save(DevotionalPosition(item: current.ref, repetitions: repetitions, savedAt: now()),
                    in: collection.ref)
+        let items = cursor.items
+        counts?.save(Dictionary(cursor.counts.map { (items[$0.key].ref.string, $0.value) }, uniquingKeysWith: { Swift.max($0, $1) }),
+                     in: collection.ref, on: DayKey(date: now()))
     }
 }

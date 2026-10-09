@@ -4,18 +4,20 @@ import ContentKit
 import QuranReading
 import AdhkarReading
 import GlobalSearch
+import HisnReading
 
 /// Saved verses (Quran bookmarks) and saved adhkar and duas, newest first.
 struct FavoritesView: View {
     @ObservedObject private var favorites = AppServices.shared.favorites
     @State private var quran: QuranLibrary?
     @State private var adhkar: AdhkarLibrary?
+    @State private var hisn: HisnLibrary?
 
     var body: some View {
         List {
             if favorites.entries.isEmpty {
                 ContentUnavailableView("لا يوجد شيء محفوظ", systemImage: "star",
-                                       description: Text("احفظ آية بعلامة، أو ذكراً أو دعاءً بالنجمة."))
+                                       description: Text("احفظ آية بعلامة، أو ذكراً أو دعاءً بالنجمة، من الأذكار أو من حصن المسلم."))
             }
             ForEach(favorites.entries, id: \.ref) { entry in
                 if let row = describe(entry.ref) {
@@ -47,6 +49,7 @@ struct FavoritesView: View {
         .task {
             quran = try? await AppServices.shared.content.quran().library
             adhkar = try? await AppServices.shared.content.adhkar().library
+            hisn = (try? await BundledHisnRepository().loadBook()).map(HisnLibrary.init(book:))
         }
     }
 
@@ -62,7 +65,8 @@ struct FavoritesView: View {
             let item = found.collection.items[found.index]
             return (item.text, found.collection.title, item.reviewStatus == .quranVerbatimTanzil)
         case .hisn:
-            return nil
+            guard let found = hisn?.locate(itemId: ref.id) else { return nil }
+            return (found.chapter.items[found.itemIndex].arabicText, "حصن المسلم: \(found.chapter.titleArabic)", false)
         }
     }
 }

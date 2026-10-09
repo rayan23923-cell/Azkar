@@ -36,6 +36,17 @@ public struct HisnLibrary: Sendable {
 
     public func chapter(id: String) -> HisnChapter? { chaptersById[id] }
 
+    /// The first section (in index order) holding the item, and its place there; nil for an
+    /// unknown id. Used to open a saved item.
+    public func locate(itemId: String) -> (chapter: HisnChapter, itemIndex: Int)? {
+        for entry in sections {
+            guard let chapter = chaptersById[entry.id],
+                  let index = chapter.items.firstIndex(where: { $0.id == itemId }) else { continue }
+            return (chapter, index)
+        }
+        return nil
+    }
+
     /// The section after this one in index order (for «الباب التالي»); nil after the last.
     public func section(after id: String) -> HisnSectionEntry? {
         guard let index = sections.firstIndex(where: { $0.id == id }), index + 1 < sections.count else { return nil }

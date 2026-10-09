@@ -182,4 +182,19 @@ final class StateTypeTests: XCTestCase {
         XCTAssertEqual(AudioState.allCases.map(\.rawValue),
                        ["unavailable", "idle", "playing", "paused", "stopped", "interrupted", "error"])
     }
+
+    func testCountsRoundTripAndAreCapped() throws {
+        let items = self.items(1, 3, 3)
+        var cursor = try XCTUnwrap(SessionCursor(items: items))
+        cursor.advance(); cursor.advance(); cursor.advance()
+        XCTAssertEqual(cursor.counts, [0: 1, 1: 2])
+        var restored = try XCTUnwrap(SessionCursor(items: items, startIndex: 2))
+        restored.restoreCounts([0: 5, 1: 2, 2: 1, 9: 4, -1: 1])
+        XCTAssertEqual(restored.completedRepetitions, 1, "the current item takes its saved count")
+        XCTAssertEqual(restored.counts, [0: 1, 1: 2, 2: 1], "capped at each item's repetitions; bad indices ignored")
+        restored.previous()
+        XCTAssertEqual(restored.remainingRepetitions, 1)
+        restored.previous()
+        XCTAssertEqual(restored.remainingRepetitions, 0)
+    }
 }

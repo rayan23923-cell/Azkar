@@ -139,6 +139,7 @@ struct SettingsView: View {
                 UserDefaultsQuranPositionStore().clear()
                 UserDefaultsHisnReadingPositionStore().clear()
                 AppServices.shared.devotionalPositions.clearAll()
+                AppServices.shared.itemCounts.clearAll()
                 AppServices.shared.dailyProgress.clear()
                 showNotice("مُسحت مواضع القراءة", in: $notice)
             }

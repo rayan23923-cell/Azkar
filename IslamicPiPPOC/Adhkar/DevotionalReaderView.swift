@@ -30,7 +30,7 @@ struct DevotionalReaderView: View {
         // Collections are never empty (checked when the content loads).
         _reader = StateObject(wrappedValue: DevotionalReaderController(
             collection: collection, start: start, store: AppServices.shared.devotionalPositions,
-            dailyProgress: AppServices.shared.dailyProgress)!)
+            dailyProgress: AppServices.shared.dailyProgress, counts: AppServices.shared.itemCounts)!)
         _highlighted = State(initialValue: highlights)
     }
 

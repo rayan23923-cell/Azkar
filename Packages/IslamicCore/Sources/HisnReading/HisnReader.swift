@@ -99,6 +99,23 @@ public struct HisnReader: Equatable {
         session.restart()
     }
 
+    /// Repetitions counted on each item of the chapter, by item id, to keep across launches.
+    public var itemCounts: [String: Int] {
+        let items = session.cursor.items
+        return Dictionary(session.cursor.counts.map { (items[$0.key].id, $0.value) }, uniquingKeysWith: { Swift.max($0, $1) })
+    }
+
+    /// Puts back counts saved from `itemCounts`: going back to an item shows its count, and a
+    /// finished item is not counted again. Unknown ids are ignored.
+    public mutating func restore(itemCounts: [String: Int]) {
+        guard !itemCounts.isEmpty else { return }
+        var byIndex: [Int: Int] = [:]
+        for (index, item) in session.cursor.items.enumerated() {
+            if let count = itemCounts[item.id] { byIndex[index] = count }
+        }
+        session.cursor.restoreCounts(byIndex)
+    }
+
     /// Where to resume; nil once the chapter is complete.
     public func position(savedAt date: Date) -> HisnReadingPosition? {
         guard !isCompleted else { return nil }
