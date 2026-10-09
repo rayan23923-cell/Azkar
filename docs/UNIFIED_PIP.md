@@ -210,7 +210,7 @@ No line is wider than its block, so nothing is squeezed.
 API sets no orientation limit, so a 9:16 frame gives a portrait window. Settings has
 «اتجاه النافذة العائمة»: أفقي (the default, 16:9, the device-proven size) or عمودي (تجريبي,
 9:16). The choice is read when the app opens (`PiPLayout.saved()`), so the pages and the frames
-always agree; a change applies after the app is closed and opened again. The pixel buffer
+always agree; a change applies only after the app is quit (swiped away in the app switcher) and opened again. Going to the background, closing and reopening PiP, or a new PiP controller does not apply it. The pixel buffer
 enqueued on the `AVSampleBufferDisplayLayer` is the chosen layout's size (720×1280 or
 1280×720, `makePixelBuffer`), shown with `resizeAspect`. Nothing switches orientation by itself.
 
@@ -339,8 +339,18 @@ blocks): a 9:16 window, the system controls where section 7 puts them, and a sho
 behind play/pause, which this layout fixes in the renderer.
 
 **Build to test:** `IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED` from the CI run of the PR's
-latest commit. It is unsigned, so re-sign it for your own iPhone, or build `azkar-release-ipa`
-on Codemagic from the same commit.
+latest commit. It is unsigned and cannot be installed as is; Codemagic's `azkar-release-ipa`
+is unsigned too. To run Release on an iPhone, build it from Xcode with your own team:
+
+1. Check out the PR's head commit and open `IslamicPiPPOC.xcodeproj`.
+2. Target IslamicPiPPOC, Signing & Capabilities: Automatically manage signing, your Team (a
+   free Apple ID works; the app has no entitlements), and a bundle ID of your own in place of
+   `com.example.IslamicPiPPOC`. Do not commit the team or the bundle ID.
+3. Product › Scheme › Edit Scheme › Run › Build Configuration: Release (Debug adds the PiP test
+   tab and is not what ships).
+4. On the iPhone, turn on Settings › Privacy & Security › Developer Mode, connect it and trust
+   the Mac, then Run. If iOS asks, trust the developer in Settings › General › VPN & Device
+   Management. A free Apple ID's install expires after 7 days.
 
 **Controls per section** (from `SampleBufferPiPController`'s playback delegate: `setPlaying`
 calls `PiPEngine.setPlaying`, `skipByInterval` calls `PiPEngine.skip`):
