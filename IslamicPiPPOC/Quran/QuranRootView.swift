@@ -18,8 +18,8 @@ struct QuranRootView: View {
                 .navigationDestination(for: QuranRoute.self) { route in
                     if let library = model.library,
                        library.contains(QuranVerseRef(surah: route.surah, ayah: route.ayah)) {
-                        QuranReaderView(library: library, start: QuranVerseRef(surah: route.surah, ayah: route.ayah),
-                                        store: model.positionStore, highlightedAyah: route.highlights ? route.ayah : nil)
+                        QuranReadingScreen(library: library, start: QuranVerseRef(surah: route.surah, ayah: route.ayah),
+                                           store: model.positionStore, highlightedAyah: route.highlights ? route.ayah : nil)
                             .id(route)
                     } else if model.library == nil {
                         ProgressView()

@@ -25,10 +25,13 @@ struct QuranReaderView: View {
     @State private var showsGoTo = false
     /// Made on first appearance, on this screen's controller.
     @State private var pip: ReaderPiP?
+    private let switchToMushaf: (QuranVerseRef) -> Void
 
     /// `start` must be a verse of `library` (checked by the caller). The controller is made
     /// once per screen; it saves the start verse as the reading position.
-    init(library: QuranLibrary, start: QuranVerseRef, store: QuranPositionStore, highlightedAyah: Int?) {
+    init(library: QuranLibrary, start: QuranVerseRef, store: QuranPositionStore, highlightedAyah: Int?,
+         switchToMushaf: @escaping (QuranVerseRef) -> Void = { _ in }) {
+        self.switchToMushaf = switchToMushaf
         _controller = StateObject(wrappedValue: QuranReaderController(library: library, start: start, store: store,
                                                                       dailyProgress: AppServices.shared.dailyProgress)!)
         _highlightedAyah = State(initialValue: highlightedAyah)
@@ -236,6 +239,11 @@ struct QuranReaderView: View {
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
+            Button {
+                controller.persist()
+                switchToMushaf(controller.currentRef)
+            } label: { Image(systemName: "book.pages") }
+            .accessibilityLabel("عرض صفحات المصحف")
             Button { showsGoTo = true } label: { Image(systemName: "number") }
                 .accessibilityLabel("الانتقال إلى آية")
             Menu {

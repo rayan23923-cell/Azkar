@@ -35,6 +35,7 @@ struct SettingsView: View {
     @AppStorage(HisnSettings.hapticsKey) private var hapticsEnabled = true
     @AppStorage(AppAppearance.key) private var appearance: AppAppearance = .system
     @AppStorage("quran.textSize") private var quranTextSize: Double = 26
+    @AppStorage(QuranReadingMode.key) private var quranMode: QuranReadingMode = .verses
     @AppStorage("adhkar.textSize") private var adhkarTextSize: Double = 24
     @AppStorage(PiPAvailability.settingKey) private var pipEnabled = true
     @AppStorage(PiPLayout.orientationKey) private var pipOrientation: PiPLayout.Orientation = .landscape
@@ -92,6 +93,9 @@ struct SettingsView: View {
 
             Section {
                 Toggle("الاهتزاز", isOn: $hapticsEnabled)
+                Picker("عرض القرآن", selection: $quranMode) {
+                    ForEach(QuranReadingMode.allCases, id: \.self) { Text($0.title).tag($0) }
+                }
                 VStack(alignment: .leading) {
                     Text("حجم خط القرآن: \(Int(quranTextSize))")
                     Slider(value: $quranTextSize, in: 18...44, step: 2)
