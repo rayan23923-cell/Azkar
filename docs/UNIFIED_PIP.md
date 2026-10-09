@@ -251,32 +251,50 @@ package: 410 tests, 0 failures.
 
 ## 13. Physical device status
 
-**NOT_TESTED.** This environment has no iPhone, and nothing in this phase was run on a device.
-The device evidence that exists is the earlier POC run (iPhone12,5, iOS 26.6.2: PiP start,
-background frames, the sample-buffer source). It covers the path, not this feature.
+**NOT_TESTED.** No iPhone was available, and nothing in this phase ran on a device. The only
+device evidence is the earlier POC run (iPhone12,5, iOS 26.6.2: PiP start, background frames,
+the sample-buffer source). It covers the path, not this feature.
 
-To test, use the Release IPA (`azkar-release-ipa` on Codemagic), signed for your own iPhone:
+**Build to test:** the Release IPA from CI run 37877594495 on commit `3105f99`
+(`IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED`). It is unsigned, so re-sign it for your own
+iPhone, or build `azkar-release-ipa` on Codemagic from the same commit.
 
-1. Quran, Hisn, Adhkar, Dua: open an item and tap «نافذة عائمة». Check that the window shows
-   the title, subtitle and text.
-2. Skip forward and back on a Quran verse, a dhikr and a dua: the item. Check the ends.
-3. Play and pause on a long Hisn item: each tap shows the next / previous page at once, stopping
-   on the last and first page; the button flips at the ends. On a short item nothing changes.
-4. A Hisn item with a count (3, or 100): skip forward counts, «التكرار n من m» follows each
-   tap, the full count shows «اكتمل ✓», and the next skip shows the next item. Close and
-   reopen mid-count: the count is kept. Check the reader screen shows the same count.
-5. Home, another app, return to the app via the window, close the window. Then check the
-   reader is on the item PiP showed.
-6. Quran PiP, then open the app, go to Hisn and start PiP: the Quran window closes and Hisn
-   opens.
-7. Lock/unlock, dark mode, the longest Hisn item, VoiceOver on the PiP row, a phone call
-   interruption.
+**Controls per section** (from `SampleBufferPiPController`'s playback delegate: `setPlaying`
+calls `PiPEngine.setPlaying`, `skipByInterval` calls `PiPEngine.skip`):
 
-8. Release IPA: Settings shows «العرض العائم»; the four readers show the button; the window
-   starts, and keeps updating while another app is in front.
+| Section | Play / Pause | Skip forward | Skip back |
+|---|---|---|---|
+| Quran | Next / previous page of a long verse | Next verse | Previous verse |
+| Hisn | Next / previous page of a long item | One recitation, then the next item once the count is done | Previous item |
+| Adhkar | Next / previous page | Next dhikr (never counts) | Previous dhikr |
+| Dua | Next / previous page | Next dua | Previous dua |
 
-Watch for black or frozen frames, stale content after switching, two windows, and other apps'
-audio pausing.
+**Real examples in the bundled Hisn content:**
+- Long item: «أذكار الاستيقاظ من النوم», الذكر 4.
+- Short item: «الدعاء لمن لبس ثوباً جديداً», الذكر 2.
+- Count 3: «دعاء الركوع», الذكر 1.
+- Count 100: «أذكار الصباح», الذكر 18.
+- The book has no count above 100; tests cover 101, 250 and 1000.
+
+| # | Check | Status |
+|---|---|---|
+| 1 | Release build: «نافذة عائمة» shows and starts PiP in Quran, Hisn, Adhkar and Dua; the window shows the title, subtitle and text | NOT_TESTED |
+| 2 | Long Hisn item: each Play shows the next page and each Pause the previous one, at once; the item does not change | NOT_TESTED |
+| 3 | The play/pause icon follows the pages (play until the last page, pause back to the first), without waiting or flickering | NOT_TESTED |
+| 4 | Short item: Play and Pause change nothing. On the first and last page, the extra tap changes nothing | NOT_TESTED |
+| 5 | Count 3: three skip-forwards show «التكرار 2 من 3», «التكرار 3 من 3», then «اكتمل ✓ 3 من 3». The next skip shows الذكر 2 | NOT_TESTED |
+| 6 | Count 100: 100 skip-forwards show each step up to «اكتمل ✓ 100 من 100», and nothing is skipped or counted twice on fast taps | NOT_TESTED |
+| 7 | Close PiP mid-count (for example at 37 of 100) and reopen it: «التكرار 38 من 100» | NOT_TESTED |
+| 8 | PiP and the reader agree: the reader shows the PiP count, and counting on the reader updates the window | NOT_TESTED |
+| 9 | Background and return: Home, another app, return via the window and close it. The reader is on the item PiP showed | NOT_TESTED |
+| 10 | Quran, Adhkar and Dua: skip moves one item and stops at the first and last item | NOT_TESTED |
+| 11 | Quran PiP, then start Hisn PiP: one window, Quran position kept | NOT_TESTED |
+| 12 | Arabic RTL and diacritics, dark mode, VoiceOver on the PiP button, lock/unlock | NOT_TESTED |
+| 13 | Another audio app (music, podcast) playing, then start PiP, then a phone call. Check what pauses, and that iOS's own play/pause calls (interruptions) do not turn pages unexpectedly | NOT_TESTED |
+| 14 | No black or frozen frame, no stale content after switching | NOT_TESTED |
+
+Record each result (PASS or FAIL, with the iPhone model and iOS version) in place of
+NOT_TESTED. Only a result observed on a device changes a row.
 
 ## 14. Limitations
 
@@ -292,4 +310,6 @@ audio pausing.
 - Seeking a recording is in-app only.
 - Release declares the audio background mode for PiP; App Review 2.5.4 risk (section 9).
 - Starting PiP takes the audio session (section 8).
+- iOS can call `setPlaying` by itself, for example on an audio interruption. In text mode
+  that turns a page. Whether it happens is device-only (check 13 in section 13).
 - Physical device: NOT_TESTED.
