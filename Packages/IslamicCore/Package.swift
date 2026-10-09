@@ -17,7 +17,9 @@ import PackageDescription
 // HisnShareCard draws the share image with Core Text / Core Graphics (testable here).
 // Unified PiP: PiPCore is the engine, state, navigation, pages and session, free of AVKit;
 // PiPRendering draws PiP frames with Core Text; PiPProviders adapts the Quran, Hisn, adhkar and
-// dua readers to it. The AVKit controller lives in the app.
+// dua readers to it, and shows the day's prayer times. The AVKit controller lives in the app.
+// PrayerTimes computes prayer times and the Qibla direction on the device, from coordinates
+// only (no network, no CoreLocation: the app passes the location in).
 let package = Package(
     name: "IslamicCore",
     platforms: [.iOS(.v17), .macOS(.v14)],
@@ -35,6 +37,7 @@ let package = Package(
         .library(name: "PiPCore", targets: ["PiPCore"]),
         .library(name: "PiPRendering", targets: ["PiPRendering"]),
         .library(name: "PiPProviders", targets: ["PiPProviders"]),
+        .library(name: "PrayerTimes", targets: ["PrayerTimes"]),
     ],
     targets: [
         .target(
@@ -86,7 +89,10 @@ let package = Package(
         ),
         .target(
             name: "PiPProviders",
-            dependencies: ["PiPCore", "IslamicCore", "QuranReading", "HisnReading", "AdhkarReading"]
+            dependencies: ["PiPCore", "IslamicCore", "QuranReading", "HisnReading", "AdhkarReading", "PrayerTimes"]
+        ),
+        .target(
+            name: "PrayerTimes"
         ),
         .testTarget(
             name: "IslamicCoreTests",
@@ -134,9 +140,13 @@ let package = Package(
             dependencies: ["PiPRendering", "PiPCore", "QuranText", "IslamicCore", "HisnReading"]
         ),
         .testTarget(
+            name: "PrayerTimesTests",
+            dependencies: ["PrayerTimes"]
+        ),
+        .testTarget(
             name: "PiPProvidersTests",
             dependencies: ["PiPProviders", "PiPCore", "PiPRendering", "QuranReading", "HisnReading",
-                           "AdhkarReading", "ContentKit", "IslamicCore"]
+                           "AdhkarReading", "ContentKit", "IslamicCore", "PrayerTimes"]
         ),
     ]
 )
