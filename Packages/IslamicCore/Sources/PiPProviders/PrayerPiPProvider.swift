@@ -8,7 +8,9 @@ import PrayerTimes
 /// - The counter line (large, clear of the system controls) is the next prayer and the time
 ///   left: «العصر 3:12 م · بعد 1:05». It is recomputed on every frame the window draws, so the
 ///   countdown follows the clock.
-/// - The text is the day's six times, two a line.
+/// - The text is the day's six times, two a line in a landscape window (one page), one a line
+///   in a portrait one, whose text area is the upper half: there the day takes two pages
+///   (play / pause turns them), each ending at a whole line.
 /// - Skip back / forward: the previous / next day, from today to six days ahead. Play / pause
 ///   turns pages as in every section (the list fits one page).
 /// - Nothing is counted, saved or sent: the times are computed on the device from the saved
@@ -20,13 +22,15 @@ public final class PrayerPiPProvider: PiPContentProvider {
     public private(set) var schedule: PrayerSchedule
     public private(set) var placeName: String
     private var twentyFourHour: Bool
+    private let timesPerLine: Int
     private let now: () -> Date
     private let subject = PassthroughSubject<Void, Never>()
     /// Days after today (0: today).
     public private(set) var dayOffset = 0
 
-    public init(schedule: PrayerSchedule, placeName: String, twentyFourHour: Bool = false,
+    public init(schedule: PrayerSchedule, placeName: String, twentyFourHour: Bool = false, timesPerLine: Int = 2,
                 now: @escaping () -> Date = Date.init) {
+        self.timesPerLine = max(1, timesPerLine)
         self.schedule = schedule
         self.placeName = placeName
         self.twentyFourHour = twentyFourHour
@@ -51,12 +55,14 @@ public final class PrayerPiPProvider: PiPContentProvider {
         let zone = schedule.timeZone
         let shown = Calendar(identifier: .gregorian).date(byAdding: .day, value: dayOffset, to: date) ?? date
         let next = schedule.next(after: date)
-        // Two times a line (Fajr · sunrise, Dhuhr · Asr, Maghrib · Isha): the list fits a
-        // landscape window on one page at a readable size.
+        // Two times a line (Fajr · sunrise, Dhuhr · Asr, Maghrib · Isha) fit a landscape window
+        // on one page at a readable size; a portrait one is too narrow, so one a line there.
         let entries = day.all.map {
             "\($0.prayer.arabicName) \(PrayerFormat.clock($0.time, timeZone: zone, twentyFourHour: twentyFourHour))"
         }
-        let lines = stride(from: 0, to: entries.count, by: 2).map { entries[$0..<min($0 + 2, entries.count)].joined(separator: "   ·   ") }
+        let lines = stride(from: 0, to: entries.count, by: timesPerLine).map {
+            entries[$0..<min($0 + timesPerLine, entries.count)].joined(separator: "   ·   ")
+        }
         let detail = next.map {
             "\($0.prayer.arabicName) \(PrayerFormat.clock($0.time, timeZone: zone, twentyFourHour: twentyFourHour))"
                 + "  ·  \(PrayerFormat.remaining(from: date, to: $0.time))"

@@ -71,7 +71,9 @@ final class PrayerModel: NSObject, ObservableObject {
     func pipProvider() -> PrayerPiPProvider? {
         guard let schedule, let place else { return nil }
         if let provider { return provider }
-        let made = PrayerPiPProvider(schedule: schedule, placeName: place.name, twentyFourHour: twentyFourHour)
+        // One time a line in a portrait window, whose text area is only its upper half.
+        let made = PrayerPiPProvider(schedule: schedule, placeName: place.name, twentyFourHour: twentyFourHour,
+                                     timesPerLine: AppServices.shared.pipLayout.isPortrait ? 1 : 2)
         provider = made
         return made
     }

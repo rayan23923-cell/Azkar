@@ -51,12 +51,23 @@ final class PrayerPiPProviderTests: XCTestCase {
         XCTAssertTrue(try XCTUnwrap(provider.current).isLast)
     }
 
-    func testFitsOnePageInEveryLayout() throws {
+    /// Landscape: the whole day on one page. Portrait (text in the upper half): one time a
+    /// line, at most two pages, each ending at a whole line so no name is parted from its time.
+    func testFitsEveryLayout() throws {
         let now = Date(timeIntervalSince1970: 1_791_537_600)
-        let content = try XCTUnwrap(PrayerPiPProvider(schedule: schedule, placeName: "بغداد", now: { now }).current)
-        for layout in [PiPLayout.landscape, .portrait] {
-            let pagination = CoreTextPiPPaginator(layout: layout).paginate(content.text, style: .standard, withCounter: true)
-            XCTAssertEqual(pagination.pages.count, 1, "\(layout): the whole day at once")
+        let wide = try XCTUnwrap(PrayerPiPProvider(schedule: schedule, placeName: "بغداد", now: { now }).current)
+        XCTAssertEqual(CoreTextPiPPaginator(layout: .landscape).paginate(wide.text, style: .standard, withCounter: true)
+            .pages.count, 1, "landscape: the whole day at once")
+        let tall = try XCTUnwrap(PrayerPiPProvider(schedule: schedule, placeName: "بغداد", timesPerLine: 1,
+                                                   now: { now }).current)
+        XCTAssertEqual(tall.text.split(separator: "\n").count, 6)
+        for layout in [PiPLayout.portrait, PiPLayout(width: 360, height: 640), PiPLayout(width: 1080, height: 1920)] {
+            let pages = CoreTextPiPPaginator(layout: layout).paginate(tall.text, style: .standard, withCounter: true).pages
+            XCTAssertLessThanOrEqual(pages.count, 2, "\(layout)")
+            XCTAssertEqual(pages.joined(), tall.text)
+            for page in pages.dropLast() {
+                XCTAssertTrue(page.hasSuffix("\n"), "\(layout): a page ends at a whole line")
+            }
         }
     }
 
