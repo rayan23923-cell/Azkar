@@ -4,12 +4,14 @@ import ContentKit
 import QuranReading
 import AdhkarReading
 import GlobalSearch
+import PrayerTimes
 
 /// The first tab: the adhkar for this time of day, where reading stopped, today's progress,
 /// search across everything, and Favorites.
 struct HomeView: View {
     @ObservedObject private var router = AppServices.shared.router
     @ObservedObject private var favorites = AppServices.shared.favorites
+    @ObservedObject private var prayer = PrayerModel.shared
     @State private var quranResume: (position: QuranReadingPosition, surah: QuranSurah)?
     @State private var adhkar: AdhkarLibrary?
     @State private var completedToday: Set<ContentRef> = []
@@ -18,6 +20,19 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    NavigationLink {
+                        PrayerTimesView()
+                    } label: {
+                        prayerRow
+                    }
+                    NavigationLink {
+                        QiblaView()
+                    } label: {
+                        Label("اتجاه القبلة", systemImage: "location.north.line")
+                    }
+                }
+
                 Section {
                     NavigationLink {
                         GlobalSearchView()
@@ -89,6 +104,24 @@ struct HomeView: View {
         .onChange(of: router.tab) { Task { await reload() } }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await reload() } }
+        }
+    }
+
+    /// The next prayer and the time left, or a prompt to set the place.
+    private var prayerRow: some View {
+        TimelineView(.everyMinute) { context in
+            if let schedule = prayer.schedule, let next = schedule.next(after: context.date) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(next.prayer.arabicName) \(PrayerFormat.clock(next.time, timeZone: schedule.timeZone, twentyFourHour: prayer.twentyFourHour))")
+                        Text("\(PrayerFormat.remaining(from: context.date, to: next.time)) · مواقيت الصلاة")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: { Image(systemName: "clock") }
+            } else {
+                Label("مواقيت الصلاة", systemImage: "clock")
+            }
         }
     }
 

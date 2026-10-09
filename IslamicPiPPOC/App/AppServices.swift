@@ -166,6 +166,8 @@ final class AppServices: ObservableObject {
             case .quran: router.tab = .quran
             case .hisn: router.tab = .hisn
             case .dhikr, .dua: router.tab = .adhkar
+            // The prayer times open from Home and stay on its stack.
+            case .prayer: router.tab = .home
             }
         }
     }

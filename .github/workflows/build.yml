@@ -132,8 +132,11 @@ jobs:
           /usr/libexec/PlistBuddy -c "Print :CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName" "$APP/Info.plist"
           if grep -rlaF 'HisnAudioFixture' "$APP"; then echo "fixture code in the Release app"; exit 1; fi
           if find "$APP" -iname 'test-*' -o -name '*.device-test.json' | grep .; then echo "test audio in the Release app"; exit 1; fi
-          # No permission usage strings: the app asks only for notifications, which need none.
-          if plutil -p "$APP/Info.plist" | grep -E 'NS[A-Za-z]+UsageDescription'; then echo "unexpected usage description"; exit 1; fi
+          # The only permission usage string is location while in use (prayer times and Qibla,
+          # computed on the device). Notifications need none; no other permission is asked for.
+          USAGE=$(plutil -p "$APP/Info.plist" | grep -oE 'NS[A-Za-z]+UsageDescription' | sort -u | tr '\n' ',')
+          echo "Release usage descriptions: $USAGE"
+          [ "$USAGE" = "NSLocationWhenInUseUsageDescription," ] || { echo "unexpected usage description"; exit 1; }
           # The only background mode is the PiP one ("Audio, AirPlay, and Picture in Picture"),
           # owner decision 2026-10-09. No audio file ships, so nothing plays in the background.
           MODES=$(/usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist" 2>/dev/null | tr -d ' {}' | grep . | sort | tr '\n' ',')

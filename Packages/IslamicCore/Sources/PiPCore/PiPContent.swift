@@ -1,11 +1,12 @@
 import Foundation
 
-/// The four sections PiP can show.
+/// The sections PiP can show.
 public enum PiPContentType: String, Codable, CaseIterable, Sendable {
     case quran
     case hisn
     case dhikr
     case dua
+    case prayer
 
     /// The section name drawn in the PiP header.
     public var sectionTitle: String {
@@ -14,6 +15,7 @@ public enum PiPContentType: String, Codable, CaseIterable, Sendable {
         case .hisn: return "حصن المسلم"
         case .dhikr: return "الأذكار"
         case .dua: return "الأدعية"
+        case .prayer: return "مواقيت الصلاة"
         }
     }
 }
