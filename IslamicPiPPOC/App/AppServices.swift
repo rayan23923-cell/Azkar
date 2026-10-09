@@ -33,6 +33,8 @@ final class AppRouter: ObservableObject {
     @Published var quranTarget: QuranVerseRef?
     @Published var quranHighlights = false
     @Published var hisnTarget: HisnSearchResult?
+    /// A saved Hisn item (Favorites) to open.
+    @Published var hisnItemTarget: String?
     @Published var devotionalTarget: DevotionalRoute?
 
     func open(_ destination: GlobalSearchResult.Destination) {
@@ -66,6 +68,7 @@ final class AppRouter: ObservableObject {
                 open(.devotional(collection: ref, item: nil))
             }
         case .hisn:
+            hisnItemTarget = ref.id
             tab = .hisn
         }
     }
@@ -138,6 +141,8 @@ final class AppServices: ObservableObject {
     let dailyProgress: DailyProgressStore
     let favorites: FavoritesModel
     let devotionalPositions: DevotionalPositionStore
+    /// Each item's count today, in Hisn chapters and adhkar collections.
+    let itemCounts: ItemCountStore
     let router = AppRouter()
     let content = ContentStore()
     /// The one PiP engine of the app (Quran, Hisn, adhkar and duas).
@@ -151,6 +156,7 @@ final class AppServices: ObservableObject {
         dailyProgress = UserDefaultsDailyProgressStore()
         favorites = FavoritesModel(store: UserDefaultsFavoritesStore())
         devotionalPositions = UserDefaultsDevotionalPositionStore()
+        itemCounts = UserDefaultsItemCountStore()
         // PiP is offered only when this build declares the PiP background mode (see
         // docs/UNIFIED_PIP.md) and the user's
         // «العرض العائم» setting is on. It always starts from a button, never automatically.

@@ -95,6 +95,12 @@ final class HisnLibraryModel: ObservableObject {
                          highlightedItemId: destination.highlightedItemId)
     }
 
+    /// A saved item (Favorites), marked briefly when it opens; nil when it no longer exists.
+    func route(forItem itemId: String) -> HisnRoute? {
+        guard case .loaded(let library, _, _) = state, let found = library.locate(itemId: itemId) else { return nil }
+        return HisnRoute(chapterId: found.chapter.id, itemIndex: found.itemIndex, highlightedItemId: itemId)
+    }
+
     func route(for position: HisnReadingPosition) -> HisnRoute {
         HisnRoute(chapterId: position.chapterId, itemIndex: position.itemIndex,
                   completedRepetitions: position.completedRepetitions)
@@ -109,7 +115,7 @@ extension HisnReaderController {
         let audio = HisnAudioPlayer(repository: audioRepository, engine: AVHisnAudioEngine(),
                                     session: AudioSessionCoordinator.shared)
         return HisnReaderController(reader: reader, store: store, audio: audio, haptics: SystemHisnHaptics.shared,
-                                    dailyProgress: dailyProgress)
+                                    dailyProgress: dailyProgress, counts: AppServices.shared.itemCounts)
     }
 }
 

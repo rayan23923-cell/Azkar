@@ -25,6 +25,7 @@ extension DhikrItem: RepeatableContent {}
 ///   lives, so going back to an item (finished or not) shows its count again; a finished
 ///   item is not counted again, and `advance()` on it just moves on.
 /// - `restart()` goes back to the first item with nothing counted anywhere.
+/// - `counts` / `restoreCounts(_:)` carry every item's count across app launches.
 public struct SessionCursor<Item: RepeatableContent & Equatable>: Equatable {
     public enum Step: Equatable {
         /// Counted a repetition; still on the same item with this many left.
@@ -101,6 +102,27 @@ public struct SessionCursor<Item: RepeatableContent & Equatable>: Equatable {
         guard items.indices.contains(newIndex) else { return false }
         move(to: newIndex)
         return true
+    }
+
+    /// Repetitions counted on each item (the current one included), by index; items with
+    /// none are left out.
+    public var counts: [Int: Int] {
+        var counts = countedElsewhere
+        if completedRepetitions > 0 { counts[index] = completedRepetitions }
+        return counts
+    }
+
+    /// Puts back counts saved from `counts`. Each is capped at its item's repetitions;
+    /// out-of-range indices are ignored, and the current item keeps a count it already has.
+    public mutating func restoreCounts(_ counts: [Int: Int]) {
+        for (itemIndex, count) in counts where items.indices.contains(itemIndex) && count > 0 {
+            let capped = min(count, max(1, items[itemIndex].repeatCount))
+            if itemIndex == index {
+                if completedRepetitions == 0 { completedRepetitions = capped }
+            } else {
+                countedElsewhere[itemIndex] = capped
+            }
+        }
     }
 
     /// The first item, nothing counted on any item.

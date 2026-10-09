@@ -25,21 +25,29 @@ public final class HisnReaderController: ObservableObject {
     private let store: HisnReadingPositionStore
     private let haptics: HisnHaptics?
     private let dailyProgress: DailyProgressStore?
+    private let counts: ItemCountStore?
     private let now: () -> Date
     private var audioTask: Task<Void, Never>?
     private var audioItemId: String?
 
     /// - Parameters:
     ///   - dailyProgress: where finishing the chapter is recorded for today (Phase 3G).
+    ///   - counts: where each item's count is kept for today, so going back to an item after
+    ///     the app was closed shows its count.
     ///   - now: the clock used for that day (tests pass a fixed one).
     public init(reader: HisnReader, store: HisnReadingPositionStore, audio: HisnAudioPlayer? = nil,
                 haptics: HisnHaptics? = nil, dailyProgress: DailyProgressStore? = nil,
-                now: @escaping () -> Date = Date.init) {
+                counts: ItemCountStore? = nil, now: @escaping () -> Date = Date.init) {
+        var reader = reader
+        if let counts {
+            reader.restore(itemCounts: counts.counts(in: .hisnSection(reader.chapter.id), on: DayKey(date: now())))
+        }
         self.reader = reader
         self.store = store
         self.audio = audio
         self.haptics = haptics
         self.dailyProgress = dailyProgress
+        self.counts = counts
         self.now = now
         save()
         syncAudio()
@@ -123,5 +131,8 @@ public final class HisnReaderController: ObservableObject {
 
     private func save() {
         HisnResume.record(reader, in: store)
+        // A finished chapter starts afresh next time (it is marked done for today).
+        counts?.save(reader.isCompleted ? [:] : reader.itemCounts, in: .hisnSection(reader.chapter.id),
+                     on: DayKey(date: now()))
     }
 }

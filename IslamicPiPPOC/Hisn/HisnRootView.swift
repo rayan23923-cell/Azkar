@@ -42,11 +42,17 @@ struct HisnRootView: View {
         .onAppear { model.refreshResume() }
         // A result from global search: opened once the book is loaded.
         .onChange(of: router.hisnTarget, initial: true) { openPendingTarget() }
+        .onChange(of: router.hisnItemTarget, initial: true) { openPendingTarget() }
         .onChange(of: model.isLoaded) { openPendingTarget() }
     }
 
     private func openPendingTarget() {
-        guard let target = router.hisnTarget, model.isLoaded else { return }
+        guard model.isLoaded else { return }
+        if let itemId = router.hisnItemTarget {
+            router.hisnItemTarget = nil
+            if let route = model.route(forItem: itemId) { path = [route] }
+        }
+        guard let target = router.hisnTarget else { return }
         router.hisnTarget = nil
         if let route = model.route(for: target) { path = [route] }
     }
@@ -93,6 +99,7 @@ private struct HisnIndexView: View {
             if searching {
                 HisnSearchResultsSection(results: results) { model.route(for: $0) }
             } else {
+                HisnFavoritesSection(library: library, model: model)
                 if let position = model.resumePosition, let chapter = library.chapter(id: position.chapterId) {
                     Section {
                         NavigationLink(value: model.route(for: position)) {
@@ -119,6 +126,47 @@ private struct HisnIndexView: View {
 
     private func runSearch() {
         results = search.search(query, filter: filter)
+    }
+}
+
+/// «المفضلة»: the saved Hisn items, newest first; each opens at its item. Hidden when none.
+private struct HisnFavoritesSection: View {
+    let library: HisnLibrary
+    @ObservedObject var model: HisnLibraryModel
+    @ObservedObject private var favorites = AppServices.shared.favorites
+
+    private struct Saved: Identifiable {
+        let id: String
+        let chapter: HisnChapter
+        let index: Int
+    }
+
+    var body: some View {
+        let saved = favorites.entries.filter { $0.ref.kind == .hisn }.compactMap { entry in
+            library.locate(itemId: entry.ref.id).map { Saved(id: entry.ref.id, chapter: $0.chapter, index: $0.itemIndex) }
+        }
+        if !saved.isEmpty {
+            Section("المفضلة") {
+                ForEach(saved) { entry in
+                    NavigationLink(value: HisnRoute(chapterId: entry.chapter.id, itemIndex: entry.index,
+                                                    highlightedItemId: entry.id)) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(entry.chapter.items[entry.index].arabicText)
+                                .lineLimit(2)
+                            Text(entry.chapter.titleArabic)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            favorites.remove(.hisnItem(entry.id))
+                        } label: { Label("إزالة", systemImage: "star.slash") }
+                    }
+                }
+            }
+        }
     }
 }
 
