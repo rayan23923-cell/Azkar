@@ -14,6 +14,19 @@ final class QuranMushafLinesTests: XCTestCase {
     func testLayoutLoads() throws {
         let layout = try XCTUnwrap(QuranMushafLayout.madina1421)
         XCTAssertEqual(layout.pages.count, 604)
+        XCTAssertEqual(layout.pageStarts.count, 604)
+        XCTAssertEqual(layout.pageStarts, layout.pageStarts.sorted())
+        XCTAssertEqual(layout.page(of: QuranVerseRef(surah: 19, ayah: 11)), 305)
+        XCTAssertEqual(layout.page(of: QuranVerseRef(surah: 114, ayah: 6)), 604)
+    }
+
+    /// The 1421H print breaks 25 pages a few verses away from the Tanzil page metadata; every
+    /// other page starts at the same verse.
+    func testPageBreaksDifferFromTheMetadataOnlyOnKnownPages() throws {
+        let layout = try XCTUnwrap(QuranMushafLayout.madina1421)
+        let differing = (1...604).filter { layout.pageStart($0) != QuranMetadata.pageStarts[$0 - 1] }
+        XCTAssertEqual(differing, [121, 122, 123, 145, 532, 533, 534, 565, 568, 570, 576, 584, 586, 588, 589, 590,
+                                   592, 593, 594, 595, 596, 597, 598, 599, 600])
     }
 
     /// Joined back, every verse's words are its bundled text, character for character; each verse
@@ -35,7 +48,7 @@ final class QuranMushafLinesTests: XCTestCase {
                     }
                 }
             }
-            let page = try XCTUnwrap(library.mushafPage(number))
+            let page = try XCTUnwrap(library.mushafPage(number, layout: try XCTUnwrap(QuranMushafLayout.madina1421)))
             let expected = page.sections.flatMap { $0.verses.map { QuranVerseRef(surah: $0.surahId, ayah: $0.ayahNumber) } }
             XCTAssertEqual(onPage, expected, "page \(number)")
         }

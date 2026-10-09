@@ -26,6 +26,8 @@ public struct QuranMushafLine: Equatable, Sendable {
 /// Where each line of the Madina mushaf (King Fahd Complex, 1421H print: 15 lines, 604 pages)
 /// starts, from `MushafLines-Madina1421.txt` (see `MushafLines-NOTICE.txt`). The words are cut
 /// from the bundled Tanzil text: joined back with spaces they give each verse unchanged.
+/// Its page breaks are the 1421H print's; on 25 pages they differ by a few verses from the
+/// Tanzil page metadata (an earlier print), so pages in this layout are numbered by it.
 public struct QuranMushafLayout: Sendable {
     enum Entry: Equatable, Sendable {
         case title(Int)
@@ -34,6 +36,19 @@ public struct QuranMushafLayout: Sendable {
     }
 
     let pages: [[Entry]]
+    /// The first verse of each page (every printed page starts with a verse's first word).
+    public let pageStarts: [QuranVerseRef]
+
+    public var pageCount: Int { pages.count }
+
+    /// The page (1...604) carrying a verse.
+    public func page(of ref: QuranVerseRef) -> Int {
+        QuranLibrary.index(of: ref, in: pageStarts) + 1
+    }
+
+    public func pageStart(_ page: Int) -> QuranVerseRef? {
+        pageStarts.indices.contains(page - 1) ? pageStarts[page - 1] : nil
+    }
 
     /// The bundled Madina layout; nil if the resource is missing or unreadable.
     public static let madina1421: QuranMushafLayout? = {
@@ -67,7 +82,15 @@ public struct QuranMushafLayout: Sendable {
             pages.append(entries)
         }
         guard pages.count == QuranMetadata.pageStarts.count else { return nil }
+        var starts: [QuranVerseRef] = []
+        for page in pages {
+            guard let first = page.lazy.compactMap({ entry -> (QuranVerseRef, Int)? in
+                if case .line(let ref, let word) = entry { return (ref, word) } else { return nil }
+            }).first, first.1 == 0 else { return nil }
+            starts.append(first.0)
+        }
         self.pages = pages
+        self.pageStarts = starts
     }
 
     /// A verse's words: space-separated pieces, a piece without letters (a pause mark, the hizb

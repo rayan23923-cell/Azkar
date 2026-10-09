@@ -42,8 +42,18 @@ public extension QuranLibrary {
 
     /// A page's verses, from its first verse up to the next page's first verse.
     func mushafPage(_ number: Int) -> QuranMushafPage? {
-        guard var ref = pageStart(number) else { return nil }
-        let end = pageStart(number + 1)
+        mushafPage(number, starts: QuranMetadata.pageStarts)
+    }
+
+    /// A page of a printed layout, whose page breaks may differ from the page metadata.
+    func mushafPage(_ number: Int, layout: QuranMushafLayout) -> QuranMushafPage? {
+        mushafPage(number, starts: layout.pageStarts)
+    }
+
+    internal func mushafPage(_ number: Int, starts: [QuranVerseRef]) -> QuranMushafPage? {
+        guard starts.indices.contains(number - 1) else { return nil }
+        var ref = starts[number - 1]
+        let end = starts.indices.contains(number) ? starts[number] : nil
         var sections: [QuranMushafPage.Section] = []
         var current: [QuranVerse] = []
         while ref != end, let item = self.verse(ref) {

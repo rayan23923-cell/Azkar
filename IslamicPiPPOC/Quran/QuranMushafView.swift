@@ -29,6 +29,10 @@ enum MushafPageStyle: String, CaseIterable {
 
     static let key = "quran.mushafStyle"
 
+    static var current: MushafPageStyle {
+        UserDefaults.standard.string(forKey: key).flatMap(MushafPageStyle.init(rawValue:)) ?? .printed
+    }
+
     var title: String {
         switch self {
         case .printed: return "مطابق للمطبوع (١٥ سطراً)"
@@ -88,6 +92,8 @@ struct QuranMushafView: View {
     @State private var highlight: QuranVerseRef?
     @State private var showsGoTo = false
     @State private var opened = false
+    /// The verse saved last, used to keep the place when the page style changes.
+    @State private var lastRef: QuranVerseRef
     private let start: QuranVerseRef
 
     init(library: QuranLibrary, start: QuranVerseRef, store: QuranPositionStore, highlightedAyah: Int?,
@@ -96,18 +102,35 @@ struct QuranMushafView: View {
         self.store = store
         self.switchToVerses = switchToVerses
         self.start = start
-        _page = State(initialValue: library.page(of: start))
+        _lastRef = State(initialValue: start)
+        let printed = MushafPageStyle.current == .printed && MushafFont.register() ? QuranMushafLayout.madina1421 : nil
+        _page = State(initialValue: printed?.page(of: start) ?? library.page(of: start))
         _highlight = State(initialValue: highlightedAyah.map { QuranVerseRef(surah: start.surah, ayah: $0) })
     }
 
     private var palette: MushafPalette { MushafPalette(colorScheme) }
 
+    /// The printed layout when that style is chosen and its font and data load; its page breaks
+    /// are the 1421H print's.
+    private var printed: QuranMushafLayout? {
+        style == .printed && MushafFont.register() ? QuranMushafLayout.madina1421 : nil
+    }
+
+    private func content(_ number: Int) -> QuranMushafPage? {
+        if let printed { return library.mushafPage(number, layout: printed) }
+        return library.mushafPage(number)
+    }
+
+    private func pageNumber(of ref: QuranVerseRef) -> Int {
+        printed?.page(of: ref) ?? library.page(of: ref)
+    }
+
     var body: some View {
         TabView(selection: $page) {
             ForEach(1...library.pageCount, id: \.self) { number in
-                if let content = library.mushafPage(number) {
+                if let content = content(number) {
                     Group {
-                        if style == .printed, MushafFont.register(), let lines = library.mushafLines(number) {
+                        if printed != nil, let lines = library.mushafLines(number) {
                             MushafPrintedPageView(page: content, lines: lines, highlight: highlight, palette: palette)
                         } else {
                             MushafPageView(page: content, highlight: highlight, palette: palette)
@@ -119,7 +142,7 @@ struct QuranMushafView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .background(palette.paper.ignoresSafeArea())
-        .navigationTitle(library.mushafPage(page)?.surahName ?? "")
+        .navigationTitle(content(page)?.surahName ?? "")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -142,6 +165,11 @@ struct QuranMushafView: View {
             store.save(QuranReadingPosition(start, savedAt: Date()))
         }
         .onChange(of: page) { _, _ in pageChanged() }
+        .onChange(of: style) { _, _ in
+            // The two styles break a few pages differently: stay on the same verse.
+            let ref = highlight ?? lastRef
+            page = pageNumber(of: ref)
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { save() }
         }
@@ -155,14 +183,15 @@ struct QuranMushafView: View {
 
     /// The page's first verse, unless the verse opened is on this page.
     private var currentRef: QuranVerseRef {
-        if let highlight, library.page(of: highlight) == page { return highlight }
-        return library.pageStart(page) ?? QuranVerseRef(surah: 1, ayah: 1)
+        if let highlight, pageNumber(of: highlight) == page { return highlight }
+        return (printed?.pageStart(page) ?? library.pageStart(page)) ?? QuranVerseRef(surah: 1, ayah: 1)
     }
 
     private func pageChanged() {
         save()
         // A surah whose last verse is on the page counts as read today, as in the verse reader.
-        guard let content = library.mushafPage(page) else { return }
+        lastRef = currentRef
+        guard let content = content(page) else { return }
         for section in content.sections where section.endsSurah {
             AppServices.shared.dailyProgress.markCompleted(.quranSurah(section.surah.id), on: DayKey(date: Date()))
         }

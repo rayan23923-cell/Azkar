@@ -109,7 +109,7 @@ public struct QuranLibrary: Sendable {
     }
 
     /// Last index whose start is at or before `ref`.
-    private static func index(of ref: QuranVerseRef, in starts: [QuranVerseRef]) -> Int {
+    static func index(of ref: QuranVerseRef, in starts: [QuranVerseRef]) -> Int {
         var low = 0
         var high = starts.count - 1
         while low < high {

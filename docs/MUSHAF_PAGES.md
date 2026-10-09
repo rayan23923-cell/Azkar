@@ -44,6 +44,10 @@ Pages are cream, or dark in dark mode.
   - Only for drawing, two marks the font spells differently are handed to it as the
     equivalent code points: U+06EA as U+065C (the imala dot of 11:41) and U+06EB as U+06EC (the
     ishmam of 12:11). The stored text is unchanged.
+- **Page breaks:** the printed style follows the 1421H print's page breaks, its page numbers
+  and juz shown accordingly. On 25 pages (121–123, 145, 532–534, 565, 568, 570, 576, 584, 586,
+  588–590, 592–600) they fall a few verses away from the Tanzil page metadata, which the
+  flowing style and the rest of the app keep. Switching style keeps the verse in view.
 - **Not exact:** the shapes of the print. The King Fahd Complex fonts are the Complex's
   property and may not be reproduced without its written approval, so they are not bundled.
   DigitalKhatt New Madina is an independent font in the same script; the print also stretches
