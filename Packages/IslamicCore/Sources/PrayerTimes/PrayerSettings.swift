@@ -19,6 +19,23 @@ public struct PrayerPlace: Equatable, Codable, Sendable {
     public var timeZone: TimeZone { timeZoneID.flatMap(TimeZone.init(identifier:)) ?? .current }
 }
 
+/// A saved prayer setting that is present but cannot be read.
+public enum PrayerSettingsIssue: String, CaseIterable, Sendable {
+    case place
+    case method
+    case asr
+    case adjustments
+
+    public var arabicName: String {
+        switch self {
+        case .place: return "المكان"
+        case .method: return "طريقة الحساب"
+        case .asr: return "مذهب العصر"
+        case .adjustments: return "تصحيح المواقيت"
+        }
+    }
+}
+
 /// The saved place and calculation settings, in UserDefaults on the device only.
 public final class PrayerSettingsStore {
     public static let placeKey = "prayer.place"
@@ -84,13 +101,38 @@ public final class PrayerSettingsStore {
         return PrayerSchedule(coordinates: place.coordinates, timeZone: place.timeZone, parameters: parameters)
     }
 
+    /// Saved values that are present but cannot be read (written by another version, or
+    /// damaged). They are left as they are: the screen says so and shows the default for
+    /// display until the user chooses again, so nothing is changed silently.
+    public var unreadableSettings: [PrayerSettingsIssue] {
+        var issues: [PrayerSettingsIssue] = []
+        if let raw = defaults.object(forKey: Self.placeKey),
+           (raw as? Data).flatMap({ try? JSONDecoder().decode(PrayerPlace.self, from: $0) }) == nil {
+            issues.append(.place)
+        }
+        if let raw = defaults.object(forKey: Self.methodKey),
+           (raw as? String).flatMap(CalculationMethod.init(rawValue:)) == nil {
+            issues.append(.method)
+        }
+        if let raw = defaults.object(forKey: Self.asrKey), (raw as? String).flatMap(AsrSchool.init(rawValue:)) == nil {
+            issues.append(.asr)
+        }
+        if let raw = defaults.object(forKey: Self.adjustmentsKey), (raw as? [String: Int]) == nil {
+            issues.append(.adjustments)
+        }
+        return issues
+    }
+
     /// Copies the place and settings into `other` (the store the widgets read, in the App
-    /// Group). True when anything there changed, so widgets are reloaded only then.
+    /// Group). True when anything there changed, so widgets are reloaded only then. While a
+    /// saved setting cannot be read, no place is copied: the widget then asks to open the app
+    /// rather than show times from a default the user did not choose.
     @discardableResult
     public func copy(to other: PrayerSettingsStore) -> Bool {
-        let changed = other.place != place || other.parameters != parameters || other.twentyFourHour != twentyFourHour
+        let shared = unreadableSettings.isEmpty ? place : nil
+        let changed = other.place != shared || other.parameters != parameters || other.twentyFourHour != twentyFourHour
         if changed {
-            other.place = place
+            other.place = shared
             other.parameters = parameters
             other.twentyFourHour = twentyFourHour
         }

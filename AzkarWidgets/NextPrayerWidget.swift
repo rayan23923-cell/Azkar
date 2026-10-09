@@ -5,8 +5,10 @@ import PrayerTimes
 
 struct NextPrayerEntry: TimelineEntry {
     enum Content {
-        case prayer(PrayerMoment, place: String, timeZone: TimeZone, twentyFourHour: Bool)
-        /// No place saved in the app yet (or no App Group in this build).
+        case prayer(PrayerMoment, place: String, timeZone: TimeZone, twentyFourHour: Bool, notice: PrayerPlaceNotice?)
+        /// The App Group cannot be read in this installation.
+        case unavailable
+        /// No place saved in the app yet.
         case noPlace
         /// The sun does not rise or set there today.
         case noTimes(place: String)
@@ -42,14 +44,19 @@ struct NextPrayerProvider: TimelineProvider {
     }
 
     private func entries(from now: Date, limit: Int) -> [NextPrayerEntry] {
-        guard let store = WidgetSettings.prayerStore(), let place = store.place, let schedule = store.schedule else {
+        switch NextPrayerWidgetState.resolve(store: WidgetSettings.prayerStore(), deviceTimeZone: .current, now: now,
+                                             limit: limit) {
+        case .sharedSettingsUnavailable:
+            return [NextPrayerEntry(date: now, content: .unavailable)]
+        case .noPlace:
             return [NextPrayerEntry(date: now, content: .noPlace)]
-        }
-        let moments = schedule.moments(from: now, limit: limit)
-        guard !moments.isEmpty else { return [NextPrayerEntry(date: now, content: .noTimes(place: place.name))] }
-        return moments.map {
-            NextPrayerEntry(date: $0.date, content: .prayer($0, place: place.name, timeZone: schedule.timeZone,
-                                                            twentyFourHour: store.twentyFourHour))
+        case .noTimes(let place):
+            return [NextPrayerEntry(date: now, content: .noTimes(place: place))]
+        case let .moments(moments, place, zone, twentyFourHour, notice):
+            return moments.map {
+                NextPrayerEntry(date: $0.date, content: .prayer($0, place: place, timeZone: zone,
+                                                                twentyFourHour: twentyFourHour, notice: notice))
+            }
         }
     }
 }
@@ -85,7 +92,7 @@ struct NextPrayerView: View {
     @ViewBuilder
     private var content: some View {
         switch entry.content {
-        case let .prayer(moment, place, zone, twentyFourHour):
+        case let .prayer(moment, place, zone, twentyFourHour, notice):
             let clock = PrayerFormat.clock(moment.nextTime, timeZone: zone, twentyFourHour: twentyFourHour)
             switch family {
             case .accessoryInline:
@@ -102,26 +109,34 @@ struct NextPrayerView: View {
                     Text("\(moment.next.arabicName) \(clock)").font(.headline)
                     Text(timerInterval: moment.date...moment.nextTime, countsDown: true)
                         .font(.body.monospacedDigit())
-                    Text(place).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+                    Text(placeLine(place, notice)).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityElement(children: .combine)
             case .systemMedium:
                 HStack(spacing: 12) {
-                    summary(moment: moment, place: place, clock: clock)
+                    summary(moment: moment, place: placeLine(place, notice), clock: clock)
                     Divider().overlay(.white.opacity(0.3))
                     dayList(moment: moment, zone: zone, twentyFourHour: twentyFourHour)
                 }
                 .foregroundStyle(.white)
             default:
-                summary(moment: moment, place: place, clock: clock)
+                summary(moment: moment, place: placeLine(place, notice), clock: clock)
                     .foregroundStyle(.white)
             }
         case .noPlace:
             message("افتح التطبيق واختر مدينتك أو موقعك لتظهر المواقيت هنا.")
+        case .unavailable:
+            // Not "no place": the app may have one, but this installation does not share it.
+            message("لا تصل الودجة إلى إعدادات التطبيق في هذا التثبيت. افتح التطبيق لعرض المواقيت.")
         case .noTimes(let place):
             message("لا يمكن حساب المواقيت لـ\(place) اليوم.")
         }
+    }
+
+    /// The place, marked when the saved location may be from before travelling.
+    private func placeLine(_ place: String, _ notice: PrayerPlaceNotice?) -> String {
+        notice == .locationMayBeOld ? "\(place) · قد يكون الموقع قديماً" : place
     }
 
     private func summary(moment: PrayerMoment, place: String, clock: String) -> some View {

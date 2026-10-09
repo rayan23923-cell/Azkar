@@ -9,9 +9,14 @@ enum SharedContainer {
         (Bundle.main.object(forInfoDictionaryKey: "AzkarAppGroup") as? String).flatMap { $0.isEmpty ? nil : $0 }
     }
 
-    /// The widgets' copy of the prayer settings; nil when the build names no group.
+    /// The widgets' copy of the prayer settings; nil when the build names no group, or when
+    /// iOS gives no container for it (an unsigned build, or a group not registered for the
+    /// signing team). Then nothing is written: `UserDefaults(suiteName:)` would otherwise
+    /// write to a private file the widget never sees.
     static func prayerStore() -> PrayerSettingsStore? {
-        guard let groupID, let defaults = UserDefaults(suiteName: groupID) else { return nil }
+        guard let groupID,
+              FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID) != nil,
+              let defaults = UserDefaults(suiteName: groupID) else { return nil }
         return PrayerSettingsStore(defaults: defaults)
     }
 }

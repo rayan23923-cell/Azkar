@@ -11,6 +11,13 @@ struct PrayerTimesView: View {
 
     var body: some View {
         List {
+            if !model.unreadableSettings.isEmpty {
+                Section {
+                    Label("تعذّر قراءة بعض الإعدادات المحفوظة (\(model.unreadableSettings.map(\.arabicName).joined(separator: "، "))). لم يُغيَّر شيء منها؛ تُستعمل القيمة الافتراضية للعرض حتى تختار من جديد.",
+                          systemImage: "exclamationmark.triangle")
+                        .font(.subheadline)
+                }
+            }
             if let schedule = model.schedule, let place = model.place {
                 // Redrawn every second so the time left and the current prayer follow the clock.
                 TimelineView(.periodic(from: .now, by: 1)) { context in

@@ -155,6 +155,18 @@ jobs:
           plutil -lint "$WIDGET/PrivacyInfo.xcprivacy"
           /usr/libexec/PlistBuddy -c "Print :CFBundleURLTypes:0:CFBundleURLSchemes:0" "$APP/Info.plist" | grep -qx azkarapp \
             || { echo "azkarapp URL scheme missing"; exit 1; }
+          # Both targets name the same App Group, from the one AZKAR_APP_GROUP setting. Unsigned
+          # builds carry no entitlements, so the source files and Info.plists are what is checked;
+          # registering the group is the owner's (docs/DAILY_COMPANION.md §13).
+          APP_GROUP=$(/usr/libexec/PlistBuddy -c "Print :AzkarAppGroup" "$APP/Info.plist")
+          WIDGET_GROUP=$(/usr/libexec/PlistBuddy -c "Print :AzkarAppGroup" "$WIDGET/Info.plist")
+          echo "App Group: $APP_GROUP"
+          [ -n "$APP_GROUP" ] && [ "$APP_GROUP" = "$WIDGET_GROUP" ] || { echo "app and widget name different App Groups"; exit 1; }
+          case "$APP_GROUP" in group.*) ;; *) echo "an App Group id starts with group."; exit 1 ;; esac
+          for E in IslamicPiPPOC.entitlements AzkarWidgets.entitlements; do
+            [ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.application-groups:0' "$E")" = '$(AZKAR_APP_GROUP)' ] \
+              || { echo "$E must name the group through AZKAR_APP_GROUP"; exit 1; }
+          done
           if find "$APP" \( -iname '*.wav' -o -iname '*.caf' -o -iname '*.m4a' -o -iname '*.mp3' -o -iname '*.aac' -o -iname '*.aiff' \) | grep .; then
             echo "audio file in the Release app: no silent or test audio may keep it in the background"; exit 1
           fi

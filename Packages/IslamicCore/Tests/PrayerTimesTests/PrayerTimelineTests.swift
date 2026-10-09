@@ -135,13 +135,16 @@ final class PrayerSentenceAndCompassTests: XCTestCase {
     }
 
     func testCompassQuality() {
-        XCTAssertEqual(QiblaReadingQuality(accuracy: nil), .unknown)
-        XCTAssertEqual(QiblaReadingQuality(accuracy: -1), .unknown, "a negative error means invalid")
-        XCTAssertEqual(QiblaReadingQuality(accuracy: 5), .good)
-        XCTAssertEqual(QiblaReadingQuality(accuracy: 10), .good)
-        XCTAssertEqual(QiblaReadingQuality(accuracy: 15), .fair)
-        XCTAssertEqual(QiblaReadingQuality(accuracy: 20), .fair)
-        XCTAssertEqual(QiblaReadingQuality(accuracy: 25), .poor)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: nil, isTrueNorth: true), .unknown)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: -1, isTrueNorth: true), .unknown, "a negative error means invalid")
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 5, isTrueNorth: true), .good)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 10, isTrueNorth: true), .good)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 15, isTrueNorth: true), .fair)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 20, isTrueNorth: true), .fair)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 25, isTrueNorth: true), .poor)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 3, isTrueNorth: false), .magneticOnly,
+                       "an accurate compass on magnetic north is still off by the unknown declination")
+        XCTAssertFalse(QiblaReadingQuality.magneticOnly.confirmsFacing)
         XCTAssertTrue(QiblaReadingQuality.good.confirmsFacing)
         XCTAssertTrue(QiblaReadingQuality.fair.confirmsFacing)
         XCTAssertFalse(QiblaReadingQuality.poor.confirmsFacing)
@@ -172,5 +175,102 @@ final class SharedPrayerSettingsTests: XCTestCase {
         app.place = nil
         XCTAssertTrue(app.copy(to: group))
         XCTAssertNil(group.place, "a cleared place is cleared for the widget too")
+    }
+}
+
+final class PrayerHardeningTests: XCTestCase {
+    private let now = Date(timeIntervalSince1970: 1_791_537_600) // 2026-10-09 12:20 in Baghdad
+    private var names: [String] = []
+
+    private func store() throws -> (PrayerSettingsStore, UserDefaults) {
+        let name = "PrayerHardening.\(UUID().uuidString)"
+        names.append(name)
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: name))
+        return (PrayerSettingsStore(defaults: defaults), defaults)
+    }
+
+    override func tearDown() {
+        names.forEach { UserDefaults().removePersistentDomain(forName: $0) }
+        names = []
+    }
+
+    // MARK: Widget state
+
+    func testTheWidgetTellsAMissingAppGroupFromAMissingPlace() throws {
+        XCTAssertEqual(NextPrayerWidgetState.resolve(store: nil, deviceTimeZone: .current, now: now),
+                       .sharedSettingsUnavailable)
+        let (store, _) = try store()
+        XCTAssertEqual(NextPrayerWidgetState.resolve(store: store, deviceTimeZone: .current, now: now), .noPlace)
+    }
+
+    func testTheWidgetShowsTheSavedPlaceAndItsTimes() throws {
+        let (store, _) = try store()
+        store.place = try XCTUnwrap(PrayerCities.all.first { $0.name == "بغداد" })
+        store.parameters = PrayerParameters(method: .ummAlQura, asr: .standard, adjustments: [.asr: 4])
+        let baghdad = TimeZone(identifier: "Asia/Baghdad")!
+        guard case let .moments(moments, place, zone, twentyFourHour, notice) =
+                NextPrayerWidgetState.resolve(store: store, deviceTimeZone: baghdad, now: now) else {
+            return XCTFail("times expected")
+        }
+        XCTAssertEqual(place, "بغداد")
+        XCTAssertEqual(zone.identifier, "Asia/Baghdad")
+        XCTAssertFalse(twentyFourHour)
+        XCTAssertNil(notice)
+        XCTAssertEqual(moments, try XCTUnwrap(store.schedule).moments(from: now), "the saved method and corrections")
+        XCTAssertEqual(moments.first?.next, .asr)
+    }
+
+    func testTheWidgetMarksALocationSavedInAnotherTimeZone() throws {
+        let (store, _) = try store()
+        store.place = PrayerPlace(name: "موقعي الحالي", coordinates: Coordinates(latitude: 33.3152, longitude: 44.3661),
+                                  timeZoneID: "Asia/Baghdad", isCurrentLocation: true)
+        guard case let .moments(_, _, _, _, notice) =
+                NextPrayerWidgetState.resolve(store: store, deviceTimeZone: TimeZone(identifier: "Europe/London")!, now: now) else {
+            return XCTFail("times expected")
+        }
+        XCTAssertEqual(notice, .locationMayBeOld)
+    }
+
+    func testTheWidgetSaysWhenThereAreNoTimes() throws {
+        let (store, _) = try store()
+        store.place = PrayerPlace(name: "القطب", coordinates: Coordinates(latitude: 78, longitude: 15),
+                                  timeZoneID: "Arctic/Longyearbyen", isCurrentLocation: false)
+        XCTAssertEqual(NextPrayerWidgetState.resolve(store: store, deviceTimeZone: .current,
+                                                     now: Date(timeIntervalSince1970: 1_782_043_200)),
+                       .noTimes(place: "القطب"))
+    }
+
+    // MARK: Unreadable settings
+
+    func testUnreadableSettingsAreReportedAndLeftAsTheyAre() throws {
+        let (store, defaults) = try store()
+        XCTAssertEqual(store.unreadableSettings, [])
+        defaults.set("someFutureMethod", forKey: PrayerSettingsStore.methodKey)
+        defaults.set(7, forKey: PrayerSettingsStore.asrKey)
+        defaults.set(Data("{".utf8), forKey: PrayerSettingsStore.placeKey)
+        defaults.set(["fajr": "two"], forKey: PrayerSettingsStore.adjustmentsKey)
+        XCTAssertEqual(store.unreadableSettings, [.place, .method, .asr, .adjustments])
+        // Shown with the defaults, but nothing is rewritten by reading.
+        XCTAssertNil(store.place)
+        XCTAssertEqual(store.parameters, PrayerParameters())
+        XCTAssertEqual(defaults.string(forKey: PrayerSettingsStore.methodKey), "someFutureMethod")
+        XCTAssertEqual(defaults.data(forKey: PrayerSettingsStore.placeKey), Data("{".utf8))
+        XCTAssertEqual(store.unreadableSettings.map(\.arabicName), ["المكان", "طريقة الحساب", "مذهب العصر", "تصحيح المواقيت"])
+    }
+
+    func testAnUnreadableMethodKeepsDefaultTimesOffTheWidget() throws {
+        let (app, appDefaults) = try store()
+        let (group, _) = try store()
+        app.place = try XCTUnwrap(PrayerCities.all.first { $0.name == "الكويت" })
+        XCTAssertTrue(app.copy(to: group))
+        XCTAssertNotNil(group.place)
+        appDefaults.set("someFutureMethod", forKey: PrayerSettingsStore.methodKey)
+        XCTAssertTrue(app.copy(to: group))
+        XCTAssertNil(group.place, "the widget asks to open the app instead of showing times by a default method")
+        XCTAssertEqual(NextPrayerWidgetState.resolve(store: group, deviceTimeZone: .current, now: now), .noPlace)
+        app.parameters = PrayerParameters(method: .egyptian, asr: .standard)
+        XCTAssertTrue(app.copy(to: group), "once the user chooses again the widget follows")
+        XCTAssertEqual(group.place?.name, "الكويت")
+        XCTAssertEqual(group.parameters.method, .egyptian)
     }
 }

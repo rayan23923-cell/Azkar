@@ -52,6 +52,9 @@ final class PrayerModel: NSObject, ObservableObject {
         publishToWidgets()
     }
 
+    /// Saved settings that are present but unreadable; shown, never overwritten by themselves.
+    var unreadableSettings: [PrayerSettingsIssue] { store.unreadableSettings }
+
     var schedule: PrayerSchedule? {
         place.map { PrayerSchedule(coordinates: $0.coordinates, timeZone: $0.timeZone, parameters: parameters) }
     }

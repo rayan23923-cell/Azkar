@@ -63,3 +63,28 @@ public enum PrayerPlaceNotice: Equatable, Sendable {
         return place.isCurrentLocation ? .locationMayBeOld : .cityInOtherTimeZone
     }
 }
+
+/// What the next-prayer widget can show, decided from what it can read. Kept apart from the
+/// view so each case is tested: the widget never shows a time it cannot back.
+public enum NextPrayerWidgetState: Equatable, Sendable {
+    /// The App Group cannot be opened (an unsigned build, or a group not registered for this
+    /// signing team): the widget cannot see the app's settings, which is not the same as no
+    /// place being chosen.
+    case sharedSettingsUnavailable
+    /// The app has not saved a place.
+    case noPlace
+    /// The sun does not rise or set there on this day.
+    case noTimes(place: String)
+    case moments([PrayerMoment], place: String, timeZone: TimeZone, twentyFourHour: Bool, notice: PrayerPlaceNotice?)
+
+    /// - Parameter store: the App Group copy of the settings; nil when the group is unavailable.
+    public static func resolve(store: PrayerSettingsStore?, deviceTimeZone: TimeZone, now: Date,
+                               limit: Int = 16) -> NextPrayerWidgetState {
+        guard let store else { return .sharedSettingsUnavailable }
+        guard let place = store.place, let schedule = store.schedule else { return .noPlace }
+        let moments = schedule.moments(from: now, limit: limit)
+        guard !moments.isEmpty else { return .noTimes(place: place.name) }
+        return .moments(moments, place: place.name, timeZone: schedule.timeZone, twentyFourHour: store.twentyFourHour,
+                        notice: PrayerPlaceNotice.check(place, deviceTimeZone: deviceTimeZone, at: now))
+    }
+}

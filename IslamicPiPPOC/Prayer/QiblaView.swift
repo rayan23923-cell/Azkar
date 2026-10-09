@@ -40,7 +40,7 @@ struct QiblaView: View {
         let reading = compass.reading
         let turn = reading.map { Qibla.turn(bearing: bearing, heading: $0.degrees) }
         // A rough reading never says «facing the Qibla» nor gives a precise turn.
-        let quality = QiblaReadingQuality(accuracy: reading?.accuracy)
+        let quality = QiblaReadingQuality(accuracy: reading?.accuracy, isTrueNorth: reading?.isTrueNorth ?? false)
         let facing = quality.confirmsFacing && (turn.map { abs($0) <= Self.aligned } ?? false)
 
         return ScrollView {
@@ -63,6 +63,11 @@ struct QiblaView: View {
                     Text(place.name)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
+                    if let caveat = placeCaveat(place) {
+                        Label(caveat, systemImage: "exclamationmark.triangle")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 .multilineTextAlignment(.center)
                 .accessibilityElement(children: .combine)
@@ -126,11 +131,26 @@ struct QiblaView: View {
     private func guidance(turn: Double, facing: Bool, quality: QiblaReadingQuality) -> String {
         if facing { return "أنت متّجه نحو القبلة" }
         guard quality.confirmsFacing else {
-            // No degrees from a compass that may be off by more than 20°.
+            // No degrees from a compass that may be off by more than 20°, or from magnetic north.
+            if quality == .magneticOnly {
+                return turn > 0 ? "استدر يميناً تقريباً" : "استدر يساراً تقريباً"
+            }
             return turn > 0 ? "استدر يميناً تقريباً، ثم عاير البوصلة" : "استدر يساراً تقريباً، ثم عاير البوصلة"
         }
         let degrees = Int(abs(turn).rounded())
         return turn > 0 ? "استدر يميناً \(degrees)°" : "استدر يساراً \(degrees)°"
+    }
+
+    /// The direction is computed for the saved place; say so when that may not be where the
+    /// user stands.
+    private func placeCaveat(_ place: PrayerPlace) -> String? {
+        if PrayerPlaceNotice.check(place, deviceTimeZone: .current, at: Date()) == .locationMayBeOld {
+            return "قد يكون الموقع المحفوظ قديماً. حدّثه من شاشة مواقيت الصلاة قبل الاعتماد على الاتجاه."
+        }
+        if !place.isCurrentLocation {
+            return "الاتجاه محسوب من \(place.name)، لا من موقعك الدقيق؛ يقترب منه ما دمت في المدينة نفسها."
+        }
+        return nil
     }
 
     @ViewBuilder
@@ -145,7 +165,7 @@ struct QiblaView: View {
                     Text("البوصلة تحتاج معايرة: حرّك الجهاز على شكل الرقم 8.")
                 }
                 if !reading.isTrueNorth {
-                    Text("الاتجاه من الشمال المغناطيسي، لأن الموقع غير مفعّل. قد يختلف بضع درجات عن الشمال الحقيقي.")
+                    Text("الاتجاه من الشمال المغناطيسي، لأن الموقع غير مفعّل. قد يختلف بضع درجات عن الشمال الحقيقي، فلا يُؤكَّد التوجّه نحو القبلة ولا تُعرض درجات الدوران.")
                 }
                 Text("أمسك الجهاز مستوياً، بعيداً عن المعادن والمغناطيس.")
             }
