@@ -136,10 +136,22 @@ jobs:
           if grep -rlaF 'PiP Technical Test' "$APP"; then echo "PiP test screen in the Release app"; exit 1; fi
           grep -rlaF 'PiPEngine' "$APP" > /dev/null || { echo "production PiP engine missing"; exit 1; }
           # The production PiP of every section ships in Release, not behind a Debug switch.
-          for s in 'SampleBufferPiPController' 'PiPFrameRenderer' 'QuranPiPProvider' 'HisnPiPProvider' \
-                   'AdhkarPiPProvider' 'DuaPiPProvider' 'تشغيل في نافذة عائمة' 'إغلاق النافذة العائمة'; do
-            grep -rlaF "$s" "$APP" > /dev/null || { echo "production PiP missing from Release: $s"; exit 1; }
-          done
+          # Byte search (UTF-8), so the Arabic button titles do not depend on grep's locale.
+          python3 - "$APP" <<'PY'
+          import os, sys
+          app = sys.argv[1]
+          blobs = []
+          for root, _, files in os.walk(app):
+              for name in files:
+                  with open(os.path.join(root, name), 'rb') as f:
+                      blobs.append(f.read())
+          needed = ['SampleBufferPiPController', 'PiPFrameRenderer', 'QuranPiPProvider', 'HisnPiPProvider',
+                    'AdhkarPiPProvider', 'DuaPiPProvider', 'تشغيل في نافذة عائمة', 'إغلاق النافذة العائمة']
+          missing = [s for s in needed if not any(s.encode('utf-8') in b for b in blobs)]
+          if missing:
+              sys.exit('production PiP missing from Release: ' + ', '.join(missing))
+          print('production PiP present in Release:', ', '.join(needed))
+          PY
           find "$APP" -name '*.ttf' -o -name '*.json' | sed "s|$APP/||" | sort
           du -sh "$APP"
 
