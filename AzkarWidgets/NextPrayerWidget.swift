@@ -148,18 +148,22 @@ struct NextPrayerView: View {
                     .foregroundStyle(.white)
             }
         case .noPlace:
-            message("افتح التطبيق واختر مدينتك أو موقعك، أو اختر مدينة من «تعديل الودجة».")
+            message("افتح التطبيق واختر مدينتك أو موقعك، أو اختر مدينة من «تعديل الودجة».",
+                    short: "اختر المدينة", icon: "mappin.slash")
         case .locationNotAllowed:
-            message("اسمح بالموقع للودجة: الإعدادات › أذكار › الموقع › «أثناء استخدام التطبيق أو الودجات».")
+            message("اسمح بالموقع للودجة: الإعدادات › أذكار › الموقع › «أثناء استخدام التطبيق أو الودجات».",
+                    short: "اسمح بالموقع", icon: "location.slash")
         case .locationUnavailable:
-            message("تعذّر تحديد موقعك الآن، وستُعاد المحاولة بعد قليل.")
+            message("تعذّر تحديد موقعك الآن، وستُعاد المحاولة بعد قليل.", short: "الموقع غير متاح", icon: "location")
         case .needsMethod(let place):
-            message("اختر طريقة الحساب من «تعديل الودجة» لتظهر مواقيت \(place).")
+            message("اختر طريقة الحساب من «تعديل الودجة» لتظهر مواقيت \(place).",
+                    short: "اختر طريقة الحساب", icon: "slider.horizontal.3")
         case .unavailable:
             // Not "no place": the app may have one, but this installation does not share it.
-            message("لا تصل الودجة إلى إعدادات التطبيق في هذا التثبيت. اضغط عليها مطوّلاً، ثم «تعديل الودجة»، واختر مدينتك.")
+            message("لا تصل الودجة إلى إعدادات التطبيق في هذا التثبيت. اضغط عليها مطوّلاً، ثم «تعديل الودجة»، واختر مدينتك.",
+                    short: "اختر المدينة", icon: "mappin.slash")
         case .noTimes(let place):
-            message("لا يمكن حساب المواقيت لـ\(place) اليوم.")
+            message("لا يمكن حساب المواقيت لـ\(place) اليوم.", short: "لا مواقيت اليوم", icon: "moon.zzz")
         }
     }
 
@@ -204,10 +208,34 @@ struct NextPrayerView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func message(_ text: String) -> some View {
-        Text(text)
-            .font(family == .accessoryInline || family == .accessoryCircular ? .caption2 : .footnote)
-            .foregroundStyle(family == .systemSmall || family == .systemMedium ? Color.white : Color.primary)
-            .minimumScaleFactor(0.7)
+    /// A state the widget cannot show times in. The lock screen has room only for a few words
+    /// (and the circle for an icon), so it shows `short`; the full text stays for VoiceOver.
+    @ViewBuilder
+    private func message(_ text: String, short: String, icon: String) -> some View {
+        switch family {
+        case .accessoryInline:
+            Label(short, systemImage: icon)
+                .accessibilityLabel(text)
+        case .accessoryCircular:
+            VStack(spacing: 1) {
+                Image(systemName: icon).font(.title3)
+                Text(short).font(.system(size: 9)).lineLimit(2).minimumScaleFactor(0.6).multilineTextAlignment(.center)
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(text)
+        case .accessoryRectangular:
+            VStack(alignment: .leading, spacing: 1) {
+                Label(short, systemImage: icon).font(.headline)
+                Text("من «تعديل الودجة» أو التطبيق").font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(text)
+        default:
+            Text(text)
+                .font(.footnote)
+                .foregroundStyle(Color.white)
+                .minimumScaleFactor(0.7)
+        }
     }
 }
