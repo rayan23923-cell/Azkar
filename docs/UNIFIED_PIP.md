@@ -235,8 +235,8 @@ PiP, which are now Debug and Release. Turning it off closes a running window.
 
 ## 12. Tests
 
-81 PiP tests (PiPCore 55, PiPRendering 9, PiPProviders 17). In CI they run with the rest of the
-package: 393 tests, 0 failures.
+98 PiP tests (PiPCore 66, PiPRendering 10, PiPProviders 22). In CI they run with the rest of the
+package: 410 tests, 0 failures.
 
 | Suite | Covers |
 |---|---|
