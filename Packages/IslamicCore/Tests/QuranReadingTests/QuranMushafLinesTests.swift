@@ -73,8 +73,9 @@ final class QuranMushafLinesTests: XCTestCase {
                 switch line.kind {
                 case .surahTitle(let surah): titles.append(surah.id)
                 case .basmala(let text):
+                    // Each surah's own basmala (Tanzil spells a few with a shadda on the ba).
                     basmalas += 1
-                    XCTAssertEqual(text, library.surah(2)?.bismillah)
+                    XCTAssertEqual(text, titles.last.flatMap { library.surah($0)?.bismillah }, "page \(number)")
                 case .text: break
                 }
             }
