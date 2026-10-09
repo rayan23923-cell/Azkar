@@ -10,6 +10,8 @@ struct NextPrayerEntry: TimelineEntry {
         case unavailable
         /// No place saved in the app yet.
         case noPlace
+        /// A city was chosen in the widget, but no method is known for it.
+        case needsMethod(place: String)
         /// The sun does not rise or set there today.
         case noTimes(place: String)
     }
@@ -18,38 +20,40 @@ struct NextPrayerEntry: TimelineEntry {
     let content: Content
 }
 
-struct NextPrayerProvider: TimelineProvider {
+struct NextPrayerProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> NextPrayerEntry {
         NextPrayerEntry(date: Date(), content: .noPlace)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (NextPrayerEntry) -> Void) {
-        completion(entries(from: Date(), limit: 1).first ?? placeholder(in: context))
+    func snapshot(for configuration: NextPrayerConfiguration, in context: Context) async -> NextPrayerEntry {
+        entries(configuration, from: Date(), limit: 1).first ?? placeholder(in: context)
     }
 
     /// One entry each time what is shown changes (each prayer and sunrise, and local midnight).
     /// The countdown in between is drawn by the system from the next prayer's date.
-    func getTimeline(in context: Context, completion: @escaping (Timeline<NextPrayerEntry>) -> Void) {
+    func timeline(for configuration: NextPrayerConfiguration, in context: Context) async -> Timeline<NextPrayerEntry> {
         let now = Date()
-        let entries = entries(from: now, limit: 16)
+        let entries = entries(configuration, from: now, limit: 16)
         switch entries.last?.content {
         case .prayer:
-            completion(Timeline(entries: entries, policy: .atEnd))
+            return Timeline(entries: entries, policy: .atEnd)
         case .noTimes:
-            completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(6 * 3600))))
+            return Timeline(entries: entries, policy: .after(now.addingTimeInterval(6 * 3600)))
         default:
-            // The app reloads the widget when a place is chosen.
-            completion(Timeline(entries: entries, policy: .never))
+            // The app reloads the widget when a place is chosen; editing the widget reloads it too.
+            return Timeline(entries: entries, policy: .never)
         }
     }
 
-    private func entries(from now: Date, limit: Int) -> [NextPrayerEntry] {
-        switch NextPrayerWidgetState.resolve(store: WidgetSettings.prayerStore(), deviceTimeZone: .current, now: now,
-                                             limit: limit) {
+    private func entries(_ configuration: NextPrayerConfiguration, from now: Date, limit: Int) -> [NextPrayerEntry] {
+        switch NextPrayerWidgetState.resolve(store: WidgetSettings.prayerStore(), choice: configuration.choice,
+                                             deviceTimeZone: .current, now: now, limit: limit) {
         case .sharedSettingsUnavailable:
             return [NextPrayerEntry(date: now, content: .unavailable)]
         case .noPlace:
             return [NextPrayerEntry(date: now, content: .noPlace)]
+        case .needsMethod(let place):
+            return [NextPrayerEntry(date: now, content: .needsMethod(place: place))]
         case .noTimes(let place):
             return [NextPrayerEntry(date: now, content: .noTimes(place: place))]
         case let .moments(moments, place, zone, twentyFourHour, notice):
@@ -63,11 +67,11 @@ struct NextPrayerProvider: TimelineProvider {
 
 struct NextPrayerWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "NextPrayer", provider: NextPrayerProvider()) { entry in
+        AppIntentConfiguration(kind: "NextPrayer", intent: NextPrayerConfiguration.self, provider: NextPrayerProvider()) { entry in
             NextPrayerView(entry: entry)
         }
         .configurationDisplayName("الصلاة القادمة")
-        .description("الصلاة القادمة ووقتها والوقت المتبقي للمكان المحفوظ في التطبيق.")
+        .description("الصلاة القادمة ووقتها والوقت المتبقي، للمكان المحفوظ في التطبيق أو لمدينة تختارها من «تعديل الودجة».")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryInline, .accessoryCircular, .accessoryRectangular])
     }
 }
@@ -125,10 +129,12 @@ struct NextPrayerView: View {
                     .foregroundStyle(.white)
             }
         case .noPlace:
-            message("افتح التطبيق واختر مدينتك أو موقعك لتظهر المواقيت هنا.")
+            message("افتح التطبيق واختر مدينتك أو موقعك، أو اختر مدينة من «تعديل الودجة».")
+        case .needsMethod(let place):
+            message("اختر طريقة الحساب من «تعديل الودجة» لتظهر مواقيت \(place).")
         case .unavailable:
             // Not "no place": the app may have one, but this installation does not share it.
-            message("لا تصل الودجة إلى إعدادات التطبيق في هذا التثبيت. افتح التطبيق لعرض المواقيت.")
+            message("لا تصل الودجة إلى إعدادات التطبيق في هذا التثبيت. اضغط عليها مطوّلاً، ثم «تعديل الودجة»، واختر مدينتك.")
         case .noTimes(let place):
             message("لا يمكن حساب المواقيت لـ\(place) اليوم.")
         }

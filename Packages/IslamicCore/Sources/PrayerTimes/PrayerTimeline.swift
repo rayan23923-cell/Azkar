@@ -66,6 +66,19 @@ public enum PrayerPlaceNotice: Equatable, Sendable {
 
 /// What the next-prayer widget can show, decided from what it can read. Kept apart from the
 /// view so each case is tested: the widget never shows a time it cannot back.
+/// What the user set in the next-prayer widget's own settings; nil means "as in the app".
+public struct NextPrayerWidgetChoice: Equatable, Sendable {
+    public var place: PrayerPlace?
+    public var method: CalculationMethod?
+    public var asr: AsrSchool?
+
+    public init(place: PrayerPlace? = nil, method: CalculationMethod? = nil, asr: AsrSchool? = nil) {
+        self.place = place
+        self.method = method
+        self.asr = asr
+    }
+}
+
 public enum NextPrayerWidgetState: Equatable, Sendable {
     /// The App Group cannot be opened (an unsigned build, or a group not registered for this
     /// signing team): the widget cannot see the app's settings, which is not the same as no
@@ -75,11 +88,32 @@ public enum NextPrayerWidgetState: Equatable, Sendable {
     case noPlace
     /// The sun does not rise or set there on this day.
     case noTimes(place: String)
+    /// A city was chosen in the widget, but no calculation method is known for it: none was
+    /// chosen in the widget and the app's settings cannot be read. No default is assumed.
+    case needsMethod(place: String)
     case moments([PrayerMoment], place: String, timeZone: TimeZone, twentyFourHour: Bool, notice: PrayerPlaceNotice?)
 
-    /// - Parameter store: the App Group copy of the settings; nil when the group is unavailable.
-    public static func resolve(store: PrayerSettingsStore?, deviceTimeZone: TimeZone, now: Date,
-                               limit: Int = 16) -> NextPrayerWidgetState {
+    /// - Parameters:
+    ///   - store: the App Group copy of the settings; nil when the group is unavailable.
+    ///   - choice: what the user set in the widget itself («تعديل الودجة»). A city chosen there
+    ///     is used instead of the app's place, so the widget works where the App Group does not
+    ///     (a build signed without it). The method and Asr school come from the widget when set,
+    ///     else from the app's shared settings, and are never assumed.
+    public static func resolve(store: PrayerSettingsStore?, choice: NextPrayerWidgetChoice = NextPrayerWidgetChoice(),
+                               deviceTimeZone: TimeZone, now: Date, limit: Int = 16) -> NextPrayerWidgetState {
+        if let place = choice.place {
+            // The app's settings count only when it shared a place: then they were read and copied
+            // whole (see `PrayerSettingsStore.copy(to:)`).
+            let app = store?.place != nil ? store : nil
+            guard let method = choice.method ?? app?.parameters.method else { return .needsMethod(place: place.name) }
+            let parameters = PrayerParameters(method: method, asr: choice.asr ?? app?.parameters.asr ?? .standard,
+                                              adjustments: app?.parameters.adjustments ?? [:])
+            let schedule = PrayerSchedule(coordinates: place.coordinates, timeZone: place.timeZone, parameters: parameters)
+            let moments = schedule.moments(from: now, limit: limit)
+            guard !moments.isEmpty else { return .noTimes(place: place.name) }
+            return .moments(moments, place: place.name, timeZone: schedule.timeZone,
+                            twentyFourHour: app?.twentyFourHour ?? false, notice: nil)
+        }
         guard let store else { return .sharedSettingsUnavailable }
         guard let place = store.place, let schedule = store.schedule else { return .noPlace }
         let moments = schedule.moments(from: now, limit: limit)

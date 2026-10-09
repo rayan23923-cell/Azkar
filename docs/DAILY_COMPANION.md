@@ -182,6 +182,14 @@ Quick access:
   - The widget says «لا تصل الودجة إلى إعدادات التطبيق في هذا التثبيت. افتح التطبيق لعرض
     المواقيت», which is not the same as no place chosen.
   - A tap still opens the prayer times.
+  - **Fallback:** the widget's own settings (long press › «تعديل الودجة») offer the app's
+    bundled cities, the calculation method and the Asr school. A city chosen there is used
+    instead of the app's place, so the widget works in a build signed without the group.
+    - Its method and Asr school come from the widget when set. Otherwise they come from the
+      app's shared settings, and only when the app shared a place.
+    - With neither, the widget asks for a method («اختر طريقة الحساب من «تعديل الودجة»…»);
+      no default is assumed.
+    - The widget never writes the app's settings. Tests: `WidgetChoiceTests`.
   - The entitlement in the source files is not proof the group is registered; only a signed
     install shows it (§12 step 2).
 - **Out-of-date place.** When the saved device location is from another time zone, the widget
