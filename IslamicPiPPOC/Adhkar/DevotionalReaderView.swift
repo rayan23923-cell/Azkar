@@ -121,7 +121,7 @@ struct DevotionalReaderView: View {
                 VStack(spacing: 4) {
                     Text("\(reader.remaining)")
                         .font(.largeTitle.monospacedDigit().bold())
-                    Text(reader.current.repeatCount > 1 ? "متبقٍّ" : "تمّ")
+                    Text(reader.remaining == 0 ? "اكتمل ✓" : reader.current.repeatCount > 1 ? "متبقٍّ" : "تمّ")
                         .font(.caption)
                 }
                 .frame(maxWidth: .infinity, minHeight: 88)

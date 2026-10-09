@@ -277,7 +277,9 @@ private struct HisnReaderContent: View {
                     ProgressView(value: Double(completed), total: Double(total))
                         .tint(.white.opacity(0.9))
                         .frame(maxWidth: 160)
-                    Text(completed + 1 == total ? "القراءة الأخيرة" : "اضغط بعد كل قراءة")
+                    Text(completed >= total
+                         ? (reader.isLastItem ? "اكتمل ✓ · إنهاء الباب" : "اكتمل ✓ · الانتقال إلى الذكر التالي")
+                         : completed + 1 == total ? "القراءة الأخيرة" : "اضغط بعد كل قراءة")
                         .font(.footnote)
                 case .once, .unstated:
                     Text("تمّ")

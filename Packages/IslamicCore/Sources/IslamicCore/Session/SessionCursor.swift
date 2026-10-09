@@ -20,8 +20,11 @@ extension DhikrItem: RepeatableContent {}
 ///
 /// - `advance()` is the session step: it counts one repetition and moves to the
 ///   next item only after the current item's repetitions are complete.
-/// - `next()` / `previous()` are explicit navigation: they move at once and reset
-///   the repetition count. Both stop at the ends of the list.
+/// - `next()` / `previous()` are explicit navigation: they move at once and stop at the
+///   ends of the list. Each item keeps the repetitions counted on it while the cursor
+///   lives, so going back to an item (finished or not) shows its count again; a finished
+///   item is not counted again, and `advance()` on it just moves on.
+/// - `restart()` goes back to the first item with nothing counted anywhere.
 public struct SessionCursor<Item: RepeatableContent & Equatable>: Equatable {
     public enum Step: Equatable {
         /// Counted a repetition; still on the same item with this many left.
@@ -37,6 +40,8 @@ public struct SessionCursor<Item: RepeatableContent & Equatable>: Equatable {
     /// Repetitions already completed for the current item.
     public private(set) var completedRepetitions: Int
     public private(set) var isFinished: Bool
+    /// Repetitions counted on the items the cursor has left, by index.
+    private var countedElsewhere: [Int: Int] = [:]
 
     /// Returns nil for an empty list or an out-of-range start index.
     public init?(items: [Item], startIndex: Int = 0) {
@@ -61,7 +66,8 @@ public struct SessionCursor<Item: RepeatableContent & Equatable>: Equatable {
     @discardableResult
     public mutating func advance() -> Step {
         guard !isFinished else { return .finished }
-        completedRepetitions += 1
+        // A finished item (gone back to) is not counted again.
+        if completedRepetitions < requiredRepetitions { completedRepetitions += 1 }
         if completedRepetitions < requiredRepetitions {
             return .repeated(remaining: requiredRepetitions - completedRepetitions)
         }
@@ -69,8 +75,7 @@ public struct SessionCursor<Item: RepeatableContent & Equatable>: Equatable {
             isFinished = true
             return .finished
         }
-        index += 1
-        completedRepetitions = 0
+        move(to: index + 1)
         return .movedToNext
     }
 
@@ -98,9 +103,18 @@ public struct SessionCursor<Item: RepeatableContent & Equatable>: Equatable {
         return true
     }
 
-    private mutating func move(to newIndex: Int) {
-        index = newIndex
+    /// The first item, nothing counted on any item.
+    public mutating func restart() {
+        countedElsewhere = [:]
+        index = 0
         completedRepetitions = 0
+        isFinished = false
+    }
+
+    private mutating func move(to newIndex: Int) {
+        countedElsewhere[index] = completedRepetitions > 0 ? completedRepetitions : nil
+        index = newIndex
+        completedRepetitions = countedElsewhere.removeValue(forKey: newIndex) ?? 0
         isFinished = false
     }
 }

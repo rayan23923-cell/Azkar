@@ -75,7 +75,31 @@ final class HisnReaderControllerTests: XCTestCase {
         controller.previous()
         XCTAssertNil(controller.finishedItemNumber)
         XCTAssertEqual(controller.reader.itemNumber, 1)
-        XCTAssertEqual(controller.reader.repetition, .counted(completed: 0, total: 3), "no count is invented")
+        XCTAssertEqual(controller.reader.repetition, .counted(completed: 3, total: 3),
+                       "going back to the finished item shows its count, not zero")
+        let recitations = controller.recitations
+        controller.recite()
+        XCTAssertEqual(controller.reader.itemNumber, 2, "a finished item is not counted again; on to the next")
+        XCTAssertEqual(controller.recitations, recitations + 1)
+    }
+
+    /// The owner's report (2026-10-09): finish an item, go on, come back: the count was zero
+    /// on the screen and in PiP. Each item keeps its count while the chapter is open; «إعادة»
+    /// clears them all.
+    func testEveryItemKeepsItsCountUntilRestart() async throws {
+        let store = InMemoryHisnReadingPositionStore()
+        let controller = try await makeController("hisn-ch-017", store: store)
+        controller.recite(); controller.recite(); controller.recite()
+        XCTAssertEqual(controller.reader.itemNumber, 2)
+        controller.next()
+        controller.previous()
+        controller.previous()
+        XCTAssertEqual(controller.reader.itemNumber, 1)
+        XCTAssertEqual(controller.reader.repetition, .counted(completed: 3, total: 3))
+        controller.next()
+        XCTAssertEqual(controller.reader.itemNumber, 2)
+        controller.restart()
+        XCTAssertEqual(controller.reader.repetition, .counted(completed: 0, total: 3), "«إعادة» clears every count")
     }
 
     func testRestartClearsTheCue() async throws {

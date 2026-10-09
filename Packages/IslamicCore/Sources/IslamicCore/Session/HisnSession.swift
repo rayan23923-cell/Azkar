@@ -47,5 +47,5 @@ public struct HisnSession: Equatable {
     public mutating func previous() -> Bool { cursor.previous() }
 
     /// Back to the first item with no repetitions counted.
-    public mutating func restart() { cursor.jump(to: 0) }
+    public mutating func restart() { cursor.restart() }
 }

@@ -154,14 +154,16 @@ public final class DevotionalReaderController: ObservableObject {
 
     /// Back to the first item with no repetitions; the saved position is removed.
     public func restart() {
-        cursor.jump(to: 0)
+        cursor.restart()
         isComplete = false
         store.clear(collection.ref)
     }
 
     public func persist() {
         guard !isComplete else { return }
-        store.save(DevotionalPosition(item: current.ref, repetitions: cursor.completedRepetitions, savedAt: now()),
+        // A finished item (gone back to) is saved as not started, as Hisn resumes it.
+        let repetitions = cursor.remainingRepetitions == 0 ? 0 : cursor.completedRepetitions
+        store.save(DevotionalPosition(item: current.ref, repetitions: repetitions, savedAt: now()),
                    in: collection.ref)
     }
 }

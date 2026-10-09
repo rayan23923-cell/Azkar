@@ -83,17 +83,39 @@ final class SessionCursorTests: XCTestCase {
         XCTAssertEqual(cursor.remainingRepetitions, 0)
     }
 
-    func testNavigationResetsRepetitionsAndFinishedState() throws {
+    /// Going back to an item shows what was counted on it (a finished item stays finished,
+    /// a partial count is kept); navigation clears the finished state; restart clears all.
+    func testNavigationKeepsEachItemsCountAndRestartClearsThem() throws {
         var cursor = try XCTUnwrap(SessionCursor(items: items(3, 3)))
         cursor.advance()
         XCTAssertEqual(cursor.completedRepetitions, 1)
         cursor.next()
+        XCTAssertEqual(cursor.completedRepetitions, 0, "a new item starts at zero")
+        XCTAssertTrue(cursor.previous())
+        XCTAssertEqual(cursor.completedRepetitions, 1, "a partial count is kept")
+        XCTAssertEqual(cursor.advance(), .repeated(remaining: 1))
+        XCTAssertEqual(cursor.advance(), .movedToNext)
+        XCTAssertTrue(cursor.previous())
+        XCTAssertEqual(cursor.completedRepetitions, 3, "a finished item stays finished")
+        XCTAssertEqual(cursor.remainingRepetitions, 0)
+        XCTAssertEqual(cursor.advance(), .movedToNext, "not counted again, it moves on")
+        XCTAssertEqual(cursor.index, 1)
         XCTAssertEqual(cursor.completedRepetitions, 0)
-        cursor.advance(); cursor.advance(); cursor.advance()
+        cursor.advance(); cursor.advance()
+        XCTAssertEqual(cursor.advance(), .finished)
         XCTAssertTrue(cursor.isFinished)
         XCTAssertTrue(cursor.previous())
         XCTAssertFalse(cursor.isFinished)
-        XCTAssertEqual(cursor.remainingRepetitions, 3)
+        XCTAssertEqual(cursor.completedRepetitions, 3)
+        XCTAssertTrue(cursor.next())
+        XCTAssertEqual(cursor.completedRepetitions, 3, "the last item too")
+        XCTAssertEqual(cursor.advance(), .finished, "a finished last item finishes without counting")
+        cursor.restart()
+        XCTAssertEqual(cursor.index, 0)
+        XCTAssertEqual(cursor.completedRepetitions, 0)
+        XCTAssertFalse(cursor.isFinished)
+        cursor.next()
+        XCTAssertEqual(cursor.completedRepetitions, 0, "restart clears every item")
     }
 
     func testZeroOrNegativeRepeatCountActsAsOne() throws {

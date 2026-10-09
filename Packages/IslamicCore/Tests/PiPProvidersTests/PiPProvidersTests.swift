@@ -382,13 +382,41 @@ final class HisnPiPProviderTests: XCTestCase {
         engine.skip(by: -15)
         XCTAssertEqual(controller.reader.itemIndex, 1, "back to the item shown")
         XCTAssertEqual(pip.frame?.content.contentID, chapter.items[1].id)
-        XCTAssertEqual(pip.frame?.content.detail, "التكرار 1 من 1")
+        XCTAssertEqual(pip.frame?.content.detail, "اكتمل ✓ 1 من 1", "the finished item keeps its count")
         engine.skip(by: -15)
         XCTAssertEqual(controller.reader.itemIndex, 0)
         XCTAssertNil(pip.frame?.content.repetition, "no stated count: nothing to count")
         engine.skip(by: 15)
         XCTAssertEqual(controller.reader.itemIndex, 1, "an item without a count moves on")
         XCTAssertEqual(controller.recitations, 1)
+        engine.skip(by: 15)
+        XCTAssertEqual(controller.reader.itemIndex, 2, "the finished item is not counted again")
+        XCTAssertEqual(controller.recitations, 1)
+    }
+
+    /// The owner's report (2026-10-09): count an item to the end, go on, skip back: PiP and the
+    /// reader showed zero. Now both show the finished count, skip forward moves on without
+    /// counting, and a partial count on the next item is kept too.
+    func testGoingBackToAFinishedItemKeepsItsCount() async throws {
+        let chapter = try await self.chapter(counts: [3, 3])
+        let controller = try self.controller(chapter, at: 0)
+        let (engine, pip, _) = running(controller)
+        engine.skip(by: 15); engine.skip(by: 15); engine.skip(by: 15)
+        XCTAssertEqual(pip.frame?.content.detail, "اكتمل ✓ 3 من 3")
+        engine.skip(by: 15)
+        XCTAssertEqual(controller.reader.itemIndex, 1)
+        engine.skip(by: 15)
+        XCTAssertEqual(pip.frame?.content.detail, "التكرار 2 من 3")
+        engine.skip(by: -15)
+        XCTAssertEqual(controller.reader.itemIndex, 0)
+        XCTAssertEqual(controller.reader.repetition, .counted(completed: 3, total: 3), "the reader screen")
+        XCTAssertEqual(pip.frame?.content.detail, "اكتمل ✓ 3 من 3", "the window")
+        XCTAssertEqual(pip.frame?.content.repetition, PiPRepetition(completed: 3, total: 3))
+        let recitations = controller.recitations
+        engine.skip(by: 15)
+        XCTAssertEqual(controller.recitations, recitations, "not counted again")
+        XCTAssertEqual(controller.reader.itemIndex, 1)
+        XCTAssertEqual(pip.frame?.content.detail, "التكرار 2 من 3", "the partial count is kept")
     }
 
     func testFirstItemNextPreviousAndLastItem() async throws {

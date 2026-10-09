@@ -34,7 +34,7 @@ public final class HisnPiPProvider: PiPContentProvider {
         if let finished, finished.readerKey == readerKey { return finished.content }
         let reader = controller.reader
         guard !reader.isCompleted else { return nil }
-        let repetition = Self.repetition(reader.repetition)
+        let repetition = Self.repetition(reader.repetition, completed: reader.completedRepetitions)
         return PiPContent(contentType: .hisn, contentID: reader.currentItem.id, containerID: reader.chapter.id,
                           title: reader.chapter.titleArabic, subtitle: "الذكر \(reader.itemNumber)",
                           text: reader.currentItem.arabicText, index: reader.itemIndex, total: reader.itemCount,
@@ -42,11 +42,12 @@ public final class HisnPiPProvider: PiPContentProvider {
     }
 
     /// The count PiP advances, from the reader's own counter: a stated count of any size (one
-    /// included); nil when the book states none.
-    static func repetition(_ repetition: HisnReader.Repetition) -> PiPRepetition? {
+    /// included, done once the reader counted it, e.g. on going back to it); nil when the book
+    /// states none.
+    static func repetition(_ repetition: HisnReader.Repetition, completed: Int) -> PiPRepetition? {
         switch repetition {
         case .counted(let completed, let total): return PiPRepetition(completed: completed, total: total)
-        case .once: return PiPRepetition(completed: 0, total: 1)
+        case .once: return PiPRepetition(completed: min(completed, 1), total: 1)
         case .unstated: return nil
         }
     }
