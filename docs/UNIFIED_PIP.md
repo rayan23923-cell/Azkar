@@ -147,7 +147,7 @@ surah or collection (rate 0).
 
 ## 9. Release activation: audit and decision
 
-### Why PiP is hidden in Release (audit, 2026-10-09)
+### Why PiP was hidden in Release (audit, 2026-10-09)
 
 I checked every possible cause in the code, the project and the built apps. Only the first one
 applies.
@@ -182,32 +182,35 @@ Debug only.
   declared. Whether text PiP would start without it has **not been tried on a device**, so
   this section claims only what the documents say.
 
-### Decision
+### Decision (owner, 2026-10-09): PiP ships in Release
 
-- No silent or synthetic audio is used, and none will be. No audio file ships in Release.
-- The mode is the one Apple names for PiP. If it is added, it is added for PiP, not to keep
-  the app running: PiP starts only from the button, never automatically, and the app plays
-  nothing in the background.
-- **Adding it to Release is the owner's decision** and was not made in this change (see the
-  Release readiness report). Until then Release keeps PiP hidden: nothing that would fail is
-  offered.
-- What adding it takes: `UIBackgroundModes = [audio]` in `Info.plist`, and the Release CI rules
-  (`build.yml`, `codemagic.yaml`) changed from "no background mode" to "only `audio`".
-  `ReleasePiPConfigurationTests` already accepts exactly that and nothing else.
-- Risk: App Review 2.5.4. The reviewer may ask why an app with no recordings declares the
-  audio mode. The answer is PiP, which Apple ties to this mode, but the app has to show it.
+The owner chose to add the PiP background mode to Release.
+
+- `Info.plist` (Release) now declares `UIBackgroundModes = [audio]`, the same as
+  `Info-Debug.plist`. That is the only change to what Release declares.
+- It is declared for PiP, not to keep the app running. PiP starts only from the button, never
+  automatically (`allowsAutomaticStart = false`), and the app plays nothing in the background.
+- No silent or synthetic audio is used. No audio file ships in Release, and CI fails the
+  Release build if one appears.
+- CI (`build.yml`, `codemagic.yaml`) now requires the Release background modes to be exactly
+  `[audio]`, where it used to require none. `ReleasePiPConfigurationTests` checks the same in
+  both plists.
+- Risk: App Review 2.5.4. A reviewer may ask why an app with no recordings declares the audio
+  mode. The answer is PiP, which Apple ties to this mode. The review notes should say so and
+  show the «نافذة عائمة» button.
+- Whether PiP starts and keeps updating in the background on a real iPhone is **NOT_TESTED**.
 
 ## 10. Settings
 
 There is one setting: «العرض العائم», on by default. It appears only in builds that can run
-PiP. Turning it off closes a running window.
+PiP, which are now Debug and Release. Turning it off closes a running window.
 
 ## 11. Release safety
 
 - No PiP test UI in Release. The test tab, `PiPTestEngine` and the chime stay `#if DEBUG`.
 - CI fails the Release build if it contains `PiPTestEngine` or the string
   `PiP Technical Test`, or if the production `PiPEngine` is missing.
-- The CI rule against a background mode in Release is unchanged.
+- The only background mode Release may declare is `audio` (for PiP), and no audio file may ship.
 - CI fails the Release build if any production PiP piece is missing from it:
   `SampleBufferPiPController`, `PiPFrameRenderer`, the four providers, and the button titles.
 - `ReleasePiPConfigurationTests` fails if the production PiP path gets a `#if DEBUG` or test-only
@@ -235,7 +238,7 @@ package: 389 tests, 0 failures.
 The device evidence that exists is the earlier POC run (iPhone12,5, iOS 26.6.2: PiP start,
 background frames, the sample-buffer source). It covers the path, not this feature.
 
-To test, use the Debug or device-test IPA (Release has no PiP, see section 9):
+To test, use the Release IPA (`azkar-release-ipa` on Codemagic), signed for your own iPhone:
 
 1. Quran, Hisn, Adhkar, Dua: open an item and tap «نافذة عائمة». Check that the window shows
    the title, subtitle and text.
@@ -248,6 +251,9 @@ To test, use the Debug or device-test IPA (Release has no PiP, see section 9):
 6. Lock/unlock, dark mode, the longest Hisn item, VoiceOver on the PiP row, a phone call
    interruption.
 
+7. Release IPA: Settings shows «العرض العائم»; the four readers show the button; the window
+   starts, and keeps updating while another app is in front.
+
 Watch for black or frozen frames, stale content after switching, two windows, and other apps'
 audio pausing.
 
@@ -258,6 +264,6 @@ audio pausing.
   one-page text it does nothing.
 - Without recordings, the system progress bar shows the place in the container, not time.
 - Seeking a recording is in-app only.
-- Release has no PiP until the background-mode decision (section 9).
+- Release declares the audio background mode for PiP; App Review 2.5.4 risk (section 9).
 - Starting PiP takes the audio session (section 8).
 - Physical device: NOT_TESTED.

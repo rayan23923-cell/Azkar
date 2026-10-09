@@ -123,8 +123,14 @@ jobs:
           if find "$APP" -iname 'test-*' -o -name '*.device-test.json' | grep .; then echo "test audio in the Release app"; exit 1; fi
           # No permission usage strings: the app asks only for notifications, which need none.
           if plutil -p "$APP/Info.plist" | grep -E 'NS[A-Za-z]+UsageDescription'; then echo "unexpected usage description"; exit 1; fi
-          # No background mode while no production audio ships (App Review 2.5.4).
-          if plutil -p "$APP/Info.plist" | grep -q UIBackgroundModes; then echo "background mode in the Release app"; exit 1; fi
+          # The only background mode is the PiP one ("Audio, AirPlay, and Picture in Picture"),
+          # owner decision 2026-10-09. No audio file ships, so nothing plays in the background.
+          MODES=$(/usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist" 2>/dev/null | tr -d ' {}' | grep . | sort | tr '\n' ',')
+          echo "Release background modes: $MODES"
+          [ "$MODES" = "Array,audio," ] || { echo "Release background modes must be exactly [audio] for PiP"; exit 1; }
+          if find "$APP" \( -iname '*.wav' -o -iname '*.caf' -o -iname '*.m4a' -o -iname '*.mp3' -o -iname '*.aac' -o -iname '*.aiff' \) | grep .; then
+            echo "audio file in the Release app: no silent or test audio may keep it in the background"; exit 1
+          fi
           # The PiP test screen and its engine are Debug-only; production PiP (PiPCore) ships.
           if grep -rlaF 'PiPTestEngine' "$APP"; then echo "PiP test engine in the Release app"; exit 1; fi
           if grep -rlaF 'PiP Technical Test' "$APP"; then echo "PiP test screen in the Release app"; exit 1; fi

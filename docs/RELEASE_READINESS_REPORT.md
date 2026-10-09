@@ -21,9 +21,9 @@ FINAL STATUS: READY_WITH_EXTERNAL_BLOCKERS
 
 What each line means:
 
-- **CODE: READY.** CI is green. Release has no test screen, no POC engine, no background mode
-  and no development logging. Unified PiP is built for all four sections; in Release it stays
-  hidden until the background-mode decision (see PiP Status).
+- **CODE: READY.** CI is green. Release has no test screen, no POC engine and no development
+  logging. Unified PiP ships in all four sections; Release declares only the PiP background mode
+  (`audio`), by the owner's decision (see PiP Status).
 - **BUILD: READY.** The Release build, archive and unsigned IPA all succeed in CI. Building
   unsigned is all that is possible without credentials.
 - **CONTENT: READY.** This line covers integrity only. The Quran is verbatim from Tanzil, and
@@ -144,14 +144,15 @@ UNIFIED PiP
 Architecture: PASS (unit tests)
 Quran / Hisn / Adhkar / Dua: PASS in unit tests; device NOT_TESTED
 Release PiP: no test UI, no Debug-only dependency (CI-checked)
-Release availability: HIDDEN until the background-mode decision
+Release availability: ON (background mode audio, for PiP only); device NOT_TESTED
 Physical Device: NOT_TESTED
 ```
 
-**Release decision (owner).** PiP needs `UIBackgroundModes = audio`, which Release does not
-declare. Release therefore shows no PiP button. Turning PiP on in Release means adding the mode
-and changing the CI rule, at App Review 2.5.4 risk while no audio ships. Debug and the
-device-test IPA have full PiP for device testing.
+**Release decision (owner, 2026-10-09).** PiP needs `UIBackgroundModes = audio` (Apple's
+"Audio, AirPlay, and Picture in Picture" mode). The owner chose to add it to Release, so PiP is
+offered in all four sections. CI allows that one mode only, and no audio file ships. The risk
+is App Review 2.5.4 while no recordings ship: the review notes must explain the mode is for
+PiP. The audit is in `UNIFIED_PIP.md` §9.
 
 ## Accessibility
 
@@ -231,14 +232,13 @@ The owner still has to provide the identity, signing and App Store Connect metad
    - the item-by-item comparison with the canonical edition.
 3. **App identity and signing.** The bundle identifier is still `com.example.IslamicPiPPOC`,
    and there is no team or signing (owner).
-4. ~~**Background audio mode with no audio.**~~ Resolved in hardening: Release has no
-   background mode.
+4. **Background audio mode for PiP.** Release declares `audio` again, for PiP only (owner
+   decision, 2026-10-09). Explain it in the App Review notes (2.5.4).
 5. **Device testing** of a signed build on iPhone (and iPad, or make it iPhone-only),
-   including the PiP checklist in `UNIFIED_PIP.md` §13 (Debug or device-test IPA).
+   including the PiP checklist in `UNIFIED_PIP.md` §13 (Release IPA).
 6. **App Store Connect:** privacy policy URL, support URL, screenshots, description, privacy
    answers.
-7. **PiP in Release (decision).** Keep it hidden, or add the PiP background mode (see PiP
-   Status).
+7. ~~**PiP in Release (decision).**~~ Decided: PiP ships in Release (see PiP Status).
 
 ## Final Recommendation
 

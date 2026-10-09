@@ -41,8 +41,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.IslamicPiPPOC
         INFOPLIST_FILE: Info.plist
       configs:
-        # Debug keeps background audio for the PiP test screen and the fixture IPA; the
-        # Release (App Store) build has no background mode until licensed audio ships.
+        # Both declare only the PiP background mode (audio). Debug adds the PiP test screen
+        # and the fixture IPA; the Release (App Store) build has neither.
         Debug:
           INFOPLIST_FILE: Info-Debug.plist
         GENERATE_INFOPLIST_FILE: YES

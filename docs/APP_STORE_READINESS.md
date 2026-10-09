@@ -43,7 +43,7 @@ Nothing was submitted. This is the checklist against App Store requirements as o
 
 | Risk | Guideline | Resolution |
 |---|---|---|
-| ~~`UIBackgroundModes: audio` declared, but no audio ships~~ | 2.5.4 | **Resolved in release hardening.** Release uses `Info.plist`, which has no background modes. Debug keeps `audio` (`Info-Debug.plist`) for the PiP test screen. CI fails if a Release build has a background mode. Add it back when licensed audio ships. |
+| `UIBackgroundModes: audio` declared, but no audio ships | 2.5.4 | **Open risk, owner decision 2026-10-09.** Release declares `audio` again, for PiP only: Apple requires this mode for Picture in Picture. No audio file ships and nothing plays in the background; PiP starts only from the «نافذة عائمة» button. CI allows no other mode. Say this in the App Review notes. |
 | Hisn Al-Muslim text without a rights decision | 5.2 (intellectual property) | Rights decision, or release without the Hisn tab |
 | Religious texts not yet reviewed | Accuracy (not a guideline, but a product risk) | Scholarly review of non-Quranic adhkar, duas and Hisn decisions |
 | iPad layout not checked | 2.1 / 4.0 (completeness and design) | Check on iPad, or make the app iPhone-only |

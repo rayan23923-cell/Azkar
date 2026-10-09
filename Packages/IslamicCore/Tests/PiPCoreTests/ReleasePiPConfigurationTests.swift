@@ -70,14 +70,15 @@ final class ReleasePiPConfigurationTests: XCTestCase {
         XCTAssertTrue(files["IslamicPiPPOC/Quran/QuranReaderView.swift"]?.contains("تشغيل في نافذة عائمة") == true)
     }
 
-    /// The background mode, if declared, is the PiP one and nothing else.
-    func testDeclaredBackgroundModesAreOnlyThePiPOne() throws {
+    /// Release and Debug declare the PiP background mode and nothing else (owner decision,
+    /// 2026-10-09), so PiP is offered in both.
+    func testBothBuildsDeclareOnlyThePiPBackgroundMode() throws {
         for name in ["Info.plist", "Info-Debug.plist"] {
             let info = try plist(name)
-            if let modes = info["UIBackgroundModes"] {
-                XCTAssertEqual(modes as? [String], ["audio"], name)
-            }
+            XCTAssertEqual(info["UIBackgroundModes"] as? [String], ["audio"], name)
+            XCTAssertTrue(PiPAvailability.backgroundModeDeclared(in: info), name)
+            XCTAssertTrue(PiPAvailability(backgroundModeDeclared: PiPAvailability.backgroundModeDeclared(in: info),
+                                          userEnabled: true).isEnabled, name)
         }
-        XCTAssertTrue(PiPAvailability.backgroundModeDeclared(in: try plist("Info-Debug.plist")))
     }
 }
