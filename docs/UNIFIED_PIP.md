@@ -219,8 +219,8 @@ PiP, which are now Debug and Release. Turning it off closes a running window.
 
 ## 12. Tests
 
-77 PiP tests (PiPCore 51, PiPRendering 9, PiPProviders 17). In CI they run with the rest of the
-package: 389 tests, 0 failures.
+81 PiP tests (PiPCore 55, PiPRendering 9, PiPProviders 17). In CI they run with the rest of the
+package: 393 tests, 0 failures.
 
 | Suite | Covers |
 |---|---|
@@ -229,6 +229,7 @@ package: 389 tests, 0 failures.
 | `PiPCoreTests/PiPNavigationTests` | Page before item, ends, skip sign |
 | `PiPCoreTests/PiPSessionAndAvailabilityTests` | Info.plist background mode, setting, session store, footer and progress |
 | `PiPCoreTests/PiPEngineTests` | Start and refusals, navigation, long text, play and pause in text and audio modes, audio completion, close and session, section switch, heartbeat, return to app |
+| `PiPCoreTests/ReleasePiPConfigurationTests` | No `#if DEBUG` or test-only code on the production PiP path, availability gated only by the declared mode, every reader offers PiP, both plists declare only `audio` |
 | `PiPRenderingTests` | One page at 84 pt, longest Hisn item paged at 54 pt and fully drawn, RTL runs with diacritics, Quran font, verse 2:282 paged, light and dark |
 | `PiPProvidersTests` | Quran (first, middle, last, next, previous, long ayah, scroll vs jump), Hisn (first, repetition, last, next, previous, long text, completed chapter, no counting, no production audio), Adhkar (first, middle, last, counter), Dua (first, middle, last), Quran → Hisn switch on real content |
 
