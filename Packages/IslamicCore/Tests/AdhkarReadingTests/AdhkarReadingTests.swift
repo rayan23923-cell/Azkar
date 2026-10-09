@@ -166,7 +166,7 @@ final class DevotionalReaderTests: XCTestCase {
 
         let nextDay = try XCTUnwrap(DevotionalReaderController(collection: collection, store: store, counts: counts,
                                                                now: { day.addingTimeInterval(86_400 * 2) }))
-        nextDay.previous()
+        nextDay.jump(to: 1)
         XCTAssertEqual(nextDay.remaining, 3, "a new day starts at zero")
 
         second.restart()
