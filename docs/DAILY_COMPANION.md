@@ -195,6 +195,10 @@ Quick access:
       extended to widgets (`NSWidgetWantsLocation`; Settings › أذكار › الموقع › «أثناء استخدام
       التطبيق أو الودجات»). No new permission prompt and no background location. If it is not
       allowed, or no fix comes within 10 seconds, the widget says so and shows no times.
+    - The lock-screen sizes (inline, circular, rectangular) are the same widget with the same
+      settings: on the lock screen, «تخصيص» then a tap on the widget opens them. With no times
+      to show they say only what to set («اختر المدينة», «اختر طريقة الحساب», «اسمح
+      بالموقع»…), with an icon; VoiceOver reads the full message.
   - The entitlement in the source files is not proof the group is registered; only a signed
     install shows it (§12 step 2).
 - **Out-of-date place.** When the saved device location is from another time zone, the widget
