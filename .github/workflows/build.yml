@@ -3,7 +3,7 @@ name: PiP azkar POC build
 # Compile check for the standalone PiPAzkarPOC project (no signing, no device).
 on:
   push:
-    branches: [main, 'feature/**']
+    branches: [main, 'feature/**', 'claude/**']
   workflow_dispatch:
 
 jobs:
@@ -31,6 +31,10 @@ jobs:
 
       - name: swift test
         working-directory: Packages/IslamicCore
+        env:
+          # PiPFramePreviewTests writes PNG previews of PiP frames here (test output only;
+          # nothing of it is in the app).
+          PIP_PREVIEW_DIR: ${{ github.workspace }}/pip-frame-previews
         run: |
           set -o pipefail
           swift --version
@@ -41,6 +45,13 @@ jobs:
         with:
           name: core-tests-log
           path: core-tests.log
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pip-frame-previews
+          path: pip-frame-previews
           if-no-files-found: ignore
 
   build:
@@ -123,10 +134,35 @@ jobs:
           if find "$APP" -iname 'test-*' -o -name '*.device-test.json' | grep .; then echo "test audio in the Release app"; exit 1; fi
           # No permission usage strings: the app asks only for notifications, which need none.
           if plutil -p "$APP/Info.plist" | grep -E 'NS[A-Za-z]+UsageDescription'; then echo "unexpected usage description"; exit 1; fi
-          # No background mode while no production audio ships (App Review 2.5.4).
-          if plutil -p "$APP/Info.plist" | grep -q UIBackgroundModes; then echo "background mode in the Release app"; exit 1; fi
-          # The PiP test screen and its engine are Debug-only.
-          if grep -rlaF 'PiPEngine' "$APP"; then echo "PiP test engine in the Release app"; exit 1; fi
+          # The only background mode is the PiP one ("Audio, AirPlay, and Picture in Picture"),
+          # owner decision 2026-10-09. No audio file ships, so nothing plays in the background.
+          MODES=$(/usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist" 2>/dev/null | tr -d ' {}' | grep . | sort | tr '\n' ',')
+          echo "Release background modes: $MODES"
+          [ "$MODES" = "Array,audio," ] || { echo "Release background modes must be exactly [audio] for PiP"; exit 1; }
+          if find "$APP" \( -iname '*.wav' -o -iname '*.caf' -o -iname '*.m4a' -o -iname '*.mp3' -o -iname '*.aac' -o -iname '*.aiff' \) | grep .; then
+            echo "audio file in the Release app: no silent or test audio may keep it in the background"; exit 1
+          fi
+          # The PiP test screen and its engine are Debug-only; production PiP (PiPCore) ships.
+          if grep -rlaF 'PiPTestEngine' "$APP"; then echo "PiP test engine in the Release app"; exit 1; fi
+          if grep -rlaF 'PiP Technical Test' "$APP"; then echo "PiP test screen in the Release app"; exit 1; fi
+          grep -rlaF 'PiPEngine' "$APP" > /dev/null || { echo "production PiP engine missing"; exit 1; }
+          # The production PiP of every section ships in Release, not behind a Debug switch.
+          # Byte search (UTF-8), so the Arabic button titles do not depend on grep's locale.
+          python3 - "$APP" <<'PY'
+          import os, sys
+          app = sys.argv[1]
+          blobs = []
+          for root, _, files in os.walk(app):
+              for name in files:
+                  with open(os.path.join(root, name), 'rb') as f:
+                      blobs.append(f.read())
+          needed = ['SampleBufferPiPController', 'PiPFrameRenderer', 'QuranPiPProvider', 'HisnPiPProvider',
+                    'AdhkarPiPProvider', 'DuaPiPProvider', 'تشغيل في نافذة عائمة', 'إغلاق النافذة العائمة']
+          missing = [s for s in needed if not any(s.encode('utf-8') in b for b in blobs)]
+          if missing:
+              sys.exit('production PiP missing from Release: ' + ', '.join(missing))
+          print('production PiP present in Release:', ', '.join(needed))
+          PY
           find "$APP" -name '*.ttf' -o -name '*.json' | sed "s|$APP/||" | sort
           du -sh "$APP"
 

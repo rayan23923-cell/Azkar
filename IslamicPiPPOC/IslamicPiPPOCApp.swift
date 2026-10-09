@@ -5,8 +5,8 @@ import QuranText
 struct IslamicPiPPOCApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     #if DEBUG
-    /// The PiP technical test engine; Debug builds only (see `PiPEngine`).
-    @StateObject private var engine = PiPEngine()
+    /// The PiP technical test engine; Debug builds only (see `PiPTestEngine`).
+    @StateObject private var engine = PiPTestEngine()
     #endif
     @Environment(\.scenePhase) private var scenePhase
 

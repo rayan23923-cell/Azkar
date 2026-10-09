@@ -32,6 +32,7 @@ struct AdhkarRootView: View {
     }
 
     @ObservedObject private var router = AppServices.shared.router
+    @ObservedObject private var favorites = AppServices.shared.favorites
     @State private var state: LoadState = .loading
     @State private var path: [DevotionalRoute] = []
     @State private var query = ""
@@ -111,6 +112,7 @@ struct AdhkarRootView: View {
             if searching {
                 searchResults
             } else {
+                favoritesSection(library: library)
                 if scope != .dua {
                     collectionSection("الأذكار", library.adhkar)
                 }
@@ -122,6 +124,44 @@ struct AdhkarRootView: View {
         .scrollDismissesKeyboard(.immediately)
         .onChange(of: query, initial: true) { results = index.search(query, kind: scope.kind) }
         .onChange(of: scope) { results = index.search(query, kind: scope.kind) }
+    }
+
+    private struct SavedItem {
+        let ref: ContentRef
+        let collection: DevotionalCollection
+        let item: DevotionalItem
+    }
+
+    /// «المفضلة»: the saved adhkar and duas in this scope, newest first; each opens at its item.
+    @ViewBuilder
+    private func favoritesSection(library: AdhkarLibrary) -> some View {
+        let saved = favorites.entries.compactMap { entry -> SavedItem? in
+            guard entry.ref.kind == .adhkar || entry.ref.kind == .dua, let found = library.locate(entry.ref),
+                  scope.kind == nil || found.collection.kind == scope.kind else { return nil }
+            return SavedItem(ref: entry.ref, collection: found.collection, item: found.collection.items[found.index])
+        }
+        if !saved.isEmpty {
+            Section("المفضلة") {
+                ForEach(saved, id: \.ref) { entry in
+                    NavigationLink(value: DevotionalRoute(collection: entry.collection.ref, item: entry.ref,
+                                                          highlights: true)) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(entry.item.text)
+                                .lineLimit(2)
+                            Text(entry.collection.title)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            favorites.remove(entry.ref)
+                        } label: { Label("إزالة", systemImage: "star.slash") }
+                    }
+                }
+            }
+        }
     }
 
     private func collectionSection(_ title: String, _ collections: [DevotionalCollection]) -> some View {

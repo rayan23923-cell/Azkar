@@ -19,6 +19,7 @@ public enum HisnAccessibility {
 
     public static func counterHint(_ reader: HisnReader) -> String {
         if case .counted(let completed, let total) = reader.repetition {
+            if completed >= total { return reader.isLastItem ? "اكتمل، ينهي الباب" : "اكتمل، ينتقل إلى الذكر التالي" }
             return total - completed == 1
                 ? (reader.isLastItem ? "القراءة الأخيرة، تنهي الباب" : "القراءة الأخيرة، تنتقل إلى الذكر التالي")
                 : "اضغط مرة بعد كل قراءة"

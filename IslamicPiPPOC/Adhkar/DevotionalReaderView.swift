@@ -6,6 +6,7 @@ import AdhkarReading
 import HisnReading
 import HisnShareCard
 import QuranText
+import PiPProviders
 
 /// One dhikr or dua at a time with its counter. A tap on the counter says one repetition;
 /// after the last, the next item opens. Saved when leaving or going to the background.
@@ -13,6 +14,7 @@ struct DevotionalReaderView: View {
     @StateObject private var reader: DevotionalReaderController
     @ObservedObject private var favorites = AppServices.shared.favorites
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.isPresented) private var isPresented
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("adhkar.textSize") private var textSize: Double = 24
@@ -21,12 +23,14 @@ struct DevotionalReaderView: View {
     @State private var highlighted: Bool
     @State private var sharePayload: HisnSharePayload?
     @State private var notice: String?
+    /// Made on first appearance, on this screen's reader.
+    @State private var pip: ReaderPiP?
 
     init(collection: DevotionalCollection, start: ContentRef?, highlights: Bool) {
         // Collections are never empty (checked when the content loads).
         _reader = StateObject(wrappedValue: DevotionalReaderController(
             collection: collection, start: start, store: AppServices.shared.devotionalPositions,
-            dailyProgress: AppServices.shared.dailyProgress)!)
+            dailyProgress: AppServices.shared.dailyProgress, counts: AppServices.shared.itemCounts)!)
         _highlighted = State(initialValue: highlights)
     }
 
@@ -46,7 +50,14 @@ struct DevotionalReaderView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { reader.persist() }
         }
-        .onDisappear { reader.persist() }
+        .onAppear {
+            if pip == nil { pip = ReaderPiP(provider: DevotionalPiPProvider.make(controller: reader)) }
+        }
+        .onDisappear {
+            reader.persist()
+            // Closed (not another tab): its PiP closes too.
+            if !isPresented { pip?.screenClosed() }
+        }
         .task(id: highlighted) {
             guard highlighted else { return }
             try? await Task.sleep(nanoseconds: 1_600_000_000)
@@ -95,6 +106,10 @@ struct DevotionalReaderView: View {
 
     private var counterBar: some View {
         VStack(spacing: 12) {
+            if let pip {
+                PiPEntryView(pip: pip)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             Button {
                 let step = reader.recite()
                 switch step {
@@ -106,7 +121,7 @@ struct DevotionalReaderView: View {
                 VStack(spacing: 4) {
                     Text("\(reader.remaining)")
                         .font(.largeTitle.monospacedDigit().bold())
-                    Text(reader.current.repeatCount > 1 ? "متبقٍّ" : "تمّ")
+                    Text(reader.remaining == 0 ? "اكتمل ✓" : reader.current.repeatCount > 1 ? "متبقٍّ" : "تمّ")
                         .font(.caption)
                 }
                 .frame(maxWidth: .infinity, minHeight: 88)

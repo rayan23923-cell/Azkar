@@ -95,29 +95,29 @@ final class HisnAudioPlaybackTests: XCTestCase {
 
     func testAppHasOneAudioSessionOwner() throws {
         let files = try appSources()
-        XCTAssertTrue(files.contains { $0.0 == "PiPEngine.swift" })
+        XCTAssertTrue(files.contains { $0.0 == "PiPTestEngine.swift" })
         for (name, text) in files {
             XCTAssertFalse(text.contains("setCategory("), "\(name) configures the audio session")
             XCTAssertFalse(text.contains("setActive("), "\(name) activates the audio session")
         }
-        let engine = try XCTUnwrap(files.first { $0.0 == "PiPEngine.swift" }?.1)
+        let engine = try XCTUnwrap(files.first { $0.0 == "PiPTestEngine.swift" }?.1)
         XCTAssertTrue(engine.contains("AudioSessionCoordinator.shared.activateForPlayback()"))
     }
 
     func testExistingPiPPathIsPreserved() throws {
         let files = try appSources()
-        let engine = try XCTUnwrap(files.first { $0.0 == "PiPEngine.swift" }?.1)
+        let engine = try XCTUnwrap(files.first { $0.0 == "PiPTestEngine.swift" }?.1)
         for proven in ["ContentSource(sampleBufferDisplayLayer:", "CMClockGetHostTimeClock()", "controlTimebase",
                        "canStartPictureInPictureAutomaticallyFromInline = autoStartEnabled", "skipByInterval"] {
-            XCTAssertTrue(engine.contains(proven), "PiPEngine lost \(proven)")
+            XCTAssertTrue(engine.contains(proven), "PiPTestEngine lost \(proven)")
         }
-        let surface = try XCTUnwrap(files.first { $0.0 == "SampleBufferPiPSurface.swift" }?.1)
+        let surface = try XCTUnwrap(files.first { $0.0 == "SampleBufferPiPController.swift" }?.1)
         for proven in ["ContentSource(sampleBufferDisplayLayer:", "CMClockGetHostTimeClock()", "controlTimebase",
                        "AzkarFrameRenderer.makeSampleBuffer"] {
-            XCTAssertTrue(surface.contains(proven), "the Hisn surface does not use \(proven)")
+            XCTAssertTrue(surface.contains(proven), "the production PiP controller does not use \(proven)")
         }
-        XCTAssertTrue(surface.contains("canStartPictureInPictureAutomaticallyFromInline = false"),
-                      "Hisn PiP starts manually")
+        XCTAssertTrue(surface.contains("canStartPictureInPictureAutomaticallyFromInline = allowsAutomaticStart"),
+                      "production PiP follows PiPAvailability.allowsAutomaticStart (off)")
         for (name, text) in files {
             for word in ["AVPlayerViewController", "import ReplayKit", "import WebKit", "WKWebView", "AVPlayerLayer"] {
                 XCTAssertFalse(text.contains(word), "\(name) contains \(word)")

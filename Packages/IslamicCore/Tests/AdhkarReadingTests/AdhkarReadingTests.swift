@@ -142,6 +142,53 @@ final class DevotionalReaderTests: XCTestCase {
         XCTAssertNil(store.position(in: .duaCategory("quranic")))
         XCTAssertNil(defaults.data(forKey: UserDefaultsDevotionalPositionStore.defaultKey))
     }
+
+    func testCountsComeBackAfterRelaunchTheSameDay() async throws {
+        let collection = try await morning()
+        let store = InMemoryDevotionalPositionStore()
+        let counts = InMemoryItemCountStore()
+        let day = Date(timeIntervalSince1970: 1_800_000_000)
+        let first = try XCTUnwrap(DevotionalReaderController(collection: collection, store: store, counts: counts,
+                                                             now: { day }))
+        first.recite()                       // item 1, once
+        first.recite(); first.recite(); first.recite() // item 2, three times
+        XCTAssertEqual(first.index, 2)
+        first.persist()
+
+        let second = try XCTUnwrap(DevotionalReaderController(collection: collection, store: store, counts: counts,
+                                                              now: { day.addingTimeInterval(600) }))
+        XCTAssertEqual(second.index, 2)
+        second.previous()
+        XCTAssertEqual(second.remaining, 0, "the finished item keeps its count after the app is opened again")
+        XCTAssertEqual(second.cursor.completedRepetitions, 3)
+        second.previous()
+        XCTAssertEqual(second.remaining, 0)
+
+        let nextDay = try XCTUnwrap(DevotionalReaderController(collection: collection, store: store, counts: counts,
+                                                               now: { day.addingTimeInterval(86_400 * 2) }))
+        nextDay.jump(to: 1)
+        XCTAssertEqual(nextDay.remaining, 3, "a new day starts at zero")
+
+        second.restart()
+        XCTAssertTrue(counts.counts(in: collection.ref, on: DayKey(date: day)).isEmpty)
+    }
+
+    func testUserDefaultsItemCountsKeepOneDay() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: "item-counts-\(UUID().uuidString)"))
+        let store = UserDefaultsItemCountStore(defaults: defaults)
+        let today = DayKey(year: 2026, month: 10, day: 9)
+        let group = ContentRef.dhikrGroup("morning")
+        store.save(["a": 3, "b": 0], in: group, on: today)
+        XCTAssertEqual(UserDefaultsItemCountStore(defaults: defaults).counts(in: group, on: today), ["a": 3])
+        XCTAssertTrue(store.counts(in: group, on: today.adding(days: 1)).isEmpty)
+        store.save(["c": 1], in: .hisnSection("hisn-ch-001"), on: today.adding(days: 1))
+        XCTAssertTrue(store.counts(in: group, on: today).isEmpty, "writing a new day drops the old one")
+        store.clear(.hisnSection("hisn-ch-001"))
+        XCTAssertNil(defaults.data(forKey: UserDefaultsItemCountStore.defaultKey))
+        defaults.set(Data("bad".utf8), forKey: UserDefaultsItemCountStore.defaultKey)
+        XCTAssertTrue(store.counts(in: group, on: today).isEmpty)
+        XCTAssertNil(defaults.data(forKey: UserDefaultsItemCountStore.defaultKey), "unreadable data is removed")
+    }
 }
 
 final class DevotionalSearchTests: XCTestCase {

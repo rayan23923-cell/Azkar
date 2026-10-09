@@ -55,11 +55,19 @@ Record for each run:
 
 ## Audio
 
-**N/A.** No production recordings ship. The Release build has no background audio mode and no
-audio controls. Verify:
+**N/A.** No production recordings ship. The Release build declares the audio background mode
+only for PiP and has no in-app audio controls. Verify:
 
-- [ ] No play button anywhere.
+- [ ] No play button in the readers (PiP's own window has the system play/pause).
 - [ ] Settings shows «التلاوات الصوتية: غير متاحة».
+
+## Picture in Picture
+
+Run the checklist in `UNIFIED_PIP.md` §13 on this Release IPA: «نافذة عائمة» in Hisn, adhkar
+and duas, «تشغيل في نافذة عائمة» in the Quran, the window in front of another app, previous and
+next, the long Hisn item, and closing the window.
+
+- [ ] Another app's music: note whether it pauses when PiP starts (known limitation).
 
 When licensed audio is added:
 

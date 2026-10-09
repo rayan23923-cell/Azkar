@@ -5,6 +5,8 @@ import QuranReading
 import HisnReading
 import AdhkarReading
 import GlobalSearch
+import PiPCore
+import PiPRendering
 
 /// Opens an adhkar or dua collection, optionally at one item.
 struct DevotionalRoute: Hashable {
@@ -31,6 +33,8 @@ final class AppRouter: ObservableObject {
     @Published var quranTarget: QuranVerseRef?
     @Published var quranHighlights = false
     @Published var hisnTarget: HisnSearchResult?
+    /// A saved Hisn item (Favorites) to open.
+    @Published var hisnItemTarget: String?
     @Published var devotionalTarget: DevotionalRoute?
 
     func open(_ destination: GlobalSearchResult.Destination) {
@@ -64,6 +68,7 @@ final class AppRouter: ObservableObject {
                 open(.devotional(collection: ref, item: nil))
             }
         case .hisn:
+            hisnItemTarget = ref.id
             tab = .hisn
         }
     }
@@ -136,14 +141,39 @@ final class AppServices: ObservableObject {
     let dailyProgress: DailyProgressStore
     let favorites: FavoritesModel
     let devotionalPositions: DevotionalPositionStore
+    /// Each item's count today, in Hisn chapters and adhkar collections.
+    let itemCounts: ItemCountStore
     let router = AppRouter()
     let content = ContentStore()
+    /// The one PiP engine of the app (Quran, Hisn, adhkar and duas).
+    let pip: PiPEngine
+    /// The PiP frame's size and layout, from the orientation setting read at launch (pages and
+    /// frames must agree, so a change applies the next time the app opens).
+    let pipLayout: PiPLayout
 
     private init() {
         reminders = ReminderController(store: UserDefaultsReminderStore(), scheduler: SystemReminderScheduler())
         dailyProgress = UserDefaultsDailyProgressStore()
         favorites = FavoritesModel(store: UserDefaultsFavoritesStore())
         devotionalPositions = UserDefaultsDevotionalPositionStore()
+        itemCounts = UserDefaultsItemCountStore()
+        // PiP is offered only when this build declares the PiP background mode (see
+        // docs/UNIFIED_PIP.md) and the user's
+        // «العرض العائم» setting is on. It always starts from a button, never automatically.
+        let availability = PiPAvailability(
+            backgroundModeDeclared: PiPAvailability.backgroundModeDeclared(in: Bundle.main.infoDictionary),
+            userEnabled: UserDefaults.standard.object(forKey: PiPAvailability.settingKey) as? Bool ?? true)
+        pipLayout = PiPLayout.saved()
+        pip = PiPEngine(paginator: CoreTextPiPPaginator(layout: pipLayout), sessionStore: UserDefaultsPiPSessionStore(),
+                        availability: availability)
+        pip.onRestoreUserInterface = { [router] type in
+            // "Return to app" in the window opens the section it shows.
+            switch type {
+            case .quran: router.tab = .quran
+            case .hisn: router.tab = .hisn
+            case .dhikr, .dua: router.tab = .adhkar
+            }
+        }
     }
 
     func isCompletedToday(_ ref: ContentRef) -> Bool {

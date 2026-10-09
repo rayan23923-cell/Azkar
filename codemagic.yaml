@@ -3,7 +3,7 @@
 # (see README.md, "Install on iPhone").
 #
 #   azkar-release-ipa  the app as it will ship (Release): no PiP test tab,
-#                      no background audio mode. Use it for the device checklist
+#                      PiP in every section (background mode audio, for PiP only). Use it for the device checklist
 #                      in docs/PHYSICAL_DEVICE_RELEASE_CHECKLIST.md.
 #   pip-azkar-ipa      Debug build with the PiP test tab and background audio,
 #                      for testing PiP itself.
@@ -43,9 +43,9 @@ workflows:
         script: |
           APP=build/DerivedData/Build/Products/Release-iphoneos/IslamicPiPPOC.app
           test -d "$APP"
-          if /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist" 2>/dev/null; then
-            echo "Release must not declare background modes"; exit 1
-          fi
+          # Only the PiP background mode (audio); no audio file ships.
+          MODES=$(/usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist" 2>/dev/null | tr -d ' {}' | grep . | sort | tr '\n' ',')
+          [ "$MODES" = "Array,audio," ] || { echo "Release background modes must be exactly [audio] for PiP"; exit 1; }
           rm -rf build/ipa && mkdir -p build/ipa/Payload
           cp -R "$APP" build/ipa/Payload/
           (cd build/ipa && zip -qry Azkar-release-unsigned.ipa Payload)

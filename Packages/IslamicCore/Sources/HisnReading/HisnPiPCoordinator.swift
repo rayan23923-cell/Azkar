@@ -65,6 +65,9 @@ public protocol PiPPlaybackControlling: AnyObject {
     func skip(by seconds: TimeInterval)
 }
 
+/// Superseded in the app by the unified PiP engine (PiPCore) with `HisnPiPProvider`; kept with its
+/// tests as the Phase 3C reference until it is removed.
+///
 /// Owns the Hisn PiP lifecycle. It reads the reader (current item) and the audio player
 /// (state, time, duration); it never owns either. PiP system controls are mapped here:
 /// play/pause → the player, skip ±interval → a seek within the current recording (never the

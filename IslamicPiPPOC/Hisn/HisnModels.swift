@@ -3,6 +3,7 @@ import IslamicCore
 import HisnReading
 import HisnAudioPlayback
 import ContentKit
+import PiPProviders
 
 /// Opens a chapter at a display item. Built from the index, a search result or the saved position.
 struct HisnRoute: Hashable {
@@ -94,6 +95,12 @@ final class HisnLibraryModel: ObservableObject {
                          highlightedItemId: destination.highlightedItemId)
     }
 
+    /// A saved item (Favorites), marked briefly when it opens; nil when it no longer exists.
+    func route(forItem itemId: String) -> HisnRoute? {
+        guard case .loaded(let library, _, _) = state, let found = library.locate(itemId: itemId) else { return nil }
+        return HisnRoute(chapterId: found.chapter.id, itemIndex: found.itemIndex, highlightedItemId: itemId)
+    }
+
     func route(for position: HisnReadingPosition) -> HisnRoute {
         HisnRoute(chapterId: position.chapterId, itemIndex: position.itemIndex,
                   completedRepetitions: position.completedRepetitions)
@@ -108,32 +115,34 @@ extension HisnReaderController {
         let audio = HisnAudioPlayer(repository: audioRepository, engine: AVHisnAudioEngine(),
                                     session: AudioSessionCoordinator.shared)
         return HisnReaderController(reader: reader, store: store, audio: audio, haptics: SystemHisnHaptics.shared,
-                                    dailyProgress: dailyProgress)
+                                    dailyProgress: dailyProgress, counts: AppServices.shared.itemCounts)
     }
 }
 
 /// Everything one open chapter needs, created once per reader screen: the reader and its
-/// recording (`HisnReaderController`), and the Hisn PiP coordinator with its surface. PiP
-/// reads the controller; the controller does not know about PiP.
+/// recording (`HisnReaderController`), and its PiP (`HisnPiPProvider` on the app's PiP engine).
+/// PiP reads the controller; the controller does not know about PiP.
 @MainActor
 final class HisnReaderScreenModel: ObservableObject {
     let controller: HisnReaderController
-    let surface: SampleBufferPiPSurface
-    let pip: HisnPiPCoordinator
+    let pip: ReaderPiP
     let actions: HisnItemActions
 
     init(reader: HisnReader, store: HisnReadingPositionStore, dailyProgress: DailyProgressStore,
          audioRepository: HisnAudioRepository) {
         controller = .make(reader: reader, store: store, dailyProgress: dailyProgress, audioRepository: audioRepository)
-        surface = SampleBufferPiPSurface()
-        pip = HisnPiPCoordinator(controller: controller, surface: surface)
-        surface.coordinator = pip
+        pip = ReaderPiP(provider: HisnPiPProvider(controller: controller))
         actions = HisnItemActions(pasteboard: SystemPasteboard(), haptics: SystemHisnHaptics.shared)
     }
 
-    /// The screen is closing: leave PiP first, then stop the recording and save the place.
-    func close() {
-        pip.close()
-        controller.close()
+    /// The screen went away. Closed (popped): leave PiP, stop the recording and save the place.
+    /// Another tab while PiP shows this chapter: PiP keeps running on this reader.
+    func disappeared(closed: Bool) {
+        if closed || !pip.isRunning {
+            pip.screenClosed()
+            controller.close()
+        } else {
+            controller.persist()
+        }
     }
 }

@@ -21,8 +21,9 @@ FINAL STATUS: READY_WITH_EXTERNAL_BLOCKERS
 
 What each line means:
 
-- **CODE: READY.** CI is green. Release has no test screen, no POC engine, no background mode
-  and no development logging.
+- **CODE: READY.** CI is green. Release has no test screen, no POC engine and no development
+  logging. Unified PiP ships in all four sections; Release declares only the PiP background mode
+  (`audio`), by the owner's decision (see PiP Status).
 - **BUILD: READY.** The Release build, archive and unsigned IPA all succeed in CI. Building
   unsigned is all that is possible without credentials.
 - **CONTENT: READY.** This line covers integrity only. The Quran is verbatim from Tanzil, and
@@ -69,7 +70,7 @@ The app is a complete, offline Arabic app:
 
 CI shows:
 
-- 312 package tests passing;
+- 415 package tests passing (103 of them PiP);
 - the content checks passing;
 - Debug, Release and IPA builds succeeding.
 
@@ -81,11 +82,11 @@ claimed.
 | Area | Features |
 |---|---|
 | Home | Today's adhkar by time of day, resume, Favorites, today's progress, global search |
-| Quran | Surah and juz index, bookmarks, search (Uthmani-aware), reader with basmala, ayah markers, juz and page, go to ayah, previous and next surah, copy, share, share image, text size, resume, daily completion |
-| Hisn Al-Muslim | Index, reader with counter, resume, search with 6 ranks and filters, copy, share, share image, haptics, daily completion, audio and PiP ready (no recordings) |
-| Adhkar and duas | Collections, counter reader with per-collection resume, search, favorites, copy, share, share image, completion |
+| Quran | Surah and juz index, bookmarks, search (Uthmani-aware), reader with basmala, ayah markers, juz and page, go to ayah, previous and next surah, copy, share, share image, text size, resume, daily completion, PiP |
+| Hisn Al-Muslim | Index, reader with counter, resume, search with 6 ranks and filters, copy, share, share image, haptics, daily completion, audio ready (no recordings), PiP |
+| Adhkar and duas | Collections, counter reader with per-collection resume, search, favorites, copy, share, share image, completion, PiP |
 | Global search | Every section, deterministic ranking, source filter, safe typo suggestion |
-| Settings | Reminders, appearance, haptics, text sizes, audio and PiP status, reset, clear favorites, About (sources, licences, privacy) |
+| Settings | Reminders, appearance, haptics, text sizes, audio status, the PiP setting (builds with PiP), reset, clear favorites, About (sources, licences, privacy) |
 | Platform | Tabs (the PiP test tab is Debug only), deep links from reminders, dark mode, RTL, Dynamic Type, VoiceOver |
 
 ## Test Results
@@ -129,11 +130,29 @@ claimed.
 
 ## PiP Status
 
-- The proven sample-buffer path is unchanged, now driven through a small playback-control
-  protocol.
-- PiP is ready for Hisn (tested) and for any queue (tested).
-- It is available only while a recording plays, so it is inactive in this build.
-- Device validation: NOT PERFORMED.
+Unified Production PiP (`UNIFIED_PIP.md`): one engine for the Quran, Hisn, adhkar and duas, on
+the unchanged device-proven sample-buffer path.
+
+- Controls: play/pause, and skip for previous/next (page first, then item). A recording that
+  ends stays on its item.
+- Text-only in this build (no recordings). Long text is paged at a readable size, never
+  shrunk.
+- Unit tests: engine, state, navigation, pages, session, renderer and the four providers.
+
+```
+UNIFIED PiP
+Architecture: PASS (unit tests)
+Quran / Hisn / Adhkar / Dua: PASS in unit tests; device NOT_TESTED
+Release PiP: no test UI, no Debug-only dependency (CI-checked)
+Release availability: ON (background mode audio, for PiP only); device NOT_TESTED
+Physical Device: NOT_TESTED
+```
+
+**Release decision (owner, 2026-10-09).** PiP needs `UIBackgroundModes = audio` (Apple's
+"Audio, AirPlay, and Picture in Picture" mode). The owner chose to add it to Release, so PiP is
+offered in all four sections. CI allows that one mode only, and no audio file ships. The risk
+is App Review 2.5.4 while no recordings ship: the review notes must explain the mode is for
+PiP. The audit is in `UNIFIED_PIP.md` §9.
 
 ## Accessibility
 
@@ -213,11 +232,13 @@ The owner still has to provide the identity, signing and App Store Connect metad
    - the item-by-item comparison with the canonical edition.
 3. **App identity and signing.** The bundle identifier is still `com.example.IslamicPiPPOC`,
    and there is no team or signing (owner).
-4. ~~**Background audio mode with no audio.**~~ Resolved in hardening: Release has no
-   background mode.
-5. **Device testing** of a signed build on iPhone (and iPad, or make it iPhone-only).
+4. **Background audio mode for PiP.** Release declares `audio` again, for PiP only (owner
+   decision, 2026-10-09). Explain it in the App Review notes (2.5.4).
+5. **Device testing** of a signed build on iPhone (and iPad, or make it iPhone-only),
+   including the PiP checklist in `UNIFIED_PIP.md` §13 (Release IPA).
 6. **App Store Connect:** privacy policy URL, support URL, screenshots, description, privacy
    answers.
+7. ~~**PiP in Release (decision).**~~ Decided: PiP ships in Release (see PiP Status).
 
 ## Final Recommendation
 

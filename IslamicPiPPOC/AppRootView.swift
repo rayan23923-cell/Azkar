@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// The app's tabs: Home, Quran, Hisn Al-Muslim, Adhkar and Duas, Settings. The PiP technical
-/// test screen (PiPEngine, unchanged) is a tab in Debug builds only.
+/// test screen (PiPTestEngine, unchanged) is a tab in Debug builds only.
 struct AppRootView: View {
     @ObservedObject private var router = AppServices.shared.router
     @AppStorage(AppAppearance.key) private var appearance: AppAppearance = .system

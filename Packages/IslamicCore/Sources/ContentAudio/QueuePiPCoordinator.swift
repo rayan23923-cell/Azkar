@@ -2,6 +2,8 @@ import Combine
 import Foundation
 import HisnReading
 
+/// Not used by the app (no recordings ship); the unified `PiPEngine` (PiPCore) is the app's PiP.
+///
 /// PiP for a listening queue, on the same surface protocol as Hisn PiP. The queue is the
 /// content provider (title and text of the playing item), the player is the playback
 /// controller, and the surface is the renderer. System skip buttons seek inside the current

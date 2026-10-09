@@ -11,7 +11,7 @@ import UIKit
 /// Owns the AVSampleBufferDisplayLayer, the AVPictureInPictureController that
 /// presents it, the 5-second azkar rotation and the optional generated audio.
 /// Only public AVKit / AVFoundation APIs are used.
-final class PiPEngine: NSObject, ObservableObject {
+final class PiPTestEngine: NSObject, ObservableObject {
     static let azkar = [
         "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
         "الْحَمْدُ لِلَّهِ",
@@ -305,7 +305,7 @@ final class PiPEngine: NSObject, ObservableObject {
 
 // MARK: - AVPictureInPictureControllerDelegate
 
-extension PiPEngine: AVPictureInPictureControllerDelegate {
+extension PiPTestEngine: AVPictureInPictureControllerDelegate {
     func pictureInPictureControllerWillStartPictureInPicture(_ controller: AVPictureInPictureController) {
         let state = UIApplication.shared.applicationState
         log("PiP willStart (appState=\(state == .active ? "active" : state == .background ? "background" : "inactive"))")
@@ -333,7 +333,7 @@ extension PiPEngine: AVPictureInPictureControllerDelegate {
 
 // MARK: - AVPictureInPictureSampleBufferPlaybackDelegate
 
-extension PiPEngine: AVPictureInPictureSampleBufferPlaybackDelegate {
+extension PiPTestEngine: AVPictureInPictureSampleBufferPlaybackDelegate {
     func pictureInPictureController(_ controller: AVPictureInPictureController, setPlaying playing: Bool) {
         log("PiP control: setPlaying(\(playing))")
         DispatchQueue.main.async { self.setPlaying(playing) }

@@ -36,12 +36,14 @@ struct HisnReaderView: View {
 
 private struct HisnReaderContent: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.isPresented) private var isPresented
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var sharePayload: HisnSharePayload?
     @State private var notice: String?
+    @ObservedObject private var favorites = AppServices.shared.favorites
     @ObservedObject var model: HisnReaderController
     let screen: HisnReaderScreenModel
     let nextSection: HisnSectionEntry?
@@ -62,6 +64,7 @@ private struct HisnReaderContent: View {
         .toolbar {
             if !model.reader.isCompleted {
                 ToolbarItem(placement: .primaryAction) { actionsMenu }
+                ToolbarItem(placement: .primaryAction) { favoriteButton }
             }
         }
         .sheet(item: $sharePayload) { payload in
@@ -80,7 +83,7 @@ private struct HisnReaderContent: View {
                     .accessibilityHidden(true)
             }
         }
-        .onDisappear { screen.close() }
+        .onDisappear { screen.disappeared(closed: !isPresented) }
         .onChange(of: scenePhase) { _, phase in
             // Leaving the foreground: the cursor is already saved on each step; save once more
             // so the stored time is the last moment of reading.
@@ -94,6 +97,18 @@ private struct HisnReaderContent: View {
     }
 
     // MARK: Item actions
+
+    /// The star: saves the item on screen to Favorites (shown in Hisn's index and on Home).
+    private var favoriteButton: some View {
+        let ref = ContentRef.hisnItem(model.reader.currentItem.id)
+        let saved = favorites.contains(ref)
+        return Button {
+            show(favorites.toggle(ref) ? "أُضيف إلى المفضلة" : "أُزيل من المفضلة")
+        } label: {
+            Image(systemName: saved ? "star.fill" : "star")
+        }
+        .accessibilityLabel(saved ? "إزالة من المفضلة" : "إضافة إلى المفضلة")
+    }
 
     private var actionsMenu: some View {
         Menu {
@@ -220,8 +235,8 @@ private struct HisnReaderContent: View {
             #endif
             if let audio = model.audio {
                 HisnAudioControls(player: audio)
-                HisnPiPControls(pip: screen.pip, player: audio, surface: screen.surface)
             }
+            PiPEntryView(pip: screen.pip)
             counter
             HStack {
                 Button {
@@ -276,7 +291,9 @@ private struct HisnReaderContent: View {
                     ProgressView(value: Double(completed), total: Double(total))
                         .tint(.white.opacity(0.9))
                         .frame(maxWidth: 160)
-                    Text(completed + 1 == total ? "القراءة الأخيرة" : "اضغط بعد كل قراءة")
+                    Text(completed >= total
+                         ? (reader.isLastItem ? "اكتمل ✓ · إنهاء الباب" : "اكتمل ✓ · الانتقال إلى الذكر التالي")
+                         : completed + 1 == total ? "القراءة الأخيرة" : "اضغط بعد كل قراءة")
                         .font(.footnote)
                 case .once, .unstated:
                     Text("تمّ")

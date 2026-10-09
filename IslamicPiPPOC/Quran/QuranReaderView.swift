@@ -6,6 +6,7 @@ import QuranReading
 import QuranText
 import HisnReading
 import HisnShareCard
+import PiPProviders
 
 /// One surah, verse after verse, in the Quran font. Tracks the verse at the top of the screen
 /// and saves it when the reader leaves or the app goes to the background.
@@ -13,6 +14,7 @@ struct QuranReaderView: View {
     @StateObject private var controller: QuranReaderController
     @ObservedObject private var favorites = AppServices.shared.favorites
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.isPresented) private var isPresented
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("quran.textSize") private var textSize: Double = 26
@@ -21,6 +23,8 @@ struct QuranReaderView: View {
     @State private var sharePayload: HisnSharePayload?
     @State private var notice: String?
     @State private var showsGoTo = false
+    /// Made on first appearance, on this screen's controller.
+    @State private var pip: ReaderPiP?
 
     /// `start` must be a verse of `library` (checked by the caller). The controller is made
     /// once per screen; it saves the start verse as the reading position.
@@ -50,7 +54,18 @@ struct QuranReaderView: View {
         .navigationTitle(controller.surah.fullArabicName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
-        .safeAreaInset(edge: .bottom) { positionBar }
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 0) {
+                if let pip {
+                    PiPEntryView(pip: pip, startTitle: "تشغيل في نافذة عائمة")
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(.bar)
+                }
+                positionBar
+            }
+        }
         .transientNotice($notice)
         .sheet(item: $sharePayload) { payload in ActivityShareSheet(items: payload.items) }
         .sheet(isPresented: $showsGoTo) {
@@ -59,7 +74,10 @@ struct QuranReaderView: View {
             }
             .presentationDetents([.medium])
         }
-        .onAppear { scrolledAyah = controller.currentAyah }
+        .onAppear {
+            scrolledAyah = controller.currentAyah
+            if pip == nil { pip = ReaderPiP(provider: QuranPiPProvider(controller: controller)) }
+        }
         .onChange(of: scrolledAyah) { _, ayah in
             if let ayah { controller.visible(ayah: ayah) }
         }
@@ -69,7 +87,11 @@ struct QuranReaderView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { controller.persist() }
         }
-        .onDisappear { controller.persist() }
+        .onDisappear {
+            controller.persist()
+            // Closed (not another tab): its PiP closes too.
+            if !isPresented { pip?.screenClosed() }
+        }
         .task(id: highlightedAyah) {
             guard highlightedAyah != nil else { return }
             try? await Task.sleep(nanoseconds: 1_600_000_000)
