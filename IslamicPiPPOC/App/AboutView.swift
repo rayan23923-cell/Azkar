@@ -46,7 +46,6 @@ struct AboutView: View {
                     }
                 }
             }
-        }
             Section("صفحات المصحف") {
                 Text("خط DigitalKhatt New Madina (Amine Anane وTarteel)، رخصة SIL Open Font License 1.1. مواضع الأسطر من مشروع DigitalKhatt (رخصة MIT)، والنص المعروض هو نص تنزيل نفسه.")
                 if let url = MushafFont.licenseURL, let text = try? String(contentsOf: url, encoding: .utf8) {
