@@ -4,6 +4,7 @@ import ContentKit
 
 /// The dhikr of the day for the widget: one bundled dhikr, the same all day and for everyone,
 /// chosen in turn from the adhkar short enough to be shown whole (the text is never cut).
+/// Quranic text is left out: it is shown only in the readers, with the bundled Quran font.
 public enum DailyDhikr {
     /// Longest text, in characters, that a medium widget shows in full.
     public static let maximumLength = 160
@@ -12,7 +13,7 @@ public enum DailyDhikr {
     /// on every device whatever order the collections load in.
     public static func pool(in library: AdhkarLibrary, maximumLength: Int = DailyDhikr.maximumLength) -> [DevotionalItem] {
         library.adhkar.flatMap(\.items)
-            .filter { !$0.text.isEmpty && $0.text.count <= maximumLength }
+            .filter { !$0.text.isEmpty && $0.text.count <= maximumLength && $0.reviewStatus != .quranVerbatimTanzil }
             .sorted { $0.ref < $1.ref }
     }
 

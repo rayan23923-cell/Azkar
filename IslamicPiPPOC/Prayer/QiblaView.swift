@@ -39,18 +39,20 @@ struct QiblaView: View {
         let distance = Qibla.distance(from: place.coordinates)
         let reading = compass.reading
         let turn = reading.map { Qibla.turn(bearing: bearing, heading: $0.degrees) }
-        let facing = turn.map { abs($0) <= Self.aligned } ?? false
+        // A rough reading never says «facing the Qibla» nor gives a precise turn.
+        let quality = QiblaReadingQuality(accuracy: reading?.accuracy)
+        let facing = quality.confirmsFacing && (turn.map { abs($0) <= Self.aligned } ?? false)
 
         return ScrollView {
             VStack(spacing: 24) {
                 // The dial is drawn left-to-right: east is to the right whatever the language.
-                dial(turn: turn, facing: facing)
+                dial(turn: turn, facing: facing, quality: quality)
                     .environment(\.layoutDirection, .leftToRight)
                     .padding(.top, 12)
 
                 VStack(spacing: 8) {
                     if let turn {
-                        Text(guidance(turn: turn, facing: facing))
+                        Text(guidance(turn: turn, facing: facing, quality: quality))
                             .font(.title3.bold())
                             .foregroundStyle(facing ? Color.green : Color.primary)
                     }
@@ -76,7 +78,7 @@ struct QiblaView: View {
         .sensoryFeedback(.success, trigger: facing) { _, now in now }
     }
 
-    private func dial(turn: Double?, facing: Bool) -> some View {
+    private func dial(turn: Double?, facing: Bool, quality: QiblaReadingQuality) -> some View {
         // The dial turns so north points north; the Qibla arrow sits at the bearing on it.
         let heading = compass.reading?.degrees ?? 0
         let bearing = model.place.map { Qibla.bearing(from: $0.coordinates) } ?? 0
@@ -118,11 +120,15 @@ struct QiblaView: View {
         .frame(width: 280, height: 280)
         .padding(28)
         .accessibilityElement()
-        .accessibilityLabel(turn.map { guidance(turn: $0, facing: facing) } ?? "اتجاه القبلة")
+        .accessibilityLabel(turn.map { guidance(turn: $0, facing: facing, quality: quality) } ?? "اتجاه القبلة")
     }
 
-    private func guidance(turn: Double, facing: Bool) -> String {
+    private func guidance(turn: Double, facing: Bool, quality: QiblaReadingQuality) -> String {
         if facing { return "أنت متّجه نحو القبلة" }
+        guard quality.confirmsFacing else {
+            // No degrees from a compass that may be off by more than 20°.
+            return turn > 0 ? "استدر يميناً تقريباً، ثم عاير البوصلة" : "استدر يساراً تقريباً، ثم عاير البوصلة"
+        }
         let degrees = Int(abs(turn).rounded())
         return turn > 0 ? "استدر يميناً \(degrees)°" : "استدر يساراً \(degrees)°"
     }

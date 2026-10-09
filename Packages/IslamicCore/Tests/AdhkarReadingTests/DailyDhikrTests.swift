@@ -20,6 +20,7 @@ final class DailyDhikrTests: XCTestCase {
         for item in pool {
             XCTAssertLessThanOrEqual(item.text.count, DailyDhikr.maximumLength)
             XCTAssertEqual(item.ref.kind, .adhkar)
+            XCTAssertNotEqual(item.reviewStatus, .quranVerbatimTanzil, "Quran text stays in the readers")
             // The stored item, unchanged: the widget shows the library's own text and source.
             XCTAssertEqual(library.item(item.ref), item)
         }

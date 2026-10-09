@@ -109,3 +109,68 @@ final class PrayerTimelineTests: XCTestCase {
         XCTAssertNil(PrayerPlaceNotice.check(london, deviceTimeZone: lisbon, at: morning))
     }
 }
+
+final class PrayerSentenceAndCompassTests: XCTestCase {
+    func testNextPrayerSentence() throws {
+        let name = "PrayerSentence.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: name))
+        defer { defaults.removePersistentDomain(forName: name) }
+        let store = PrayerSettingsStore(defaults: defaults)
+        let now = Date(timeIntervalSince1970: 1_791_537_600) // 12:20 in Baghdad
+        XCTAssertEqual(store.nextPrayerSentence(now: now),
+                       "لم تختر مكاناً لمواقيت الصلاة بعد. افتح التطبيق واختر مدينتك أو موقعك.")
+        store.place = try XCTUnwrap(PrayerCities.all.first { $0.name == "بغداد" })
+        let next = try XCTUnwrap(store.schedule?.next(after: now))
+        XCTAssertEqual(next.prayer, .asr)
+        let clock = PrayerFormat.clock(next.time, timeZone: TimeZone(identifier: "Asia/Baghdad")!)
+        XCTAssertEqual(store.nextPrayerSentence(now: now),
+                       "العصر الساعة \(clock) في بغداد، \(PrayerFormat.remaining(from: now, to: next.time)).")
+        store.twentyFourHour = true
+        // Asr in Baghdad that day is at 17:38 (14:38 UTC, cross-checked in PrayerTimesTests).
+        XCTAssertTrue(store.nextPrayerSentence(now: now).hasPrefix("العصر الساعة 17:"), store.nextPrayerSentence(now: now))
+        store.place = PrayerPlace(name: "القطب", coordinates: Coordinates(latitude: 78, longitude: 15),
+                                  timeZoneID: "Arctic/Longyearbyen", isCurrentLocation: false)
+        XCTAssertEqual(store.nextPrayerSentence(now: Date(timeIntervalSince1970: 1_782_043_200)),
+                       "لا يمكن حساب المواقيت لـالقطب في هذا اليوم.")
+    }
+
+    func testCompassQuality() {
+        XCTAssertEqual(QiblaReadingQuality(accuracy: nil), .unknown)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: -1), .unknown, "a negative error means invalid")
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 5), .good)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 10), .good)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 15), .fair)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 20), .fair)
+        XCTAssertEqual(QiblaReadingQuality(accuracy: 25), .poor)
+        XCTAssertTrue(QiblaReadingQuality.good.confirmsFacing)
+        XCTAssertTrue(QiblaReadingQuality.fair.confirmsFacing)
+        XCTAssertFalse(QiblaReadingQuality.poor.confirmsFacing)
+        XCTAssertFalse(QiblaReadingQuality.unknown.confirmsFacing)
+    }
+}
+
+final class SharedPrayerSettingsTests: XCTestCase {
+    func testTheWidgetCopyFollowsTheAppAndReportsChanges() throws {
+        let names = ["SharedPrayer.app.\(UUID().uuidString)", "SharedPrayer.group.\(UUID().uuidString)"]
+        let app = PrayerSettingsStore(defaults: try XCTUnwrap(UserDefaults(suiteName: names[0])))
+        let group = PrayerSettingsStore(defaults: try XCTUnwrap(UserDefaults(suiteName: names[1])))
+        defer { names.forEach { UserDefaults().removePersistentDomain(forName: $0) } }
+
+        XCTAssertFalse(app.copy(to: group), "nothing saved yet, nothing to copy")
+        app.place = try XCTUnwrap(PrayerCities.all.first { $0.name == "الكويت" })
+        var parameters = PrayerParameters(method: .ummAlQura, asr: .hanafi)
+        parameters.adjustments = [.fajr: 2, .isha: -3]
+        app.parameters = parameters
+        app.twentyFourHour = true
+        XCTAssertTrue(app.copy(to: group))
+        XCTAssertEqual(group.place, app.place)
+        XCTAssertEqual(group.parameters, parameters, "method, Asr and corrections are all copied")
+        XCTAssertTrue(group.twentyFourHour)
+        XCTAssertEqual(group.schedule, app.schedule)
+        XCTAssertFalse(app.copy(to: group), "unchanged: no widget reload")
+
+        app.place = nil
+        XCTAssertTrue(app.copy(to: group))
+        XCTAssertNil(group.place, "a cleared place is cleared for the widget too")
+    }
+}

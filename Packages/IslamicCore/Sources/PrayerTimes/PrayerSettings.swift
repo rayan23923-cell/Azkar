@@ -83,6 +83,32 @@ public final class PrayerSettingsStore {
         guard let place else { return nil }
         return PrayerSchedule(coordinates: place.coordinates, timeZone: place.timeZone, parameters: parameters)
     }
+
+    /// Copies the place and settings into `other` (the store the widgets read, in the App
+    /// Group). True when anything there changed, so widgets are reloaded only then.
+    @discardableResult
+    public func copy(to other: PrayerSettingsStore) -> Bool {
+        let changed = other.place != place || other.parameters != parameters || other.twentyFourHour != twentyFourHour
+        if changed {
+            other.place = place
+            other.parameters = parameters
+            other.twentyFourHour = twentyFourHour
+        }
+        return changed
+    }
+
+    /// The next prayer in one sentence, as Siri and Shortcuts say it: «العصر الساعة 3:12 م في
+    /// بغداد، بعد 1:05.» With no place saved, it says so (nothing is asked for from here).
+    public func nextPrayerSentence(now: Date) -> String {
+        guard let place, let schedule else {
+            return "لم تختر مكاناً لمواقيت الصلاة بعد. افتح التطبيق واختر مدينتك أو موقعك."
+        }
+        guard let next = schedule.next(after: now) else {
+            return "لا يمكن حساب المواقيت لـ\(place.name) في هذا اليوم."
+        }
+        let clock = PrayerFormat.clock(next.time, timeZone: schedule.timeZone, twentyFourHour: twentyFourHour)
+        return "\(next.prayer.arabicName) الساعة \(clock) في \(place.name)، \(PrayerFormat.remaining(from: now, to: next.time))."
+    }
 }
 
 /// Cities to pick from when the location is not shared.

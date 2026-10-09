@@ -92,6 +92,10 @@ struct PrayerTimesView: View {
                 Text("\(PrayerFormat.gregorian(now, timeZone: zone)) · \(PrayerFormat.hijri(now, timeZone: zone))")
             }
 
+            if let notice = PrayerPlaceNotice.check(place, deviceTimeZone: .current, at: now) {
+                placeNotice(notice, place: place)
+            }
+
             Section {
                 ForEach(Prayer.allCases, id: \.self) { prayer in
                     let entry = (prayer: prayer, time: day.time(of: prayer))
@@ -123,6 +127,39 @@ struct PrayerTimesView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+
+    /// The saved place may not be where the user is: said, never changed by itself.
+    @ViewBuilder
+    private func placeNotice(_ notice: PrayerPlaceNotice, place: PrayerPlace) -> some View {
+        Section {
+            switch notice {
+            case .locationMayBeOld:
+                Label("توقيت جهازك يختلف عن توقيت الموقع المحفوظ. إن كنت انتقلت إلى مكان آخر فحدّث موقعك لتصحّ المواقيت.",
+                      systemImage: "exclamationmark.triangle")
+                Button {
+                    model.useCurrentLocation()
+                } label: {
+                    HStack {
+                        Text("تحديث موقعي")
+                        if model.locationState == .locating { Spacer(); ProgressView() }
+                    }
+                }
+                .disabled(model.locationState == .locating)
+                if model.locationState == .denied {
+                    Text("الوصول إلى الموقع غير مسموح؛ تبقى المواقيت لـ\(place.name). يمكنك اختيار مدينة بدلاً منه.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else if model.locationState == .failed {
+                    Text("تعذّر تحديد الموقع؛ تبقى المواقيت لـ\(place.name).")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            case .cityInOtherTimeZone:
+                Label("المواقيت بالتوقيت المحلي لـ\(place.name)، وهو يختلف عن توقيت جهازك.", systemImage: "globe")
+            }
+        }
+        .font(.subheadline)
     }
 
     @ViewBuilder
@@ -228,6 +265,11 @@ struct PrayerPlaceSetup: View {
     @ObservedObject var model: PrayerModel
     var chosen: () -> Void = {}
 
+    /// Nothing is lost when the location cannot be read: the saved place stays.
+    private var savedPlaceNote: String {
+        model.place.map { " تبقى المواقيت لـ\($0.name) حتى تختار غيره." } ?? ""
+    }
+
     var body: some View {
         Section {
             Button {
@@ -242,11 +284,11 @@ struct PrayerPlaceSetup: View {
             .disabled(model.locationState == .locating)
             switch model.locationState {
             case .denied:
-                Text("الوصول إلى الموقع غير مسموح. يمكنك السماح به من إعدادات iPhone، أو اختيار مدينة من القائمة.")
+                Text("الوصول إلى الموقع غير مسموح. يمكنك السماح به من إعدادات iPhone، أو اختيار مدينة من القائمة.\(savedPlaceNote)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             case .failed:
-                Text("تعذّر تحديد الموقع. حاول مرة أخرى، أو اختر مدينة من القائمة.")
+                Text("تعذّر تحديد الموقع. حاول مرة أخرى، أو اختر مدينة من القائمة.\(savedPlaceNote)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             default:
