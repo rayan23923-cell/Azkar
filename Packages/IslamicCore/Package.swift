@@ -13,7 +13,7 @@ import PackageDescription
 // GlobalSearch searches every section together on top of their own engines.
 // ContentAudio is the listening queue and its PiP coordinator for the Quran, adhkar and duas,
 // on the Hisn audio player and PiP surface protocols; its pack (content_audio.json) is empty.
-// QuranText bundles the OFL Amiri Quran font and its Core Text layout checks.
+// QuranText bundles the OFL Amiri Quran and DigitalKhatt New Madina fonts and their Core Text checks.
 // HisnShareCard draws the share image with Core Text / Core Graphics (testable here).
 // Unified PiP: PiPCore is the engine, state, navigation, pages and session, free of AVKit;
 // PiPRendering draws PiP frames with Core Text; PiPProviders adapts the Quran, Hisn, adhkar and
@@ -50,7 +50,8 @@ let package = Package(
         ),
         .target(
             name: "QuranReading",
-            dependencies: ["IslamicCore", "ContentKit"]
+            dependencies: ["IslamicCore", "ContentKit"],
+            resources: [.copy("Resources/MushafLines-Madina1421.txt"), .copy("Resources/MushafLines-NOTICE.txt")]
         ),
         .target(
             name: "AdhkarReading",
@@ -66,7 +67,8 @@ let package = Package(
         ),
         .target(
             name: "QuranText",
-            resources: [.copy("Resources/AmiriQuran-Regular.ttf"), .copy("Resources/AmiriQuran-OFL.txt")]
+            resources: [.copy("Resources/AmiriQuran-Regular.ttf"), .copy("Resources/AmiriQuran-OFL.txt"),
+                        .copy("Resources/DigitalKhattNewMadina.ttf"), .copy("Resources/DigitalKhatt-OFL.txt")]
         ),
         .target(
             name: "HisnReading",
