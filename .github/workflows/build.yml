@@ -200,19 +200,26 @@ jobs:
           xcodebuild archive -project IslamicPiPPOC.xcodeproj -scheme IslamicPiPPOC \
             -configuration Release -destination 'generic/platform=iOS' \
             -archivePath build/IslamicPiPPOC.xcarchive \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             | tee archive.log | grep -E 'error|warning:|ARCHIVE' || true
           grep -q 'ARCHIVE SUCCEEDED' archive.log
           /usr/libexec/PlistBuddy -c "Print :ApplicationProperties" build/IslamicPiPPOC.xcarchive/Info.plist
           mkdir -p build/release-ipa/Payload
           cp -R build/IslamicPiPPOC.xcarchive/Products/Applications/IslamicPiPPOC.app build/release-ipa/Payload/
-          (cd build/release-ipa && zip -qry IslamicPiPPOC-release-unsigned.ipa Payload)
-          ls -lh build/release-ipa/IslamicPiPPOC-release-unsigned.ipa
+          # The build number (shown in Settings › About) and the file name say which run and
+          # commit this is, so a tester can tell a new IPA from an old one.
+          APP=build/release-ipa/Payload/IslamicPiPPOC.app
+          [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Info.plist")" = "${{ github.run_number }}" ]
+          [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/PlugIns/AzkarWidgetsExtension.appex/Info.plist")" = "${{ github.run_number }}" ]
+          NAME="IslamicPiPPOC-release-unsigned-build${{ github.run_number }}-${GITHUB_SHA::7}.ipa"
+          (cd build/release-ipa && zip -qry "$NAME" Payload)
+          ls -lh "build/release-ipa/$NAME"
 
       - uses: actions/upload-artifact@v4
         with:
           name: IslamicPiPPOC-release-unsigned-ipa-NOT-SIGNED
-          path: build/release-ipa/IslamicPiPPOC-release-unsigned.ipa
+          path: build/release-ipa/*.ipa
 
       # Device-test build for Phase 3C (not for release): compiled with HISN_AUDIO_FIXTURE, it
       # carries the TEST_ONLY synthetic tone and its manifest so Hisn audio and PiP can be

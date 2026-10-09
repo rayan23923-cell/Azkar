@@ -36,6 +36,7 @@ workflows:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -derivedDataPath build/DerivedData \
+            CURRENT_PROJECT_VERSION=${BUILD_NUMBER:-1} \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             | tee build/xcodebuild.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
           grep -q "BUILD SUCCEEDED" build/xcodebuild.log
@@ -48,8 +49,12 @@ workflows:
           [ "$MODES" = "Array,audio," ] || { echo "Release background modes must be exactly [audio] for PiP"; exit 1; }
           rm -rf build/ipa && mkdir -p build/ipa/Payload
           cp -R "$APP" build/ipa/Payload/
-          (cd build/ipa && zip -qry Azkar-release-unsigned.ipa Payload)
-          ls -lh build/ipa/Azkar-release-unsigned.ipa
+          # Branch, commit and build number in the name (the build number also shows in
+          # Settings › About), so a tester can tell which code an IPA has.
+          echo "Branch: ${CM_BRANCH:-?}  Commit: ${CM_COMMIT:-?}"
+          NAME="Azkar-release-unsigned-build${BUILD_NUMBER:-1}-$(echo "${CM_COMMIT:-local}" | cut -c1-7).ipa"
+          (cd build/ipa && zip -qry "$NAME" Payload)
+          ls -lh "build/ipa/$NAME"
           /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
           /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Info.plist"
     artifacts:
