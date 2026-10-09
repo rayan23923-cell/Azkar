@@ -13,8 +13,13 @@ import QuranText
 /// above the system progress bar, and a thin progress line. Right to left; Arabic shaping and
 /// marks by Core Text; verses in the bundled Quran font.
 ///
+/// The page goes in the layout's text blocks in reading order. In a portrait window those are
+/// above and below the middle control row: a text that fits the upper block is centred there,
+/// a longer one fills the upper block and goes on, from the next line, in the lower one. So
+/// nothing is drawn where the play / pause row shows.
+///
 /// The text is never changed, shrunk below the layout's smallest body size or cut: the largest
-/// size that fits the body box is used, and a text that does not fit at the smallest size is
+/// size that fits the blocks is used, and a text that does not fit at the smallest size is
 /// split into pages (`CoreTextPiPPaginator`), every page drawn at that size. Each line (header,
 /// counter, information) stays on one line, at a smaller size if it must.
 public enum PiPFrameRenderer {
@@ -31,9 +36,11 @@ public enum PiPFrameRenderer {
 
     public struct Rendered {
         public let image: CGImage
-        /// Characters (UTF-16) of the page Core Text placed in the body frame.
+        /// Characters (UTF-16) of the page Core Text placed in the body frames.
         public let bodyCharactersDrawn: Int
-        public let bodyFrame: CTFrame
+        /// The body's Core Text frames, one per text block used, in reading order.
+        public let bodyFrames: [CTFrame]
+        public var bodyFrame: CTFrame { bodyFrames[0] }
         /// Where each part was drawn, in top-left coordinates (tests check them against the
         /// system controls).
         public let regions: Regions
@@ -43,7 +50,10 @@ public enum PiPFrameRenderer {
     public struct Regions {
         public let header: CGRect
         public let counter: CGRect?
-        public let body: CGRect
+        /// The rectangles the page was drawn in, in reading order.
+        public let bodyBlocks: [CGRect]
+        /// All of the page (the union of its blocks).
+        public var body: CGRect { bodyBlocks.dropFirst().reduce(bodyBlocks[0]) { $0.union($1) } }
         public let info: CGRect
         /// Every one-line part (header, counter, information) kept to one line.
         public let linesFit: Bool
@@ -57,20 +67,20 @@ public enum PiPFrameRenderer {
                                       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
               let drawn = drawParts(frame, appearance: appearance, badge: badge, layout: layout, in: context),
               let image = context.makeImage() else { return nil }
-        return Rendered(image: image, bodyCharactersDrawn: CTFrameGetVisibleStringRange(drawn.body).length,
-                        bodyFrame: drawn.body, regions: drawn.regions)
+        let drawnCount = drawn.body.reduce(0) { $0 + CTFrameGetVisibleStringRange($1).length }
+        return Rendered(image: image, bodyCharactersDrawn: drawnCount, bodyFrames: drawn.body, regions: drawn.regions)
     }
 
     /// Draws into a context of the layout's size in Core Graphics coordinates (origin bottom
-    /// left). Returns the body's Core Text frame.
+    /// left). Returns the body's Core Text frames.
     @discardableResult
     public static func draw(_ frame: PiPFrame, appearance: Appearance, badge: String? = nil,
-                            layout: PiPLayout = .production, in context: CGContext) -> CTFrame? {
+                            layout: PiPLayout = .production, in context: CGContext) -> [CTFrame]? {
         drawParts(frame, appearance: appearance, badge: badge, layout: layout, in: context)?.body
     }
 
     private static func drawParts(_ frame: PiPFrame, appearance: Appearance, badge: String?, layout: PiPLayout,
-                                  in context: CGContext) -> (body: CTFrame, regions: Regions)? {
+                                  in context: CGContext) -> (body: [CTFrame], regions: Regions)? {
         let colors = Colors(appearance)
         context.setFillColor(colors.background)
         context.fill(layout.bounds)
@@ -92,14 +102,11 @@ public enum PiPFrameRenderer {
             drawFrame(line.string, in: layout.counter, layout: layout, context: context)
         }
 
-        // Body: the page, centred in its box.
-        let bodyBox = layout.body(withCounter: counterLine != nil)
+        // Body: the page in the text blocks.
         let body = bodyString(frame.pageText, style: frame.content.textStyle, size: CGFloat(frame.fontSize),
                               color: colors.primary)
-        let measured = measure(body, width: bodyBox.width)
-        let top = bodyBox.minY + max(0, (bodyBox.height - measured) / 2)
-        let bodyRect = CGRect(x: bodyBox.minX, y: top, width: bodyBox.width, height: min(measured, bodyBox.height))
-        let bodyFrame = drawFrame(body, in: bodyRect, layout: layout, context: context)
+        let pieces = place(body, in: layout.textBlocks(withCounter: counterLine != nil)).pieces
+        let bodyFrames = pieces.map { drawFrame($0.string, in: $0.rect, layout: layout, context: context) }
 
         // Information line above the system progress bar.
         let info = oneLine(frame.infoLine, sizes: layout.infoSizes, bold: false, color: colors.secondary,
@@ -120,8 +127,47 @@ public enum PiPFrameRenderer {
                                    cornerWidth: radius, cornerHeight: radius, transform: nil))
             context.fillPath()
         }
-        return (bodyFrame, Regions(header: layout.header, counter: counterLine == nil ? nil : layout.counter,
-                                   body: bodyRect, info: layout.info, linesFit: linesFit))
+        return (bodyFrames, Regions(header: layout.header, counter: counterLine == nil ? nil : layout.counter,
+                                    bodyBlocks: pieces.map(\.rect), info: layout.info, linesFit: linesFit))
+    }
+
+    /// Where each part of the body goes. A text that fits the first block is centred in it;
+    /// otherwise each block takes the lines it holds, from the top, and the rest goes on in the
+    /// next. `complete` is false when text is left over.
+    static func place(_ string: NSAttributedString,
+                      in blocks: [CGRect]) -> (pieces: [(string: NSAttributedString, rect: CGRect)], complete: Bool) {
+        func centred(_ piece: NSAttributedString, in block: CGRect, top: Bool) -> CGRect {
+            let height = min(measure(piece, width: block.width), block.height)
+            let y = top ? block.minY : block.minY + (block.height - height) / 2
+            return CGRect(x: block.minX, y: y, width: block.width, height: height)
+        }
+        guard let first = blocks.first else { return ([], string.length == 0) }
+        if string.length == 0 || fits(string, in: first.size) {
+            return ([(string, centred(string, in: first, top: false))], true)
+        }
+        var pieces: [(string: NSAttributedString, rect: CGRect)] = []
+        var rest = string
+        for (index, block) in blocks.enumerated() where rest.length > 0 {
+            let isLast = index == blocks.count - 1
+            if !(isLast && fits(rest, in: block.size)) {
+                let held = visibleLength(rest, in: block.size)
+                guard held > 0 else { break }
+                pieces.append((rest.attributedSubstring(from: NSRange(location: 0, length: held)), block))
+                rest = rest.attributedSubstring(from: NSRange(location: held, length: rest.length - held))
+            } else {
+                pieces.append((rest, centred(rest, in: block, top: true)))
+                rest = NSAttributedString()
+            }
+        }
+        return (pieces, rest.length == 0)
+    }
+
+    /// Characters (UTF-16) of the string Core Text places in a box of `size`.
+    private static func visibleLength(_ string: NSAttributedString, in size: CGSize) -> Int {
+        let framesetter = CTFramesetterCreateWithAttributedString(string)
+        let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: 0),
+                                             CGPath(rect: CGRect(origin: .zero, size: size), transform: nil), nil)
+        return CTFrameGetVisibleStringRange(frame).length
     }
 
     /// A line at the largest of `sizes` that keeps it on one line in `box`.
@@ -274,16 +320,16 @@ public struct CoreTextPiPPaginator: PiPPaginating {
 
     public func paginate(_ text: String, style: PiPTextStyle, withCounter: Bool) -> PiPPagination {
         let color = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
-        let box = layout.body(withCounter: withCounter).size
-        for size in layout.bodySizes
-        where PiPFrameRenderer.fits(PiPFrameRenderer.bodyString(text, style: style, size: size, color: color), in: box) {
+        let blocks = layout.textBlocks(withCounter: withCounter)
+        func fits(_ text: String, size: CGFloat) -> Bool {
+            PiPFrameRenderer.place(PiPFrameRenderer.bodyString(text, style: style, size: size, color: color),
+                                   in: blocks).complete
+        }
+        for size in layout.bodySizes where fits(text, size: size) {
             return PiPPagination(fontSize: Double(size), pages: [text])
         }
         let size = layout.bodySizes.last!
-        let pages = PiPTextPaginator.pages(text) { slice in
-            PiPFrameRenderer.fits(PiPFrameRenderer.bodyString(String(slice), style: style, size: size, color: color),
-                                  in: box)
-        }
+        let pages = PiPTextPaginator.pages(text) { slice in fits(String(slice), size: size) }
         return PiPPagination(fontSize: Double(size), pages: pages)
     }
 }

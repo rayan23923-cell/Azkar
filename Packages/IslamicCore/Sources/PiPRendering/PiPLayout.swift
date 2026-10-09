@@ -6,12 +6,18 @@ import Foundation
 /// iOS draws its own controls over a sample-buffer PiP window and the app cannot move, resize
 /// or remove them: close and return-to-app in the top corners, skip back / play-pause / skip
 /// forward in a row across the middle, and the progress bar along the bottom. They show when
-/// the window is tapped and the system hides them again. The layout keeps the header, the
-/// counter and the information line out of those places; only the body, which fills the
-/// window, can sit under the middle row while the controls are shown.
+/// the window is tapped and the system hides them again. Their places here were measured on an
+/// iPhone screenshot of the 9:16 window (2026-10-09), with a margin, as fractions of the
+/// window's width; the controls keep their size in points, so in a smaller window they cover
+/// more and these places are an estimate, not a guarantee.
+///
+/// The header, the counter and the information line never sit under a control. The text sits
+/// in two blocks, above and below the middle row, when both hold at least two lines (a portrait
+/// window); a landscape window is too short for that, so there the text is one block and the
+/// middle row covers its centre while the controls are shown.
 ///
 /// Every measure is a fraction of the frame's shorter side, so a layout is the same at any
-/// scale and in either orientation.
+/// scale.
 public struct PiPLayout: Equatable, Sendable {
     public let width: Int
     public let height: Int
@@ -70,21 +76,24 @@ public struct PiPLayout: Equatable, Sendable {
     /// Close (top left) and return to the app (top right); both reserved, as their sides swap
     /// with the system language.
     public var cornerControls: [CGRect] {
-        let size = CGSize(width: unit * 0.20, height: unit * 0.15)
+        // Measured: buttons 0.13 W across, their bottom at 0.18 W.
+        let size = CGSize(width: unit * 0.22, height: unit * 0.19)
         return [CGRect(origin: .zero, size: size),
                 CGRect(origin: CGPoint(x: CGFloat(width) - size.width, y: 0), size: size)]
     }
 
     /// Skip back, play / pause, skip forward.
     public var centerControls: CGRect {
-        let size = CGSize(width: min(CGFloat(width) - 2 * margin, unit * 0.75), height: unit * 0.24)
+        // Measured: 0.05 W to 0.95 W across, 0.26 W tall, centred.
+        let size = CGSize(width: min(CGFloat(width) * 0.96, unit * 1.0), height: unit * 0.29)
         return CGRect(x: (CGFloat(width) - size.width) / 2, y: (CGFloat(height) - size.height) / 2,
                       width: size.width, height: size.height)
     }
 
     /// The system progress bar.
     public var progressControl: CGRect {
-        let height = unit * 0.12
+        // Measured: the bar's top 0.14 W above the bottom.
+        let height = unit * 0.15
         return CGRect(x: 0, y: CGFloat(self.height) - height, width: CGFloat(width), height: height)
     }
 
@@ -99,14 +108,19 @@ public struct PiPLayout: Equatable, Sendable {
 
     /// Title and subtitle, between the corner controls.
     public var header: CGRect {
-        let side = unit * 0.20 + gap
+        let side = unit * 0.22 + gap
         return CGRect(x: side, y: margin * 0.6, width: CGFloat(width) - 2 * side, height: unit * 0.085)
     }
 
-    /// The counter («التكرار 37 من 100»), across the window under the corner controls and
-    /// above the middle row.
+    /// The counter («التكرار 37 من 100»), in large type above the middle row: in a wide window
+    /// under the header between the corner controls, in a narrow one across the window under
+    /// the corner controls (between them it would have to shrink).
     public var counter: CGRect {
-        CGRect(x: margin, y: cornersBottom + gap, width: CGFloat(width) - 2 * margin, height: unit * 0.09)
+        let height = unit * 0.09
+        if header.width >= unit * 1.1 {
+            return CGRect(x: header.minX, y: header.maxY + gap / 2, width: header.width, height: height)
+        }
+        return CGRect(x: margin, y: cornersBottom + gap, width: CGFloat(width) - 2 * margin, height: height)
     }
 
     /// Position, page and what play / pause does next, just above the system progress bar.
@@ -122,17 +136,35 @@ public struct PiPLayout: Equatable, Sendable {
         CGRect(x: margin, y: CGFloat(height) - unit * 0.05, width: CGFloat(width) - 2 * margin, height: unit * 0.011)
     }
 
-    /// The text, between the header (and counter) and the information line.
+    /// The whole text area, between the header (and counter) and the information line.
     public func body(withCounter: Bool) -> CGRect {
-        let top = (withCounter ? counter.maxY : max(header.maxY, cornersBottom)) + gap
+        let top = max(withCounter ? counter.maxY : header.maxY, cornersBottom) + gap
         return CGRect(x: margin, y: top, width: CGFloat(width) - 2 * margin, height: info.minY - gap - top)
     }
+
+    /// Where the text is drawn, in reading order: above and below the middle control row when
+    /// both parts hold two lines at the smallest size, otherwise the whole text area.
+    public func textBlocks(withCounter: Bool) -> [CGRect] {
+        let body = body(withCounter: withCounter)
+        let center = centerControls
+        let top = CGRect(x: body.minX, y: body.minY, width: body.width, height: center.minY - gap - body.minY)
+        let bottom = CGRect(x: body.minX, y: center.maxY + gap, width: body.width,
+                            height: body.maxY - center.maxY - gap)
+        guard top.height >= minimumBlockHeight, bottom.height >= minimumBlockHeight else { return [body] }
+        return [top, bottom]
+    }
+
+    /// The text avoids the middle control row (two blocks).
+    public var textAvoidsCenterControls: Bool { textBlocks(withCounter: true).count == 2 }
+
+    /// Two lines of the tallest line style (verses, 1.5 line height) at the smallest size.
+    var minimumBlockHeight: CGFloat { bodySizes.last! * 1.5 * 2 + 8 }
 
     // MARK: Type sizes, largest first
 
     /// Body sizes: the largest that fits on one page is used; a longer text is paged at the
     /// smallest, which stays readable in a small window.
-    public var bodySizes: [CGFloat] { [0.12, 0.105, 0.095, 0.086].map { (unit * $0).rounded() } }
+    public var bodySizes: [CGFloat] { [0.135, 0.12, 0.105, 0.095, 0.086].map { (unit * $0).rounded() } }
     var headerSizes: [CGFloat] { [0.05, 0.044, 0.038, 0.032].map { (unit * $0).rounded() } }
     var counterSizes: [CGFloat] { [0.064, 0.056, 0.048, 0.041, 0.034].map { (unit * $0).rounded() } }
     var infoSizes: [CGFloat] { [0.042, 0.037, 0.032, 0.028].map { (unit * $0).rounded() } }

@@ -31,6 +31,10 @@ jobs:
 
       - name: swift test
         working-directory: Packages/IslamicCore
+        env:
+          # PiPFramePreviewTests writes PNG previews of PiP frames here (test output only;
+          # nothing of it is in the app).
+          PIP_PREVIEW_DIR: ${{ github.workspace }}/pip-frame-previews
         run: |
           set -o pipefail
           swift --version
@@ -41,6 +45,13 @@ jobs:
         with:
           name: core-tests-log
           path: core-tests.log
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pip-frame-previews
+          path: pip-frame-previews
           if-no-files-found: ignore
 
   build:
