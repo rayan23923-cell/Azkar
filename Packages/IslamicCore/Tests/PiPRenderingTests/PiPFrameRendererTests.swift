@@ -185,25 +185,30 @@ final class PiPFrameRendererTests: XCTestCase {
         }
     }
 
-    /// Portrait: the text has a block above and one below the middle control row, each holding
-    /// at least two lines, and neither is under any system control. Landscape is too short for
-    /// that and keeps one block.
-    func testPortraitTextBlocksAvoidEveryControl() {
+    /// Portrait: the text is kept to the upper half, above the middle control row, and the
+    /// counter sits below the row; nothing is under a system control, and the text area holds
+    /// at least two lines at the smallest size. Landscape keeps one block from the header to
+    /// the information line.
+    func testPortraitTextStaysInTheUpperHalf() {
         for layout in layouts {
             for withCounter in [false, true] {
                 let blocks = layout.textBlocks(withCounter: withCounter)
-                let body = layout.body(withCounter: withCounter)
-                XCTAssertEqual(blocks.count, layout.isPortrait ? 2 : 1, "\(layout)")
-                for block in blocks {
-                    XCTAssertTrue(body.contains(block), "\(layout)")
-                    XCTAssertGreaterThanOrEqual(block.height, layout.bodySizes.last! * 1.5 * 2, "two lines each")
-                    if layout.isPortrait {
-                        for control in layout.systemControls {
-                            XCTAssertFalse(block.intersects(control), "\(layout): \(block) under \(control)")
-                        }
+                XCTAssertEqual(blocks, [layout.body(withCounter: withCounter)], "\(layout)")
+                let block = blocks[0]
+                XCTAssertGreaterThanOrEqual(block.height, layout.bodySizes.last! * 1.5 * 2, "two lines")
+                if layout.isPortrait {
+                    XCTAssertLessThanOrEqual(block.maxY, layout.centerControls.minY, "\(layout): above the row")
+                    XCTAssertLessThanOrEqual(block.maxY, CGFloat(layout.height) / 2, "\(layout): the upper half")
+                    for control in layout.systemControls {
+                        XCTAssertFalse(block.intersects(control), "\(layout): \(block) under \(control)")
                     }
                 }
-                if blocks.count == 2 { XCTAssertLessThan(blocks[0].maxY, blocks[1].minY, "reading order") }
+            }
+            if layout.isPortrait {
+                XCTAssertGreaterThanOrEqual(layout.counter.minY, layout.centerControls.maxY, "\(layout): counter below")
+                XCTAssertLessThanOrEqual(layout.counter.maxY, layout.info.minY)
+                XCTAssertEqual(layout.body(withCounter: true), layout.body(withCounter: false),
+                               "the counter takes nothing from the text")
             }
             XCTAssertEqual(layout.textAvoidsCenterControls, layout.isPortrait)
         }
@@ -244,9 +249,9 @@ final class PiPFrameRendererTests: XCTestCase {
         }
     }
 
-    /// Long texts in portrait go on from the upper block to the lower one, every letter drawn
-    /// once, nothing under a system control.
-    func testLongTextFlowsAroundTheMiddleControls() async throws {
+    /// Long texts in portrait are paged in the upper half: every letter drawn once, nothing
+    /// under a system control or below the middle row.
+    func testLongTextIsPagedAboveTheMiddleControls() async throws {
         let samples: [(String, PiPTextStyle)] = [(try await longestHisnText(), .standard),
                                                  (try await verse(2, 282), .quran), (try await verse(2, 255), .quran)]
         for layout in portraitLayouts {
@@ -254,7 +259,6 @@ final class PiPFrameRendererTests: XCTestCase {
             for (text, style) in samples {
                 let pagination = paginator.paginate(text, style: style, withCounter: true)
                 XCTAssertEqual(pagination.pages.joined(), text)
-                var usedBoth = false
                 for (index, page) in pagination.pages.enumerated() {
                     let content = PiPContent(contentType: style == .quran ? .quran : .hisn, contentID: "id",
                                              containerID: "c", title: "عنوان", subtitle: "", text: text,
@@ -265,8 +269,8 @@ final class PiPFrameRendererTests: XCTestCase {
                     let rendered = try XCTUnwrap(PiPFrameRenderer.render(frame, appearance: .light, layout: layout))
                     XCTAssertEqual(rendered.bodyCharactersDrawn, (page as NSString).length,
                                    "\(layout) page \(index): every character once")
-                    XCTAssertEqual(rendered.bodyFrames.count, rendered.regions.bodyBlocks.count)
-                    usedBoth = usedBoth || rendered.regions.bodyBlocks.count == 2
+                    XCTAssertEqual(rendered.regions.bodyBlocks.count, 1)
+                    XCTAssertLessThanOrEqual(rendered.regions.body.maxY, layout.centerControls.minY)
                     for block in rendered.regions.bodyBlocks {
                         for control in layout.systemControls {
                             XCTAssertFalse(block.intersects(control), "\(layout) page \(index)")
@@ -276,7 +280,6 @@ final class PiPFrameRendererTests: XCTestCase {
                         }
                     }
                 }
-                XCTAssertTrue(usedBoth, "\(layout): a long text uses both blocks")
             }
         }
     }

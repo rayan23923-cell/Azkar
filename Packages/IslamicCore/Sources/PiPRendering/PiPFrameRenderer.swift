@@ -13,10 +13,14 @@ import QuranText
 /// above the system progress bar, and a thin progress line. Right to left; Arabic shaping and
 /// marks by Core Text; verses in the bundled Quran font.
 ///
-/// The page goes in the layout's text blocks in reading order. In a portrait window those are
-/// above and below the middle control row: a text that fits the upper block is centred there,
-/// a longer one fills the upper block and goes on, from the next line, in the lower one. So
-/// nothing is drawn where the play / pause row shows.
+/// In a portrait window the page is kept to the upper half, above the middle control row, and
+/// the counter sits in large type below the row; nothing is drawn where a control shows.
+///
+/// The background is drawn around the system controls: a soft gradient, a dock with three
+/// wells where skip back / play-pause / skip forward appear (portrait), wells under the close
+/// and return buttons, and a track where the progress bar shows. When iOS shows its controls
+/// they land in these places, so they look part of the frame; when it hides them the frame
+/// still reads as one design. The places are the layout's estimate, not the real controls.
 ///
 /// The text is never changed, shrunk below the layout's smallest body size or cut: the largest
 /// size that fits the blocks is used, and a text that does not fit at the smallest size is
@@ -82,8 +86,7 @@ public enum PiPFrameRenderer {
     private static func drawParts(_ frame: PiPFrame, appearance: Appearance, badge: String?, layout: PiPLayout,
                                   in context: CGContext) -> (body: [CTFrame], regions: Regions)? {
         let colors = Colors(appearance)
-        context.setFillColor(colors.background)
-        context.fill(layout.bounds)
+        drawBackground(layout: layout, colors: colors, in: context)
         var linesFit = true
 
         // Header: «badge · title · subtitle», one line between the corner controls.
@@ -129,6 +132,73 @@ public enum PiPFrameRenderer {
         }
         return (bodyFrames, Regions(header: layout.header, counter: counterLine == nil ? nil : layout.counter,
                                     bodyBlocks: pieces.map(\.rect), info: layout.info, linesFit: linesFit))
+    }
+
+    // MARK: Background
+
+    /// The gradient and the places iOS shows its controls in, drawn as part of the design.
+    private static func drawBackground(layout: PiPLayout, colors: Colors, in context: CGContext) {
+        context.saveGState()
+        defer { context.restoreGState() }
+        let bounds = layout.bounds
+        if let gradient = CGGradient(colorsSpace: CGColorSpace(name: CGColorSpace.sRGB),
+                                     colors: [colors.backgroundTop, colors.background] as CFArray,
+                                     locations: [0, 1]) {
+            // Core Graphics coordinates: the top of the frame is maxY.
+            context.drawLinearGradient(gradient, start: CGPoint(x: 0, y: bounds.maxY), end: CGPoint(x: 0, y: 0),
+                                       options: [])
+        } else {
+            context.setFillColor(colors.background)
+            context.fill(bounds)
+        }
+        let line = max(1, layout.unit * 0.003)
+        context.setLineWidth(line)
+
+        func circle(center: CGPoint, radius: CGFloat, fill: CGColor) {
+            let rect = flipped(CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2,
+                                      height: radius * 2), layout: layout)
+            context.setFillColor(fill)
+            context.fillEllipse(in: rect)
+            context.setStrokeColor(colors.dockEdge)
+            context.strokeEllipse(in: rect.insetBy(dx: line / 2, dy: line / 2))
+        }
+        func capsule(_ rect: CGRect, fill: CGColor) {
+            let box = flipped(rect, layout: layout)
+            let radius = min(box.height, box.width) / 2
+            let path = CGPath(roundedRect: box, cornerWidth: radius, cornerHeight: radius, transform: nil)
+            context.setFillColor(fill)
+            context.addPath(path)
+            context.fillPath()
+            context.setStrokeColor(colors.dockEdge)
+            context.addPath(path)
+            context.strokePath()
+        }
+
+        // Close and return-to-app: a well under each button.
+        for corner in layout.cornerControls {
+            let radius = layout.unit * 0.068
+            let x = corner.minX < CGFloat(layout.width) / 2 ? corner.minX + layout.unit * 0.11
+                : corner.maxX - layout.unit * 0.11
+            circle(center: CGPoint(x: x, y: layout.unit * 0.1), radius: radius, fill: colors.dock)
+        }
+
+        // Skip back, play / pause, skip forward: a dock across the middle with a well for each.
+        // Only where the text keeps clear of the row; in landscape the text runs behind it.
+        if layout.textAvoidsCenterControls {
+            let row = layout.centerControls
+            let dock = row.insetBy(dx: layout.unit * 0.03, dy: row.height * 0.12)
+            capsule(dock, fill: colors.dock)
+            let small = row.height * 0.28
+            for (fraction, radius) in [(0.2, small), (0.5, row.height * 0.36), (0.8, small)] {
+                circle(center: CGPoint(x: row.minX + row.width * fraction, y: row.midY), radius: radius,
+                       fill: colors.well)
+            }
+        }
+
+        // The progress bar: a track along the bottom, under the frame's own progress line.
+        let bar = layout.progressControl
+        capsule(CGRect(x: layout.margin * 0.6, y: bar.minY + bar.height * 0.42, width: bar.width - layout.margin * 1.2,
+                       height: bar.height * 0.42), fill: colors.dock)
     }
 
     /// Where each part of the body goes. A text that fits the first block is centred in it;
@@ -281,6 +351,12 @@ public enum PiPFrameRenderer {
 
     private struct Colors {
         let background: CGColor
+        /// The top of the background gradient.
+        let backgroundTop: CGColor
+        /// The docks and wells the system controls show over, and their hairline edge.
+        let dock: CGColor
+        let well: CGColor
+        let dockEdge: CGColor
         let primary: CGColor
         let secondary: CGColor
         let accent: CGColor
@@ -293,13 +369,21 @@ public enum PiPFrameRenderer {
             switch appearance {
             case .dark:
                 // The background of the device-proven POC frames.
-                background = rgb(0.05, 0.22, 0.16)
+                background = rgb(0.03, 0.16, 0.12)
+                backgroundTop = rgb(0.07, 0.27, 0.20)
+                dock = rgb(1, 1, 1, 0.06)
+                well = rgb(1, 1, 1, 0.09)
+                dockEdge = rgb(0.62, 0.90, 0.76, 0.22)
                 primary = rgb(1, 1, 1)
                 secondary = rgb(1, 1, 1, 0.8)
                 accent = rgb(0.62, 0.90, 0.76)
                 track = rgb(1, 1, 1, 0.2)
             case .light:
-                background = rgb(0.98, 0.97, 0.94)
+                background = rgb(0.95, 0.93, 0.88)
+                backgroundTop = rgb(0.99, 0.98, 0.95)
+                dock = rgb(0.05, 0.40, 0.29, 0.06)
+                well = rgb(0.05, 0.40, 0.29, 0.10)
+                dockEdge = rgb(0.05, 0.40, 0.29, 0.25)
                 primary = rgb(0.10, 0.12, 0.11)
                 secondary = rgb(0.30, 0.33, 0.31)
                 accent = rgb(0.05, 0.40, 0.29)
