@@ -131,6 +131,21 @@ final class SessionCursorTests: XCTestCase {
         XCTAssertFalse(cursor.jump(to: 3))
         XCTAssertEqual(cursor.index, 2)
     }
+
+    func testCountsRoundTripAndAreCapped() throws {
+        let items = [Item(name: "a", repeatCount: 1), Item(name: "b", repeatCount: 3), Item(name: "c", repeatCount: 3)]
+        var cursor = try XCTUnwrap(SessionCursor(items: items))
+        cursor.advance(); cursor.advance(); cursor.advance()
+        XCTAssertEqual(cursor.counts, [0: 1, 1: 2])
+        var restored = try XCTUnwrap(SessionCursor(items: items, startIndex: 2))
+        restored.restoreCounts([0: 5, 1: 2, 2: 1, 9: 4, -1: 1])
+        XCTAssertEqual(restored.completedRepetitions, 1, "the current item takes its saved count")
+        XCTAssertEqual(restored.counts, [0: 1, 1: 2, 2: 1], "capped at each item's repetitions; bad indices ignored")
+        restored.previous()
+        XCTAssertEqual(restored.remainingRepetitions, 1)
+        restored.previous()
+        XCTAssertEqual(restored.remainingRepetitions, 0)
+    }
 }
 
 final class SessionTests: XCTestCase {
@@ -181,20 +196,5 @@ final class StateTypeTests: XCTestCase {
                        ["unavailable", "idle", "starting", "active", "stopping", "stopped", "error"])
         XCTAssertEqual(AudioState.allCases.map(\.rawValue),
                        ["unavailable", "idle", "playing", "paused", "stopped", "interrupted", "error"])
-    }
-
-    func testCountsRoundTripAndAreCapped() throws {
-        let items = self.items(1, 3, 3)
-        var cursor = try XCTUnwrap(SessionCursor(items: items))
-        cursor.advance(); cursor.advance(); cursor.advance()
-        XCTAssertEqual(cursor.counts, [0: 1, 1: 2])
-        var restored = try XCTUnwrap(SessionCursor(items: items, startIndex: 2))
-        restored.restoreCounts([0: 5, 1: 2, 2: 1, 9: 4, -1: 1])
-        XCTAssertEqual(restored.completedRepetitions, 1, "the current item takes its saved count")
-        XCTAssertEqual(restored.counts, [0: 1, 1: 2, 2: 1], "capped at each item's repetitions; bad indices ignored")
-        restored.previous()
-        XCTAssertEqual(restored.remainingRepetitions, 1)
-        restored.previous()
-        XCTAssertEqual(restored.remainingRepetitions, 0)
     }
 }
