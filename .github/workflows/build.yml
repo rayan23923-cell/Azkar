@@ -142,6 +142,19 @@ jobs:
           MODES=$(/usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$APP/Info.plist" 2>/dev/null | tr -d ' {}' | grep . | sort | tr '\n' ',')
           echo "Release background modes: $MODES"
           [ "$MODES" = "Array,audio," ] || { echo "Release background modes must be exactly [audio] for PiP"; exit 1; }
+          # The widget extension is WidgetKit only: no permission string, no background mode,
+          # its own privacy manifest. The app opens azkarapp:// links from it and from shortcuts.
+          WIDGET="$APP/PlugIns/AzkarWidgetsExtension.appex"
+          test -d "$WIDGET" || { echo "widget extension missing from the Release app"; exit 1; }
+          [ "$(/usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "$WIDGET/Info.plist")" = "com.apple.widgetkit-extension" ] \
+            || { echo "unexpected extension point"; exit 1; }
+          if plutil -p "$WIDGET/Info.plist" | grep -E 'UsageDescription|UIBackgroundModes'; then
+            echo "the widget extension must not ask for permissions or background modes"; exit 1
+          fi
+          test -f "$WIDGET/PrivacyInfo.xcprivacy"
+          plutil -lint "$WIDGET/PrivacyInfo.xcprivacy"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleURLTypes:0:CFBundleURLSchemes:0" "$APP/Info.plist" | grep -qx azkarapp \
+            || { echo "azkarapp URL scheme missing"; exit 1; }
           if find "$APP" \( -iname '*.wav' -o -iname '*.caf' -o -iname '*.m4a' -o -iname '*.mp3' -o -iname '*.aac' -o -iname '*.aiff' \) | grep .; then
             echo "audio file in the Release app: no silent or test audio may keep it in the background"; exit 1
           fi
