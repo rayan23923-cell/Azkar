@@ -4,6 +4,28 @@
 `14ae1c4`, green, covering the tests, the Debug and Release builds, the Release archive and the
 IPAs. Hardening details are in `RELEASE_HARDENING_REPORT.md`.
 
+## Status of the stacked feature branches (PR #16, #17, #18)
+
+Updated 2026-10-09 after the PR #18 hardening (branch `claude/daily-companion`, stacked on
+`claude/qibla-prayer-times` and the unified PiP branch). None of these PRs is merged. Each line
+has its own status; one does not imply another.
+
+| Area | Status | Evidence and what is missing |
+|---|---|---|
+| Code implementation | DONE | Prayer times, Qibla, widgets, links, shortcuts, resume, the routine and unified PiP are implemented; the hardening is in `DAILY_COMPANION.md` |
+| Automated tests | PASS | Package tests, content checks and Release bundle checks pass in CI; the run and count are in the PR #18 description |
+| Release build and archive | PASS (unsigned) | CI builds Release, archives it and produces an unsigned IPA with the widget extension inside; a signed archive needs the owner's team |
+| Physical-device validation | NOT_TESTED | No device was available; the 15-step plan is `DAILY_COMPANION.md` §12, PiP is `UNIFIED_PIP.md` §13 |
+| App Group registration and signing | BLOCKED (owner) | Both targets name the same group through `AZKAR_APP_GROUP` (CI-checked). The group is not registered and no team is set; steps in `DAILY_COMPANION.md` §13. Unsigned builds show the widget's "cannot reach settings" state |
+| Content review and rights clearance | BLOCKED (owner) | No item is `REVIEWED`; Hisn rights are pending. The dhikr widget therefore shows only a neutral placeholder. A code gate is not scholarly review or rights clearance |
+| App Store metadata and submission | BLOCKED (owner) | Bundle ID, Privacy Policy and Support URLs, screenshots, privacy answers and review notes (PiP background mode, location use) are outstanding |
+
+These branches add one permission, location "when in use", asked only when the user taps
+«استخدام موقعي». Apart from the `audio` mode the owner chose for PiP (PR #16, see PiP Status), they add no
+background mode, and none adds analytics or network access.
+
+The app is **not App Store-ready**: the last four lines are open.
+
 ## Release gate
 
 ```

@@ -28,9 +28,30 @@ or tracking was added.
 
 Anything else opens nothing: another scheme, an unknown host, a path, an extra or repeated
 query item, a ref that does not parse, or a URL longer than 300 characters. A ref that parses
-but no longer exists is resolved by the same code as Favorites (it falls back to the
-collection, or does nothing). **Opening a link never counts a repetition or marks anything
-done.**
+but no longer exists is resolved by the same code as Favorites. Each case lands as follows:
+
+- an adhkar or dua id that is not found opens the collection;
+- an unknown collection shows «تعذّر فتح هذا القسم»;
+- an unknown Hisn item opens nothing;
+- a verse outside the Quran shows «تعذّر فتح هذه السورة».
+
+**Opening a link never counts a repetition or marks anything done.** Package tests cover this:
+`OpeningFromALinkTests` checks that nothing is counted, saved or completed on open. Reading
+positions follow the rules the readers already had:
+
+- An adhkar or dua opened at an item becomes that collection's place when its screen closes,
+  as from search or Favorites.
+- A Hisn item opened from a link becomes the Hisn cursor on open. This is the Phase 3F rule for
+  search and Favorites ("the reader saves the cursor on open").
+- A Quran verse opened from a link becomes the reading position, as from Favorites.
+- Opening a collection (shortcut, routine) resumes it where it stopped.
+
+These pre-existing rules were not changed here. The only automatic surface, the dhikr widget,
+shows nothing until content is reviewed (section 8).
+
+**Cold start.** A link that launches the app is queued on the router. Each tab opens it once
+its content has loaded (`onChange(…, initial: true)` and the load handlers), so a widget tap
+on a closed app lands in the same place as on an open one.
 
 ## 3. Shortcuts and Siri (`App/AppShortcuts.swift`)
 
@@ -90,6 +111,11 @@ the one offered.
   The comparison is by UTC offset on the day, so Riyadh and Kuwait raise nothing. The place
   and the calculation method are never changed by themselves.
 - **Denied or failed location.** The message says the saved place stays in use and names it.
+- **Unreadable saved settings.** A setting written by another version, or damaged data, is
+  listed on the prayer screen, for example «تعذّر قراءة بعض الإعدادات المحفوظة (طريقة الحساب)».
+  - It is left as it is, and the default is used for display until the user chooses again.
+  - The widget gets no place meanwhile.
+  - Tests: `PrayerHardeningTests`.
 - **Empty and loading.** With no place the setup appears. While locating, a spinner shows and
   the button is disabled. Where the sun does not rise or set, a message replaces the times.
 - No city is assumed: until the user picks one or shares the location, there are no times.
@@ -105,9 +131,17 @@ the one offered.
 | poor | > 20° |
 | unknown | not reported |
 
-Only good or fair readings can say «أنت متّجه نحو القبلة» (with the haptic) or give a turn in
-degrees. Otherwise the guidance is «استدر يميناً تقريباً، ثم عاير البوصلة» and the note asks to
-calibrate. Magnetic north (location not shared) is still said, as before.
+| magneticOnly | any, but from magnetic north (location not shared) |
+
+Only good or fair readings measured from true north can say «أنت متّجه نحو القبلة» (with the
+haptic) or give a turn in degrees.
+
+- A poor or unknown reading says «استدر يميناً تقريباً، ثم عاير البوصلة».
+- A magnetic-only reading says «استدر يميناً تقريباً». The difference from true north (the
+  declination) is unknown here and can be several degrees, and the note says so.
+- Without a compass, the bearing from north is shown for use with any compass.
+- The screen says when the direction is computed from a chosen city rather than the user's
+  exact position, and when the saved location may be from before travelling.
 
 Quick access:
 
@@ -135,23 +169,48 @@ Quick access:
 - **Opens.** A tap opens the prayer times (`azkarapp://prayer`).
 - **Data.** The app copies only the place, method, Asr school, manual corrections and the
   24-hour setting into the App Group (`AZKAR_APP_GROUP`, by default
-  `group.com.example.IslamicPiPPOC`), and reloads the widgets when they change. Settings saved
-  before the update reach the widget at the first launch. Without the group the widget says
-  «افتح التطبيق واختر مدينتك أو موقعك». That is the case for unsigned builds, or for a team that
-  has not registered the group.
+  `group.com.example.IslamicPiPPOC`), and reloads the widgets when they change.
+  - The place includes the saved coordinates when the device location was used.
+  - No reading position, favorite, count or routine is shared.
+  - Settings saved before the update reach the widget at the first launch.
+  - While a saved setting cannot be read, no place is copied, so the widget never shows times
+    by a method the user did not choose.
+- **Without the App Group.** The app and the widget both check that iOS gives a container for
+  the group (`containerURL(forSecurityApplicationGroupIdentifier:)`). This fails on unsigned
+  builds, and when the team has not registered the group.
+  - The app then writes nothing.
+  - The widget says «لا تصل الودجة إلى إعدادات التطبيق في هذا التثبيت. افتح التطبيق لعرض
+    المواقيت», which is not the same as no place chosen.
+  - A tap still opens the prayer times.
+  - The entitlement in the source files is not proof the group is registered; only a signed
+    install shows it (§12 step 2).
+- **Out-of-date place.** When the saved device location is from another time zone, the widget
+  adds «قد يكون الموقع قديماً» to the place line.
 
-### Dhikr of the day
+### Dhikr of the day: content gate
 
-- **Choice.** One bundled dhikr a day, the same for everyone, taken in turn from the adhkar of
-  at most 160 characters (26 today), so the text is always shown whole.
-- **Quranic text.** It is left out; it is shown only in the readers, with the bundled Quran
-  font.
-- **Shows.** The text, its collection, its source as stored, and the repeat count when above
-  one.
-- **Opens.** A tap opens that exact item (`azkarapp://open?ref=…`) without counting it.
-- **Data.** It reads the bundled content only and needs no shared data.
-- **Content gate.** The content's review state is unchanged and remains a release gate
-  (`CONTENT_REVIEW_GATE.md`).
+- **Policy.** Only items whose stored status is `REVIEWED` can be chosen automatically.
+  `CONTENT_REVIEW_GATE.md` defines that status as "set only after a named qualified reviewer
+  approves an item". `DailyDhikr.isEligible` also requires:
+  - an adhkar item (not a dua);
+  - no Quranic text, which stays in the readers with the Quran font;
+  - at most 160 characters, so the text is never cut.
+
+  `CONTENT_REVIEW_REQUIRED` and `QURAN_VERBATIM_TANZIL` items are never picked.
+- **Today.** No bundled item is `REVIEWED`, so the pool is empty. The widget shows a neutral
+  «افتح التطبيق لقراءة الأذكار» that opens Home; it never shows an unreviewed text.
+- **Once items are reviewed.** One eligible dhikr a day, the same for everyone, in turn. The
+  widget shows the text, its collection, its source as stored, and the repeat count when above
+  one. A tap opens that exact item without counting it.
+- **Nothing is hidden or changed.** No text, id, hash, repeat count or status is changed; the
+  readers show every item as before. The gate only governs what is chosen without the user
+  asking. No other automatic selection was added: the routine, shortcuts and resume open what
+  the user chose or last read.
+- **Tests.** `DailyDhikrTests` use a library with every review state: only `REVIEWED` adhkar
+  are chosen, nothing is chosen when none is reviewed, and every bundled non-`REVIEWED` item
+  is ineligible.
+- **This is not review.** A code gate is not a substitute for scholarly review or for rights
+  clearance; both remain release gates.
 
 ## 9. Live Activity: evaluated, not implemented
 
@@ -198,38 +257,57 @@ extension if wanted.
 | File | Covers |
 |---|---|
 | `ContentKitTests/CompanionTests.swift` | Link round trips and refusals, the resume rule and its ties, the routine (default off, toggles, reorder, normalising, storage, bad data, unknown version) |
-| `AdhkarReadingTests/DailyDhikrTests.swift` | Same dhikr all day, a new one the next day, whole text only, no Quranic text, a full cycle, day numbers across leap years, listing all saved positions |
-| `PrayerTimesTests/PrayerTimelineTests.swift` | Widget moments in order with the right next and current prayer, local midnight, DST days in London, the polar case, place notices, the Siri sentence, compass quality, the App Group copy |
+| `AdhkarReadingTests/DailyDhikrTests.swift` | Only `REVIEWED` adhkar are chosen (a library with every review state), nothing chosen when none is reviewed, the bundled content gated and unchanged, same dhikr all day and a new one the next day, day numbers across leap years, listing all saved positions; `OpeningFromALinkTests`: opening at an item or a collection counts nothing, saves nothing and completes nothing |
+| `PrayerTimesTests/PrayerTimelineTests.swift` | Widget moments in order with the right next and current prayer, local midnight, DST days in London, the polar case, place notices, the Siri sentence, compass quality (magnetic north included), the App Group copy; `PrayerHardeningTests`: every next-prayer widget state (no shared settings, no place, no times, moments), the out-of-date location notice, unreadable settings reported and left unchanged, no place shared while a setting is unreadable |
 
 The SwiftUI views, the App Intents and the widget views are compiled by CI. They are not unit
 tested: their logic is in the package code above.
 
-## 12. Physical device checklist
+## 12. Physical device test plan
 
-Each row is PASS, FAIL, BLOCKED or NOT_TESTED. Only a result seen on a device changes a row.
-Run it on a build signed with a team that has registered the App Group (Signing &
-Capabilities › App Groups on both targets, the same group). Without it, rows 6 to 9 are
-BLOCKED and the widget asks to open the app.
+Mark each step PASS, FAIL, BLOCKED or NOT_TESTED. Only a result seen on a device changes it;
+automated tests and CI are not device tests. Record the iPhone model, iOS version, build and
+date. No device or signing was available to this work, so every step is NOT_TESTED.
 
-| # | Check | Status |
-|---|---|---|
-| 1 | «أكمل من حيث توقفت» on Home opens the place read last (try Quran, then a Hisn item, then a dua) with its count | NOT_TESTED |
-| 2 | «الورد اليومي»: off by default; on, reorder and turn steps off; Home marks only today's done steps | NOT_TESTED |
-| 3 | Shortcuts app: each App Shortcut runs; «الصلاة القادمة» answers without opening the app | NOT_TESTED |
-| 4 | Siri in Arabic and in English with the phrases in section 3 | NOT_TESTED |
-| 5 | Morning adhkar shortcut opens the saved item and the count is unchanged | NOT_TESTED |
-| 6 | Next-prayer widget, small and medium: times match the app (corrections included), the countdown runs | NOT_TESTED |
-| 7 | Lock Screen inline, circular, rectangular: readable, right to left | NOT_TESTED |
-| 8 | Change the city or method in the app: the widget follows | NOT_TESTED |
-| 9 | Across a prayer time and midnight: the widget moves on without opening the app | NOT_TESTED |
-| 10 | Widget tap opens the prayer times; the medium «القبلة» link opens the Qibla | NOT_TESTED |
-| 11 | Dhikr widget: whole text, opens the same item, nothing counted | NOT_TESTED |
-| 12 | Saved location, then change the device's time zone: the notice and «تحديث موقعي» | NOT_TESTED |
-| 13 | Qibla near metal (poor accuracy): no degrees, no «متّجه نحو القبلة» | NOT_TESTED |
-| 14 | VoiceOver on the new Home rows, routine settings and widgets | NOT_TESTED |
-| 15 | Airplane mode: widgets, shortcuts and resume all work | NOT_TESTED |
+| # | Step | Needs | Status |
+|---|---|---|---|
+| 1 | Install a build signed by the owner's team (Release configuration) | Signing | NOT_TESTED |
+| 2 | Check signing on both targets: in Xcode › Signing & Capabilities, the app and AzkarWidgetsExtension each show App Groups with the same group and a valid profile; on the device the next-prayer widget shows times after a place is chosen (not «لا تصل الودجة…») | App Group | BLOCKED until the group is registered |
+| 3 | Add each widget: next prayer small and medium, Lock Screen inline, circular, rectangular; dhikr of the day medium and large | Signed install | NOT_TESTED |
+| 4 | Next prayer: times equal the app's, corrections included; the countdown runs; it moves on at a prayer time and at midnight without opening the app; a city or method change in the app shows up | App Group | NOT_TESTED |
+| 5 | Dhikr of the day: shows the neutral «افتح التطبيق لقراءة الأذكار» (no item is REVIEWED); the tap opens Home. Once items are reviewed, the text is whole and the tap opens that item, uncounted | Signed install | NOT_TESTED |
+| 6 | Qibla outdoors away from metal (good accuracy, location shared): degrees and «أنت متّجه نحو القبلة»; near metal or uncalibrated: no degrees, calibration asked; location denied: «تقريباً» only, magnetic note | Device sensors | NOT_TESTED |
+| 7 | Deny location, then allow it again in Settings: the saved place stays and is named; «تحديث موقعي» works after allowing | Device | NOT_TESTED |
+| 8 | Saved and chosen location: choose a city, then the device location; change the device time zone: the notice and «تحديث موقعي»; the city is never changed by itself | Device | NOT_TESTED |
+| 9 | Every shortcut (section 3) from the Shortcuts app, Siri in Arabic and English, and the links in section 2 from Notes or Safari, with the app closed and open | Signed install | NOT_TESTED |
+| 10 | Resume: read in the Quran, a Hisn chapter and a dua; kill the app; «أكمل من حيث توقفت» opens the last one with its count | Device | NOT_TESTED |
+| 11 | PiP in landscape (default) and portrait (experimental setting): `UNIFIED_PIP.md` §13 rows 1–17 | Device | NOT_TESTED |
+| 12 | Background, lock, reopen; music and a phone call during PiP | Device | NOT_TESTED |
+| 13 | RTL, VoiceOver (new Home rows, routine settings, prayer notices, widgets), the largest Dynamic Type size, dark mode | Device | NOT_TESTED |
+| 14 | Stale or unavailable data: an unsigned install (widget says it cannot reach the settings), a polar place (no times message), airplane mode (everything works) | Device | NOT_TESTED |
+| 15 | No unexpected counts or positions: after steps 3–10, counts and «متابعة» places are only what was read by hand | Device | NOT_TESTED |
 
 ## 13. Owner gates and risks
+
+### Registering the App Group (owner, Apple Developer account)
+
+Nothing here can be done from the repository, and no credential belongs in it.
+
+1. In Certificates, Identifiers & Profiles › Identifiers, add an **App Groups** identifier,
+   for example `group.<your bundle ID>`.
+2. Open the app's App ID (your production bundle ID) and enable **App Groups**. Under
+   Configure, tick the group, then save.
+3. Create or open the widget's App ID, `<your bundle ID>.Widgets`, enable **App Groups** and
+   tick the same group.
+4. Set `AZKAR_APP_GROUP` in the project (both configurations, project level) to that group, and
+   replace `com.example.IslamicPiPPOC` with your bundle ID in both targets. Keep these values
+   out of commits if they are private.
+5. With automatic signing, Xcode regenerates the profiles. With manual signing, regenerate
+   both profiles (app and extension) so they include the group.
+6. Build, install and run step 2 of §12. CI checks that both targets name the same group
+   through `AZKAR_APP_GROUP`; it cannot check registration.
+
+### Gates and risks
 
 - **App Group.** It must be registered for the production Bundle ID, on both targets.
   - The CI IPA renames the bundle to `com.azkar.pippoc`; the group then reads
