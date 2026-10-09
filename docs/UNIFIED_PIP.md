@@ -145,18 +145,57 @@ surah or collection (rate 0).
 - Limitation: the proven policy has no `mixWithOthers`, so starting PiP pauses another app's
   music. This needs a device test before changing it.
 
-## 9. Release decision: background mode
+## 9. Release activation: audit and decision
 
-Apple requires the background mode "Audio, AirPlay, and Picture in Picture"
-(`UIBackgroundModes = audio`) for PiP.
+### Why PiP is hidden in Release (audit, 2026-10-09)
 
-- **Debug and the device-test IPA** declare it (`Info-Debug.plist`) and get full PiP.
-- **Release** does not declare it, following the release-hardening rule (App Review 2.5.4,
-  no audio ships). In Release, `PiPAvailability.backgroundModeDeclared` is false, so no PiP
-  button or setting is shown. Nothing broken is offered.
-- **Enabling PiP in Release is a separate owner decision**: add `audio` to `Info.plist` and
-  change the CI rule that fails a Release build with a background mode. The risk is App
-  Review 2.5.4, since PiP would mainly show text while no recordings ship.
+I checked every possible cause in the code, the project and the built apps. Only the first one
+applies.
+
+| Cause | Finding |
+|---|---|
+| 1. A condition the project wrote | **Yes, and it is the only one.** `AppServices` builds `PiPAvailability` from `Bundle.main.infoDictionary`; with no `UIBackgroundModes = audio` it is false, and `PiPEntryView` and the setting hide. It mirrors item 2. |
+| 2. A real iOS requirement | **Yes, documented by Apple** (below). The project gate exists because of it. |
+| 3. A wrong dependency on audio | **No.** Availability never looks at a recording. Without a recording every section runs in text mode (`PiPEngine.frame`, `mode: .text`); the Hisn recording is used only when one is loaded. Tested in `ReleasePiPConfigurationTests` and `PiPEngineTests`. |
+| 4. Lifecycle or the sample-buffer renderer | **No.** The production path (`SampleBufferPiPController`, `PiPFrameRenderer`, the providers, the reader buttons) has no `#if DEBUG`. CI now checks that every piece is inside the Release binary. |
+
+Release build settings: `INFOPLIST_FILE = Info.plist` for Release and `Info-Debug.plist` for
+Debug (`project.pbxproj`, `project.yml`). The only difference between the two files is
+`UIBackgroundModes = [audio]`. CI prints the Info.plist of the built Release app.
+
+The one Debug-only piece that sat in the Release binary, the POC frame drawing
+(`AzkarFrameRenderer.makePixelBuffer`, used only by the Debug test engine), is now compiled in
+Debug only.
+
+### What Apple says
+
+- `AVPictureInPictureController`: "To use Picture in Picture, you need to configure your app to
+  support background audio playback."
+  ([docs](https://developer.apple.com/documentation/avkit/avpictureinpicturecontroller))
+- "Configuring your app for media playback": "Your app also needs this capability to enable
+  advanced playback features like AirPlay streaming and Picture in Picture playback", and "in
+  iOS and tvOS it can use Picture in Picture playback" once the mode "Audio, AirPlay, and
+  Picture in Picture" is enabled.
+  ([docs](https://developer.apple.com/documentation/avfoundation/configuring-your-app-for-media-playback))
+- The documents do not exempt `ContentSource(sampleBufferDisplayLayer:playbackDelegate:)`.
+  The only device evidence in this project (Phase 3C, iPhone12,5) was taken with the mode
+  declared. Whether text PiP would start without it has **not been tried on a device**, so
+  this section claims only what the documents say.
+
+### Decision
+
+- No silent or synthetic audio is used, and none will be. No audio file ships in Release.
+- The mode is the one Apple names for PiP. If it is added, it is added for PiP, not to keep
+  the app running: PiP starts only from the button, never automatically, and the app plays
+  nothing in the background.
+- **Adding it to Release is the owner's decision** and was not made in this change (see the
+  Release readiness report). Until then Release keeps PiP hidden: nothing that would fail is
+  offered.
+- What adding it takes: `UIBackgroundModes = [audio]` in `Info.plist`, and the Release CI rules
+  (`build.yml`, `codemagic.yaml`) changed from "no background mode" to "only `audio`".
+  `ReleasePiPConfigurationTests` already accepts exactly that and nothing else.
+- Risk: App Review 2.5.4. The reviewer may ask why an app with no recordings declares the
+  audio mode. The answer is PiP, which Apple ties to this mode, but the app has to show it.
 
 ## 10. Settings
 
@@ -169,6 +208,10 @@ PiP. Turning it off closes a running window.
 - CI fails the Release build if it contains `PiPTestEngine` or the string
   `PiP Technical Test`, or if the production `PiPEngine` is missing.
 - The CI rule against a background mode in Release is unchanged.
+- CI fails the Release build if any production PiP piece is missing from it:
+  `SampleBufferPiPController`, `PiPFrameRenderer`, the four providers, and the button titles.
+- `ReleasePiPConfigurationTests` fails if the production PiP path gets a `#if DEBUG` or test-only
+  code.
 - No production frame carries a test marker. Only the `HISN_AUDIO_FIXTURE` build adds «نغمة اختبار».
 
 ## 12. Tests
