@@ -126,8 +126,8 @@ final class PrayerSentenceAndCompassTests: XCTestCase {
         XCTAssertEqual(store.nextPrayerSentence(now: now),
                        "العصر الساعة \(clock) في بغداد، \(PrayerFormat.remaining(from: now, to: next.time)).")
         store.twentyFourHour = true
-        // Asr in Baghdad that day is at 17:38 (14:38 UTC, cross-checked in PrayerTimesTests).
-        XCTAssertTrue(store.nextPrayerSentence(now: now).hasPrefix("العصر الساعة 17:"), store.nextPrayerSentence(now: now))
+        // Asr in Baghdad that day is shortly after 15:00 (Dhuhr 11:50, sunset 17:38 local).
+        XCTAssertTrue(store.nextPrayerSentence(now: now).hasPrefix("العصر الساعة 15:"), store.nextPrayerSentence(now: now))
         store.place = PrayerPlace(name: "القطب", coordinates: Coordinates(latitude: 78, longitude: 15),
                                   timeZoneID: "Arctic/Longyearbyen", isCurrentLocation: false)
         XCTAssertEqual(store.nextPrayerSentence(now: Date(timeIntervalSince1970: 1_782_043_200)),

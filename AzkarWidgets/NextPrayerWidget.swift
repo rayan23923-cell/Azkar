@@ -163,7 +163,7 @@ struct NextPrayerView: View {
     private func message(_ text: String) -> some View {
         Text(text)
             .font(family == .accessoryInline || family == .accessoryCircular ? .caption2 : .footnote)
-            .foregroundStyle(family == .systemSmall || family == .systemMedium ? .white : .primary)
+            .foregroundStyle(family == .systemSmall || family == .systemMedium ? Color.white : Color.primary)
             .minimumScaleFactor(0.7)
     }
 }
