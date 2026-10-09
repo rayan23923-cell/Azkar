@@ -1,5 +1,6 @@
 import SwiftUI
 import QuranText
+import ContentKit
 
 @main
 struct IslamicPiPPOCApp: App {
@@ -21,6 +22,11 @@ struct IslamicPiPPOCApp: App {
                 // Keep the scheduled reminders equal to the saved settings (permission may
                 // have changed in system Settings). Never asks for permission here.
                 .task { await AppServices.shared.reminders.apply() }
+                // azkarapp:// links from the widgets, shortcuts or another app. Unknown or
+                // malformed links are ignored.
+                .onOpenURL { url in
+                    if let link = AppLink(url: url) { AppServices.shared.router.handle(link) }
+                }
         }
         #if DEBUG
         .onChange(of: scenePhase) { _, phase in

@@ -39,6 +39,7 @@ struct SettingsView: View {
     @AppStorage(PiPAvailability.settingKey) private var pipEnabled = true
     @AppStorage(PiPLayout.orientationKey) private var pipOrientation: PiPLayout.Orientation = .landscape
     @ObservedObject private var favorites = AppServices.shared.favorites
+    @ObservedObject private var routine = AppServices.shared.routine
     @State private var confirmsReset = false
     @State private var confirmsFavorites = false
     @State private var notice: String?
@@ -71,6 +72,16 @@ struct SettingsView: View {
                 Text("التذكير")
             } footer: {
                 Text("تذكير يومي على هذا الجهاز فقط، بالوقت المحلي.")
+            }
+
+            Section {
+                NavigationLink {
+                    RoutineSettingsView(model: routine)
+                } label: {
+                    LabeledContent("الورد اليومي", value: routine.routine.isEnabled ? "مفعّل" : "متوقف")
+                }
+            } footer: {
+                Text("اختياري، ويمكن إيقافه في أي وقت.")
             }
 
             Section("المظهر") {

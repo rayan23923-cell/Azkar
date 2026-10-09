@@ -43,11 +43,17 @@ struct HisnRootView: View {
         // A result from global search: opened once the book is loaded.
         .onChange(of: router.hisnTarget, initial: true) { openPendingTarget() }
         .onChange(of: router.hisnItemTarget, initial: true) { openPendingTarget() }
+        .onChange(of: router.hisnResumeRequested, initial: true) { openPendingTarget() }
         .onChange(of: model.isLoaded) { openPendingTarget() }
     }
 
     private func openPendingTarget() {
         guard model.isLoaded else { return }
+        if router.hisnResumeRequested {
+            router.hisnResumeRequested = false
+            model.refreshResume()
+            if let position = model.resumePosition { path = [model.route(for: position)] }
+        }
         if let itemId = router.hisnItemTarget {
             router.hisnItemTarget = nil
             if let route = model.route(forItem: itemId) { path = [route] }
