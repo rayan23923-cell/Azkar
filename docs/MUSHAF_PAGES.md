@@ -44,6 +44,11 @@ If the images are missing, the earlier code-drawn ornaments and the font's sign 
 
 Pages are cream, or dark in dark mode.
 
+**Full screen:** a tap on the page hides the navigation bar, the tab bar and the status bar, and
+the page grows into the space; another tap shows them. The choice is remembered
+(`quran.mushafFullScreen`). The page's own juz and surah line and its page number stay, as in
+the print.
+
 ## What is exact and what is not
 
 - **Exact:** which verses are on each page, from the Tanzil page metadata already in the app.

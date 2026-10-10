@@ -92,6 +92,9 @@ struct QuranMushafView: View {
     @State private var highlight: QuranVerseRef?
     @State private var showsGoTo = false
     @State private var opened = false
+    /// Full screen: a tap on the page hides the bars above and below it (and the status bar),
+    /// and the page grows into the space; another tap shows them. Remembered between visits.
+    @AppStorage("quran.mushafFullScreen") private var fullScreen = false
     /// The verse saved last, used to keep the place when the page style changes.
     @State private var lastRef: QuranVerseRef
     private let start: QuranVerseRef
@@ -138,6 +141,17 @@ struct QuranMushafView: View {
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.25)) { fullScreen.toggle() }
+        }
+        .accessibilityAction(named: fullScreen ? "إظهار الأشرطة" : "ملء الشاشة") {
+            withAnimation(.easeInOut(duration: 0.25)) { fullScreen.toggle() }
+        }
+        .toolbar(fullScreen ? .hidden : .visible, for: .navigationBar)
+        .toolbar(fullScreen ? .hidden : .visible, for: .tabBar)
+        .statusBarHidden(fullScreen)
+        .persistentSystemOverlays(fullScreen ? .hidden : .automatic)
         .background(palette.paper.ignoresSafeArea())
         .navigationTitle(content(page)?.surahName ?? "")
         .navigationBarTitleDisplayMode(.inline)
@@ -289,9 +303,9 @@ struct ShapedRow {
     init(items: [QuranMushafLine.Item], fontSize: CGFloat) {
         let font = MushafFont.font(size: fontSize) ?? CTFontCreateUIFontForLanguage(.system, fontSize, nil)!
         let sign = CTLineGetBoundsWithOptions(Self.line("\u{06DD}", font: font), .useGlyphPathBounds)
-        let markerSize = max(fontSize * 0.8, max(sign.width, sign.height) * 1.1)
+        let markerSize = max(fontSize * 0.95, max(sign.width, sign.height) * 1.2)
         let usesArt = MushafArt.isAvailable
-        let digitFont = CTFontCreateCopyWithAttributes(font, markerSize * 0.36, nil, nil)
+        let digitFont = CTFontCreateCopyWithAttributes(font, markerSize * 0.5, nil, nil)
         var pieces: [Piece] = []
         for item in items {
             switch item.kind {
@@ -396,7 +410,7 @@ struct MushafPageView: View {
 
     private let horizontalPadding: CGFloat = 18
     private let headerHeight: CGFloat = 34
-    private let footerHeight: CGFloat = 44
+    private let footerHeight: CGFloat = 52
 
     var body: some View {
         GeometryReader { geometry in
@@ -470,7 +484,7 @@ struct MushafPrintedPageView: View {
     private let horizontalPadding: CGFloat = 14
     private let framePadding: CGFloat = 6
     private let headerHeight: CGFloat = 34
-    private let footerHeight: CGFloat = 48
+    private let footerHeight: CGFloat = 56
     /// The printed measure, in ems of the font.
     static let measure: CGFloat = 17
 
@@ -576,7 +590,7 @@ struct MushafPrintedLine: View {
                     cg.setFillColor(color(for: piece.item).cgColor)
                     if let digits = piece.markerDigits {
                         // The number centred in the marker's inner circle.
-                        let fit = min(1, row.markerSize * 0.5 / max(1, digits.width))
+                        let fit = min(1, row.markerSize * 0.62 / max(1, digits.width))
                         cg.translateBy(x: origin + piece.width * scale / 2 - digits.midX * fit, y: markerY + digits.midY)
                         cg.scaleBy(x: fit, y: -1)
                     } else {
@@ -837,11 +851,11 @@ struct PageMedallion: View {
                     .resizable()
                     .scaledToFit()
                 Text(QuranMushafNames.digits(number))
-                    .font(.custom(QuranFont.postScriptName, size: height * 0.2))
+                    .font(.custom(QuranFont.postScriptName, size: height * 0.32).bold())
                     .foregroundStyle(Color(palette.ink))
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                    .frame(width: height * 0.36)
+                    .frame(width: height * 0.42)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
         }
