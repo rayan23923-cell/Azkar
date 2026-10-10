@@ -116,9 +116,12 @@ struct QuranMushafView: View {
         style == .printed && MushafFont.register() ? QuranMushafLayout.madina1421 : nil
     }
 
+    private var source: MushafPageSource {
+        MushafPageSource.shared(library: library, printed: printed != nil)
+    }
+
     private func content(_ number: Int) -> QuranMushafPage? {
-        if let printed { return library.mushafPage(number, layout: printed) }
-        return library.mushafPage(number)
+        source.page(number)
     }
 
     private func pageNumber(of ref: QuranVerseRef) -> Int {
@@ -127,17 +130,11 @@ struct QuranMushafView: View {
 
     var body: some View {
         TabView(selection: $page) {
+            // Each slot builds its page only when the pager shows it, so turning a page does
+            // not rebuild the other 603.
             ForEach(1...library.pageCount, id: \.self) { number in
-                if let content = content(number) {
-                    Group {
-                        if printed != nil, let lines = library.mushafLines(number) {
-                            MushafPrintedPageView(page: content, lines: lines, highlight: highlight, palette: palette)
-                        } else {
-                            MushafPageView(page: content, highlight: highlight, palette: palette)
-                        }
-                    }
+                MushafPageSlot(number: number, source: source, highlight: highlight, palette: palette)
                     .tag(number)
-                }
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
@@ -199,6 +196,135 @@ struct QuranMushafView: View {
 
     private func save() {
         store.save(QuranReadingPosition(currentRef, savedAt: Date()))
+    }
+}
+
+/// Builds and keeps pages: their verses, their printed lines, and the shaped words of each line
+/// at a font size, so a page already seen is drawn again without shaping its text again.
+@MainActor
+final class MushafPageSource {
+    private static var sources: [Bool: MushafPageSource] = [:]
+
+    /// One source per style for the app's library (the library is the same throughout a run).
+    static func shared(library: QuranLibrary, printed: Bool) -> MushafPageSource {
+        if let source = sources[printed] { return source }
+        let source = MushafPageSource(library: library, printed: printed)
+        sources[printed] = source
+        return source
+    }
+
+    let library: QuranLibrary
+    let printed: Bool
+    private var pages: [Int: QuranMushafPage] = [:]
+    private var lines: [Int: [QuranMushafLine]] = [:]
+    private var shaped: [ShapedKey: [ShapedRow?]] = [:]
+    private var shapedOrder: [ShapedKey] = []
+
+    private init(library: QuranLibrary, printed: Bool) {
+        self.library = library
+        self.printed = printed
+    }
+
+    func page(_ number: Int) -> QuranMushafPage? {
+        if let page = pages[number] { return page }
+        let page: QuranMushafPage?
+        if printed, let layout = QuranMushafLayout.madina1421 {
+            page = library.mushafPage(number, layout: layout)
+        } else {
+            page = library.mushafPage(number)
+        }
+        pages[number] = page
+        return page
+    }
+
+    func lines(_ number: Int) -> [QuranMushafLine]? {
+        guard printed else { return nil }
+        if let cached = lines[number] { return cached }
+        let built = library.mushafLines(number)
+        lines[number] = built
+        return built
+    }
+
+    struct ShapedKey: Hashable {
+        let page: Int
+        let fontSize: CGFloat
+    }
+
+    /// The page's text rows shaped at `fontSize` (nil for title and basmala rows). Only the last
+    /// dozen pages are kept.
+    func shapedRows(_ number: Int, fontSize: CGFloat) -> [ShapedRow?] {
+        let key = ShapedKey(page: number, fontSize: fontSize)
+        if let rows = shaped[key] { return rows }
+        let rows = (lines(number) ?? []).map { line -> ShapedRow? in
+            if case .text(let items) = line.kind { return ShapedRow(items: items, fontSize: fontSize) }
+            return nil
+        }
+        shaped[key] = rows
+        shapedOrder.append(key)
+        if shapedOrder.count > 12 { shaped[shapedOrder.removeFirst()] = nil }
+        return rows
+    }
+}
+
+/// One row's words and verse-end signs, each shaped once with Core Text.
+struct ShapedRow {
+    struct Piece {
+        let line: CTLine
+        let width: CGFloat
+        let item: QuranMushafLine.Item
+    }
+
+    let pieces: [Piece]
+    let ascent: CGFloat
+    let descent: CGFloat
+    var total: CGFloat { pieces.reduce(0) { $0 + $1.width } }
+
+    init(items: [QuranMushafLine.Item], fontSize: CGFloat) {
+        let font = MushafFont.font(size: fontSize) ?? CTFontCreateUIFontForLanguage(.system, fontSize, nil)!
+        var pieces: [Piece] = []
+        for item in items {
+            let text: String
+            switch item.kind {
+            case .word(let word): text = MushafFont.display(word)
+            case .verseEnd: text = QuranMushafNames.verseEnd(item.verse.ayah)
+            }
+            let string = NSAttributedString(string: text, attributes: [
+                NSAttributedString.Key(kCTFontAttributeName as String): font,
+                // Colour is set when drawing.
+                NSAttributedString.Key(kCTForegroundColorFromContextAttributeName as String): true,
+            ])
+            let line = CTLineCreateWithAttributedString(string)
+            pieces.append(Piece(line: line, width: CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil)), item: item))
+        }
+        self.pieces = pieces
+        ascent = CTFontGetAscent(font)
+        descent = CTFontGetDescent(font)
+    }
+}
+
+/// A page in the pager: built when shown, from the source's cache.
+struct MushafPageSlot: View {
+    let number: Int
+    let source: MushafPageSource
+    let highlight: QuranVerseRef?
+    let palette: MushafPalette
+
+    var body: some View {
+        if let content = source.page(number) {
+            if let lines = source.lines(number) {
+                MushafPrintedPageView(page: content, lines: lines, source: source,
+                                      highlight: content.holds(highlight) ? highlight : nil, palette: palette)
+            } else {
+                MushafPageView(page: content, highlight: highlight, palette: palette)
+            }
+        }
+    }
+}
+
+private extension QuranMushafPage {
+    func holds(_ ref: QuranVerseRef?) -> Bool {
+        guard let ref else { return false }
+        return contains(ref)
     }
 }
 
@@ -312,6 +438,7 @@ struct MushafPageHeader: View {
 struct MushafPrintedPageView: View {
     let page: QuranMushafPage
     let lines: [QuranMushafLine]
+    let source: MushafPageSource
     let highlight: QuranVerseRef?
     let palette: MushafPalette
 
@@ -326,16 +453,17 @@ struct MushafPrintedPageView: View {
             let width = geometry.size.width - horizontalPadding * 2
             let available = geometry.size.height - headerHeight - footerHeight - 16
             let row = max(1, available / 15)
-            let fontSize = max(10, min(width / Self.measure, row / 1.7))
+            let fontSize = max(10, min(width / Self.measure, row / 1.7)).rounded(.down)
             let measure = min(width, fontSize * Self.measure)
             let opening = page.number <= 2
+            let shaped = source.shapedRows(page.number, fontSize: fontSize)
             VStack(spacing: 0) {
                 MushafPageHeader(page: page, palette: palette)
                     .padding(.horizontal, horizontalPadding)
                     .frame(height: headerHeight)
                 Spacer(minLength: 0)
                 VStack(spacing: 0) {
-                    ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
+                    ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
                         switch line.kind {
                         case .surahTitle(let surah):
                             SurahBanner(name: "سورة \(surah.nameArabic)", palette: palette)
@@ -347,10 +475,12 @@ struct MushafPrintedPageView: View {
                                 .foregroundStyle(Color(palette.ink))
                                 .fixedSize()
                                 .frame(width: measure, height: row)
-                        case .text(let items):
-                            MushafPrintedLine(items: items, fontSize: fontSize, measure: measure, centered: opening,
-                                              highlight: highlight, palette: palette)
-                                .frame(width: measure, height: row)
+                        case .text:
+                            if index < shaped.count, let shapedRow = shaped[index] {
+                                MushafPrintedLine(row: shapedRow, fontSize: fontSize, measure: measure, centered: opening,
+                                                  highlight: highlight, palette: palette)
+                                    .frame(width: measure, height: row)
+                            }
                         }
                     }
                 }
@@ -368,9 +498,10 @@ struct MushafPrintedPageView: View {
 }
 
 /// One printed row of words and verse-end signs, right to left, the space between words
-/// stretched to fill the measure (the first two pages are centred, as printed).
+/// stretched to fill the measure (the first two pages are centred, as printed). Drawn in one
+/// Canvas from words already shaped, so a page turn costs no text layout.
 struct MushafPrintedLine: View {
-    let items: [QuranMushafLine.Item]
+    let row: ShapedRow
     let fontSize: CGFloat
     let measure: CGFloat
     let centered: Bool
@@ -378,40 +509,40 @@ struct MushafPrintedLine: View {
     let palette: MushafPalette
 
     var body: some View {
-        let font = UIFont(name: MushafFont.postScriptName, size: fontSize) ?? .systemFont(ofSize: fontSize)
-        let pieces = items.map(Self.text(for:))
-        let widths = pieces.map { ceil(($0 as NSString).size(withAttributes: [.font: font]).width) }
-        let total = widths.reduce(0, +)
-        let minimumGap = fontSize * 0.12
-        let gaps = CGFloat(max(0, pieces.count - 1))
-        let scale = min(1, measure / max(1, total + minimumGap * gaps))
-        let gap = centered || gaps == 0 ? fontSize * 0.3 : max(0, (measure - total * scale) / gaps)
-        HStack(spacing: gap) {
-            ForEach(Array(pieces.enumerated()), id: \.offset) { index, piece in
-                Text(piece)
-                    .font(.custom(MushafFont.postScriptName, fixedSize: fontSize))
-                    .foregroundStyle(color(for: items[index]))
-                    .fixedSize()
-                    .frame(width: widths[index])
-                    .scaleEffect(x: scale, y: 1)
-                    .frame(width: widths[index] * scale)
+        Canvas { context, size in
+            let total = row.total
+            let gaps = CGFloat(max(0, row.pieces.count - 1))
+            let minimumGap = fontSize * 0.12
+            let scale = min(1, size.width / max(1, total + minimumGap * gaps))
+            let gap = centered || gaps == 0 ? fontSize * 0.3 : max(0, (size.width - total * scale) / gaps)
+            let used = total * scale + gap * gaps
+            // Right to left: the first piece at the right edge (centred rows start inset).
+            var x = centered ? (size.width + used) / 2 : size.width
+            let baseline = size.height / 2 + (row.ascent - row.descent) / 2
+            context.withCGContext { cg in
+                cg.textMatrix = .identity
+                for piece in row.pieces {
+                    let width = piece.width * scale
+                    x -= width
+                    cg.saveGState()
+                    cg.setFillColor(color(for: piece.item).cgColor)
+                    cg.translateBy(x: x, y: baseline)
+                    cg.scaleBy(x: scale, y: -1)
+                    cg.textPosition = .zero
+                    CTLineDraw(piece.line, cg)
+                    cg.restoreGState()
+                    x -= gap
+                }
             }
         }
-        .environment(\.layoutDirection, .rightToLeft)
         .frame(width: measure)
+        .accessibilityHidden(true)
     }
 
-    static func text(for item: QuranMushafLine.Item) -> String {
-        switch item.kind {
-        case .word(let word): return MushafFont.display(word)
-        case .verseEnd: return QuranMushafNames.verseEnd(item.verse.ayah)
-        }
-    }
-
-    private func color(for item: QuranMushafLine.Item) -> Color {
-        if item.verse == highlight { return Color(palette.highlight) }
-        if item.kind == .verseEnd { return Color(palette.verseEnd) }
-        return Color(palette.ink)
+    private func color(for item: QuranMushafLine.Item) -> UIColor {
+        if item.verse == highlight { return palette.highlight }
+        if item.kind == .verseEnd { return palette.verseEnd }
+        return palette.ink
     }
 }
 
