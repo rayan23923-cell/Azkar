@@ -71,6 +71,14 @@ public enum PrayerFormat {
         return "بعد \(minutes / 60):\(String(format: "%02d", minutes % 60))"
     }
 
+    /// «1:05:09» (hours, minutes, seconds), «12:40» under an hour: the time left as a timer
+    /// shows it; «0:00» once the time comes.
+    public static func countdown(from now: Date, to time: Date) -> String {
+        let seconds = max(0, Int(time.timeIntervalSince(now).rounded(.up)))
+        let (h, m, s) = (seconds / 3600, seconds / 60 % 60, seconds % 60)
+        return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%d:%02d", m, s)
+    }
+
     /// «17 ربيع الآخر 1448 هـ», Umm al-Qura calendar.
     public static func hijri(_ date: Date, timeZone: TimeZone) -> String {
         var calendar = Calendar(identifier: .islamicUmmAlQura)
