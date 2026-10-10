@@ -17,7 +17,7 @@ Nothing was submitted. This is the checklist against App Store requirements as o
 | Privacy manifest | `PrivacyInfo.xcprivacy`: no tracking, no data collected, UserDefaults `CA92.1` |
 | Export compliance | `ITSAppUsesNonExemptEncryption = NO` (no encryption beyond the OS) |
 | Permissions | Notifications only, asked on use; no usage-description keys needed |
-| Network | None (offline app) |
+| Network | Offline, except Apple's reverse geocoding to name the device location when chosen |
 | Test and fixture code | Excluded from production and Release builds; CI fails otherwise |
 | Debug-only screens | The PiP test tab is `#if DEBUG` |
 | Attribution | In-app About page with the Tanzil notice and link, the MIT notice and the OFL text |

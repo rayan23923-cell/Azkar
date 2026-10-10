@@ -35,6 +35,7 @@ final class PrayerModel: NSObject, ObservableObject {
     /// The copy the next-prayer widget reads (App Group); nil when the build has none.
     private let widgetStore: PrayerSettingsStore?
     private let manager = CLLocationManager()
+    private let geocoder = CLGeocoder()
     /// Made on first use and kept, so a running window follows place and settings changes.
     private var provider: PrayerPiPProvider?
 
@@ -111,8 +112,28 @@ final class PrayerModel: NSObject, ObservableObject {
                                       longitude: location.coordinate.longitude)
         guard coordinates.isValid else { locationState = .failed; return }
         locationState = .idle
-        set(PrayerPlace(name: "موقعي الحالي", coordinates: coordinates, timeZoneID: TimeZone.current.identifier,
-                        isCurrentLocation: true))
+        let place = PrayerPlace(name: "موقعي الحالي", coordinates: coordinates, timeZoneID: TimeZone.current.identifier,
+                                isCurrentLocation: true)
+        set(place)
+        name(place, at: location)
+    }
+
+    /// Names a place read from the device's location after its city («كركوك»), from Apple's
+    /// reverse geocoding: the location is sent to Apple once, when the user chooses it, and
+    /// nothing else. Without a name (offline, no result) it stays «موقعي الحالي»; a place
+    /// chosen meanwhile is never renamed.
+    private func name(_ place: PrayerPlace, at location: CLLocation) {
+        geocoder.cancelGeocode()
+        geocoder.reverseGeocodeLocation(location, preferredLocale: Locale(identifier: "ar")) { [weak self] marks, _ in
+            let mark = marks?.first
+            guard let name = mark?.locality ?? mark?.subAdministrativeArea ?? mark?.administrativeArea,
+                  !name.isEmpty else { return }
+            Task { @MainActor in
+                guard let self, self.place == place else { return }
+                self.set(PrayerPlace(name: name, coordinates: place.coordinates, timeZoneID: place.timeZoneID,
+                                     isCurrentLocation: true))
+            }
+        }
     }
 }
 

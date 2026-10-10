@@ -110,6 +110,8 @@ the one offered.
 
   The comparison is by UTC offset on the day, so Riyadh and Kuwait raise nothing. The place
   and the calculation method are never changed by themselves.
+- **Name of the device location.** It is named after its city in Arabic (Apple's reverse
+  geocoding, once, when chosen); a city chosen meanwhile is never renamed.
 - **Denied or failed location.** The message says the saved place stays in use and names it.
 - **Unreadable saved settings.** A setting written by another version, or damaged data, is
   listed on the prayer screen, for example «تعذّر قراءة بعض الإعدادات المحفوظة (طريقة الحساب)».
@@ -254,8 +256,11 @@ extension if wanted.
   asked, while in use. The Qibla reads the heading only while its screen is shown.
 - **Shared data.** The App Group holds only the prayer place and settings. Reading positions,
   favorites, counts and the routine stay in the app's own storage.
-- **Network.** None: widgets, shortcuts and the dhikr of the day are computed from bundled
-  data.
+- **Network.** Widgets, shortcuts and the dhikr of the day are computed from bundled data.
+  The one exception: when the user chooses «استخدام موقعي الحالي», the app asks Apple's
+  geocoder (`CLGeocoder`) once for the city's name, so the place shows as «كركوك» rather than
+  «موقعي الحالي». The location goes to Apple only, nothing goes to the app's developer, and
+  offline the place keeps the name «موقعي الحالي».
 - **Privacy manifests.** The app's declares UserDefaults with reasons CA92.1 and 1C8F.1 (App
   Group). The extension has its own, with 1C8F.1.
 - **Links.** Parsed strictly (section 2); a link can only open a screen.
