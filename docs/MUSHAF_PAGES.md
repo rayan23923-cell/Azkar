@@ -25,18 +25,15 @@ Mushaf pages have two styles, in Settings › القراءة › «شكل صفح
 - **Verses:** justified, each ending with the verse marker and its number in Eastern Arabic
   digits.
 - **Footer:** the page number in the medallion.
-- **Printed style:** the 15 lines sit inside the page frame.
 
 ## Ornaments
 
-The band, frame, medallion and verse marker are an image sheet the owner supplied (light and
-dark), cut into pieces in `Assets.xcassets` so they fit any screen:
+The band, medallion and verse marker are from an image sheet the owner supplied (light and
+dark), cut into pieces in `Assets.xcassets` so they fit any screen. The sheet's page frame was
+used at first and removed at the owner's request, so the lines use the full width:
 
 - **Band:** an end piece each side, the floral segment repeated with every other copy
   mirrored, and the cartouche in the middle; only the segments stretch, a little.
-- **Frame:** one corner (mirrored for the others), the top and side edges tiled, and the
-  middle ornament on each side. Its size follows the screen width; the text measure shrinks
-  to fit inside it.
 - **Verse marker:** drawn where the font's end-of-verse sign would be, at its size, with the
   number centred in it.
 

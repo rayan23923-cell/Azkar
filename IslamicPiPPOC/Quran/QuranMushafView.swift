@@ -482,7 +482,6 @@ struct MushafPrintedPageView: View {
     let palette: MushafPalette
 
     private let horizontalPadding: CGFloat = 14
-    private let framePadding: CGFloat = 6
     private let headerHeight: CGFloat = 34
     private let footerHeight: CGFloat = 56
     /// The printed measure, in ems of the font.
@@ -490,15 +489,9 @@ struct MushafPrintedPageView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            // With the artwork the lines sit inside the page frame, scaled to the screen.
-            let framed = MushafArt.isAvailable
-            let frameWidth = geometry.size.width - framePadding * 2
-            let frameScale = framed ? min(0.85, max(0.45, frameWidth / 620)) : 0
-            let inset = CGSize(width: MushafArt.frameTextInsets.width * frameScale,
-                               height: MushafArt.frameTextInsets.height * frameScale)
-            let width = framed ? frameWidth - inset.width * 2 : geometry.size.width - horizontalPadding * 2
-            let frameHeight = geometry.size.height - headerHeight - footerHeight - 8
-            let available = framed ? frameHeight - inset.height * 2 : frameHeight - 8
+            let width = geometry.size.width - horizontalPadding * 2
+            let linesHeight = geometry.size.height - headerHeight - footerHeight - 8
+            let available = linesHeight - 8
             let row = max(1, available / 15)
             let fontSize = max(10, min(width / Self.measure, row / 1.7)).rounded(.down)
             let measure = min(width, fontSize * Self.measure)
@@ -509,9 +502,6 @@ struct MushafPrintedPageView: View {
                     .padding(.horizontal, horizontalPadding)
                     .frame(height: headerHeight)
                 ZStack {
-                    if framed {
-                        MushafPageFrame(scale: frameScale)
-                    }
                     VStack(spacing: 0) {
                         ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
                             switch line.kind {
@@ -535,7 +525,7 @@ struct MushafPrintedPageView: View {
                         }
                     }
                 }
-                .frame(width: framed ? frameWidth : nil, height: frameHeight)
+                .frame(height: linesHeight)
                 .frame(maxWidth: .infinity)
                 PageNumberOrnament(number: page.number, palette: palette)
                     .frame(height: footerHeight)
@@ -705,32 +695,19 @@ struct JustifiedText: UIViewRepresentable {
 // MARK: - Ornament artwork
 
 /// The mushaf ornaments supplied by the app's owner (Assets.xcassets, each with a dark
-/// variant): the surah band, cut in three pieces so it stretches to any width; the page frame,
-/// cut into a corner, two edge tiles and a middle ornament; the page-number medallion; and the
-/// verse marker. Sizes are in pixels of the artwork (1x images).
+/// variant): the surah band, cut in three pieces so it stretches to any width; the page-number
+/// medallion; and the verse marker. Sizes are in pixels of the artwork (1x images).
 enum MushafArt {
     static let bandEnd = "MushafBandEnd"
     static let bandSegment = "MushafBandSegment"
     static let bandCartouche = "MushafBandCartouche"
-    static let frameCorner = "MushafFrameCorner"
-    static let frameEdgeTop = "MushafFrameEdgeTop"
-    static let frameEdgeSide = "MushafFrameEdgeSide"
-    static let frameMid = "MushafFrameMid"
     static let pageMedallion = "MushafPageMedallion"
     static let verseMarker = "MushafVerseMarker"
 
-    private static let all = [bandEnd, bandSegment, bandCartouche, frameCorner, frameEdgeTop, frameEdgeSide, frameMid,
-                              pageMedallion, verseMarker]
+    private static let all = [bandEnd, bandSegment, bandCartouche, pageMedallion, verseMarker]
     static let isAvailable = all.allSatisfy { UIImage(named: $0) != nil }
 
     static func size(_ name: String) -> CGSize { UIImage(named: name)?.size ?? .zero }
-
-    /// Where text may start inside the frame: past the side band, and below the top band and
-    /// the corner ornaments.
-    static let frameTextInsets = CGSize(width: 50, height: 82)
-    /// The middle of the frame's band, from its outer edge (the frame's outer line is 15
-    /// pixels in; the band is 28 pixels wide).
-    static let frameBandMiddle: CGFloat = 30
 }
 
 /// The surah title band; the drawn one without the artwork.
@@ -861,70 +838,6 @@ struct PageMedallion: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("الصفحة \(number)")
-    }
-}
-
-/// The page frame from the artwork: a corner in each corner (mirrored), the edge tiles repeated
-/// between them, and the middle ornament at the middle of each side. `scale` is points per
-/// pixel of the artwork.
-struct MushafPageFrame: View {
-    let scale: CGFloat
-
-    var body: some View {
-        Canvas { context, size in
-            let corner = context.resolve(Image(MushafArt.frameCorner))
-            let top = context.resolve(Image(MushafArt.frameEdgeTop))
-            let side = context.resolve(Image(MushafArt.frameEdgeSide))
-            let middle = context.resolve(Image(MushafArt.frameMid))
-            let cornerSize = CGSize(width: corner.size.width * scale, height: corner.size.height * scale)
-            let topSize = CGSize(width: top.size.width * scale, height: top.size.height * scale)
-            let sideSize = CGSize(width: side.size.width * scale, height: side.size.height * scale)
-
-            // Edges first, tiled between the corners and clipped there.
-            for bottom in [false, true] {
-                var edge = context
-                let y = bottom ? size.height - topSize.height : 0
-                edge.clip(to: Path(CGRect(x: cornerSize.width, y: y, width: max(0, size.width - cornerSize.width * 2),
-                                          height: topSize.height)))
-                var x = cornerSize.width
-                while x < size.width - cornerSize.width {
-                    MushafArtDrawing.draw(top, in: CGRect(x: x, y: y, width: topSize.width + 0.5, height: topSize.height),
-                                          flipY: bottom, context: edge)
-                    x += topSize.width
-                }
-            }
-            for right in [false, true] {
-                var edge = context
-                let x = right ? size.width - sideSize.width : 0
-                edge.clip(to: Path(CGRect(x: x, y: cornerSize.height, width: sideSize.width,
-                                          height: max(0, size.height - cornerSize.height * 2))))
-                var y = cornerSize.height
-                while y < size.height - cornerSize.height {
-                    MushafArtDrawing.draw(side, in: CGRect(x: x, y: y, width: sideSize.width, height: sideSize.height + 0.5),
-                                          flipX: right, context: edge)
-                    y += sideSize.height
-                }
-            }
-            for (right, bottom) in [(false, false), (true, false), (false, true), (true, true)] {
-                let rect = CGRect(x: right ? size.width - cornerSize.width : 0, y: bottom ? size.height - cornerSize.height : 0,
-                                  width: cornerSize.width, height: cornerSize.height)
-                MushafArtDrawing.draw(corner, in: rect, flipX: right, flipY: bottom, context: context)
-            }
-            // The middle ornaments, centred on the band.
-            let band = MushafArt.frameBandMiddle * scale
-            let middleSize = CGSize(width: middle.size.width * scale, height: middle.size.height * scale)
-            let centres = [CGPoint(x: size.width / 2, y: band), CGPoint(x: size.width / 2, y: size.height - band),
-                           CGPoint(x: band, y: size.height / 2), CGPoint(x: size.width - band, y: size.height / 2)]
-            for (index, centre) in centres.enumerated() {
-                var ornament = context
-                ornament.translateBy(x: centre.x, y: centre.y)
-                if index >= 2 { ornament.rotate(by: .degrees(90)) }
-                if index == 1 { ornament.scaleBy(x: 1, y: -1) }
-                ornament.draw(middle, in: CGRect(x: -middleSize.width / 2, y: -middleSize.height / 2,
-                                                 width: middleSize.width, height: middleSize.height))
-            }
-        }
-        .accessibilityHidden(true)
     }
 }
 
