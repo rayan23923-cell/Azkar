@@ -101,6 +101,13 @@ final class HisnLibraryModel: ObservableObject {
         return HisnRoute(chapterId: found.chapter.id, itemIndex: found.itemIndex, highlightedItemId: itemId)
     }
 
+    /// A saved section (Favorites), at the place reading stopped in it if any; nil when the
+    /// section no longer exists.
+    func route(forSavedSection sectionId: String) -> HisnRoute? {
+        guard case .loaded(let library, _, _) = state, library.chapter(id: sectionId) != nil else { return nil }
+        return route(forChapter: sectionId)
+    }
+
     func route(for position: HisnReadingPosition) -> HisnRoute {
         HisnRoute(chapterId: position.chapterId, itemIndex: position.itemIndex,
                   completedRepetitions: position.completedRepetitions)
