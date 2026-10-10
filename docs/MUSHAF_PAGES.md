@@ -21,11 +21,26 @@ Mushaf pages have two styles, in Settings › القراءة › «شكل صفح
 
 - **Header:** the juz on the right («الجزء السادس عشر»), the surah on the left.
 - **Surah start:** a title band, then the basmala (except Al-Fatiha and At-Tawba).
-  - The band is drawn in code: a green lattice panel, gold borders, rosettes, and the name in
-    a cartouche.
-- **Verses:** justified, each ending with the end-of-verse sign and its number in
-  Eastern Arabic digits.
-- **Footer:** the page number in a gold cartouche.
+  - The band is the owner's artwork (see "Ornaments" below), the name in its cartouche.
+- **Verses:** justified, each ending with the verse marker and its number in Eastern Arabic
+  digits.
+- **Footer:** the page number in the medallion.
+- **Printed style:** the 15 lines sit inside the page frame.
+
+## Ornaments
+
+The band, frame, medallion and verse marker are an image sheet the owner supplied (light and
+dark), cut into pieces in `Assets.xcassets` so they fit any screen:
+
+- **Band:** an end piece each side, the floral segment repeated with every other copy
+  mirrored, and the cartouche in the middle; only the segments stretch, a little.
+- **Frame:** one corner (mirrored for the others), the top and side edges tiled, and the
+  middle ornament on each side. Its size follows the screen width; the text measure shrinks
+  to fit inside it.
+- **Verse marker:** drawn where the font's end-of-verse sign would be, at its size, with the
+  number centred in it.
+
+If the images are missing, the earlier code-drawn ornaments and the font's sign are used.
 
 Pages are cream, or dark in dark mode.
 
@@ -52,8 +67,9 @@ Pages are cream, or dark in dark mode.
   property and may not be reproduced without its written approval, so they are not bundled.
   DigitalKhatt New Madina is an independent font in the same script; the print also stretches
   letters to fill a line, which this screen does with the spaces between words instead.
-- **Not copied:** no glyphs, images or artwork from other apps or printed mushafs; the ornaments are drawn in
-  code.
+- **Not copied:** no glyphs, images or artwork from other apps or printed mushafs. The
+  ornaments are the owner's artwork (see `RIGHTS_AND_ATTRIBUTION.md`); the fallback is drawn
+  in code.
 
 ## Reading position and progress
 

@@ -266,39 +266,64 @@ final class MushafPageSource {
     }
 }
 
-/// One row's words and verse-end signs, each shaped once with Core Text.
+/// One row's words and verse-end signs, each shaped once with Core Text. With the ornament
+/// artwork, a verse end is the marker image with the verse number shaped on its own; without
+/// it, the font's end-of-verse sign.
 struct ShapedRow {
     struct Piece {
         let line: CTLine
         let width: CGFloat
         let item: QuranMushafLine.Item
+        /// The number's glyph bounds when the piece is drawn as a marker image.
+        let markerDigits: CGRect?
     }
 
     let pieces: [Piece]
     let ascent: CGFloat
     let descent: CGFloat
+    /// The marker's side and its centre's height above the baseline: those of the font's sign.
+    let markerSize: CGFloat
+    let markerCenter: CGFloat
     var total: CGFloat { pieces.reduce(0) { $0 + $1.width } }
 
     init(items: [QuranMushafLine.Item], fontSize: CGFloat) {
         let font = MushafFont.font(size: fontSize) ?? CTFontCreateUIFontForLanguage(.system, fontSize, nil)!
+        let sign = CTLineGetBoundsWithOptions(Self.line("\u{06DD}", font: font), .useGlyphPathBounds)
+        let markerSize = max(fontSize * 0.8, max(sign.width, sign.height) * 1.1)
+        let usesArt = MushafArt.isAvailable
+        let digitFont = CTFontCreateCopyWithAttributes(font, markerSize * 0.36, nil, nil)
         var pieces: [Piece] = []
         for item in items {
-            let text: String
             switch item.kind {
-            case .word(let word): text = MushafFont.display(word)
-            case .verseEnd: text = QuranMushafNames.verseEnd(item.verse.ayah)
+            case .word(let word):
+                let line = Self.line(MushafFont.display(word), font: font)
+                pieces.append(Piece(line: line, width: Self.width(of: line), item: item, markerDigits: nil))
+            case .verseEnd where usesArt:
+                let line = Self.line(QuranMushafNames.digits(item.verse.ayah), font: digitFont)
+                pieces.append(Piece(line: line, width: markerSize, item: item,
+                                    markerDigits: CTLineGetBoundsWithOptions(line, .useGlyphPathBounds)))
+            case .verseEnd:
+                let line = Self.line(QuranMushafNames.verseEnd(item.verse.ayah), font: font)
+                pieces.append(Piece(line: line, width: Self.width(of: line), item: item, markerDigits: nil))
             }
-            let string = NSAttributedString(string: text, attributes: [
-                NSAttributedString.Key(kCTFontAttributeName as String): font,
-                // Colour is set when drawing.
-                NSAttributedString.Key(kCTForegroundColorFromContextAttributeName as String): true,
-            ])
-            let line = CTLineCreateWithAttributedString(string)
-            pieces.append(Piece(line: line, width: CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil)), item: item))
         }
         self.pieces = pieces
         ascent = CTFontGetAscent(font)
         descent = CTFontGetDescent(font)
+        self.markerSize = markerSize
+        markerCenter = sign.isNull || sign.isEmpty ? fontSize * 0.3 : sign.midY
+    }
+
+    private static func line(_ text: String, font: CTFont) -> CTLine {
+        CTLineCreateWithAttributedString(NSAttributedString(string: text, attributes: [
+            NSAttributedString.Key(kCTFontAttributeName as String): font,
+            // Colour is set when drawing.
+            NSAttributedString.Key(kCTForegroundColorFromContextAttributeName as String): true,
+        ]))
+    }
+
+    private static func width(of line: CTLine) -> CGFloat {
+        CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
     }
 }
 
@@ -443,15 +468,23 @@ struct MushafPrintedPageView: View {
     let palette: MushafPalette
 
     private let horizontalPadding: CGFloat = 14
+    private let framePadding: CGFloat = 6
     private let headerHeight: CGFloat = 34
-    private let footerHeight: CGFloat = 44
+    private let footerHeight: CGFloat = 48
     /// The printed measure, in ems of the font.
     static let measure: CGFloat = 17
 
     var body: some View {
         GeometryReader { geometry in
-            let width = geometry.size.width - horizontalPadding * 2
-            let available = geometry.size.height - headerHeight - footerHeight - 16
+            // With the artwork the lines sit inside the page frame, scaled to the screen.
+            let framed = MushafArt.isAvailable
+            let frameWidth = geometry.size.width - framePadding * 2
+            let frameScale = framed ? min(0.85, max(0.45, frameWidth / 620)) : 0
+            let inset = CGSize(width: MushafArt.frameTextInsets.width * frameScale,
+                               height: MushafArt.frameTextInsets.height * frameScale)
+            let width = framed ? frameWidth - inset.width * 2 : geometry.size.width - horizontalPadding * 2
+            let frameHeight = geometry.size.height - headerHeight - footerHeight - 8
+            let available = framed ? frameHeight - inset.height * 2 : frameHeight - 8
             let row = max(1, available / 15)
             let fontSize = max(10, min(width / Self.measure, row / 1.7)).rounded(.down)
             let measure = min(width, fontSize * Self.measure)
@@ -461,31 +494,35 @@ struct MushafPrintedPageView: View {
                 MushafPageHeader(page: page, palette: palette)
                     .padding(.horizontal, horizontalPadding)
                     .frame(height: headerHeight)
-                Spacer(minLength: 0)
-                VStack(spacing: 0) {
-                    ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
-                        switch line.kind {
-                        case .surahTitle(let surah):
-                            SurahBanner(name: "سورة \(surah.nameArabic)", palette: palette)
-                                .frame(width: measure, height: row * 0.9)
-                                .frame(height: row)
-                        case .basmala(let text):
-                            Text(MushafFont.display(text))
-                                .font(.custom(MushafFont.postScriptName, fixedSize: fontSize))
-                                .foregroundStyle(Color(palette.ink))
-                                .fixedSize()
-                                .frame(width: measure, height: row)
-                        case .text:
-                            if index < shaped.count, let shapedRow = shaped[index] {
-                                MushafPrintedLine(row: shapedRow, fontSize: fontSize, measure: measure, centered: opening,
-                                                  highlight: highlight, palette: palette)
+                ZStack {
+                    if framed {
+                        MushafPageFrame(scale: frameScale)
+                    }
+                    VStack(spacing: 0) {
+                        ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
+                            switch line.kind {
+                            case .surahTitle(let surah):
+                                SurahBanner(name: "سورة \(surah.nameArabic)", palette: palette)
+                                    .frame(width: measure, height: row * 0.9)
+                                    .frame(height: row)
+                            case .basmala(let text):
+                                Text(MushafFont.display(text))
+                                    .font(.custom(MushafFont.postScriptName, fixedSize: fontSize))
+                                    .foregroundStyle(Color(palette.ink))
+                                    .fixedSize()
                                     .frame(width: measure, height: row)
+                            case .text:
+                                if index < shaped.count, let shapedRow = shaped[index] {
+                                    MushafPrintedLine(row: shapedRow, fontSize: fontSize, measure: measure, centered: opening,
+                                                      highlight: highlight, palette: palette)
+                                        .frame(width: measure, height: row)
+                                }
                             }
                         }
                     }
                 }
+                .frame(width: framed ? frameWidth : nil, height: frameHeight)
                 .frame(maxWidth: .infinity)
-                Spacer(minLength: 0)
                 PageNumberOrnament(number: page.number, palette: palette)
                     .frame(height: footerHeight)
             }
@@ -518,20 +555,37 @@ struct MushafPrintedLine: View {
             let used = total * scale + gap * gaps
             // Right to left: the first piece at the right edge (centred rows start inset).
             var x = centered ? (size.width + used) / 2 : size.width
+            var origins: [CGFloat] = []
+            for piece in row.pieces {
+                x -= piece.width * scale
+                origins.append(x)
+                x -= gap
+            }
             let baseline = size.height / 2 + (row.ascent - row.descent) / 2
+            let markerY = baseline - row.markerCenter
+            let marker = context.resolve(Image(MushafArt.verseMarker))
+            for (piece, origin) in zip(row.pieces, origins) where piece.markerDigits != nil {
+                let side = row.markerSize
+                context.draw(marker, in: CGRect(x: origin + (piece.width * scale - side) / 2, y: markerY - side / 2,
+                                                width: side, height: side))
+            }
             context.withCGContext { cg in
                 cg.textMatrix = .identity
-                for piece in row.pieces {
-                    let width = piece.width * scale
-                    x -= width
+                for (piece, origin) in zip(row.pieces, origins) {
                     cg.saveGState()
                     cg.setFillColor(color(for: piece.item).cgColor)
-                    cg.translateBy(x: x, y: baseline)
-                    cg.scaleBy(x: scale, y: -1)
+                    if let digits = piece.markerDigits {
+                        // The number centred in the marker's inner circle.
+                        let fit = min(1, row.markerSize * 0.5 / max(1, digits.width))
+                        cg.translateBy(x: origin + piece.width * scale / 2 - digits.midX * fit, y: markerY + digits.midY)
+                        cg.scaleBy(x: fit, y: -1)
+                    } else {
+                        cg.translateBy(x: origin, y: baseline)
+                        cg.scaleBy(x: scale, y: -1)
+                    }
                     cg.textPosition = .zero
                     CTLineDraw(piece.line, cg)
                     cg.restoreGState()
-                    x -= gap
                 }
             }
         }
@@ -541,7 +595,7 @@ struct MushafPrintedLine: View {
 
     private func color(for item: QuranMushafLine.Item) -> UIColor {
         if item.verse == highlight { return palette.highlight }
-        if item.kind == .verseEnd { return palette.verseEnd }
+        if item.kind == .verseEnd { return MushafArt.isAvailable ? palette.ink : palette.verseEnd }
         return palette.ink
     }
 }
@@ -634,11 +688,248 @@ struct JustifiedText: UIViewRepresentable {
     }
 }
 
-// MARK: - Ornaments (drawn here; no artwork from other apps or printed mushafs)
+// MARK: - Ornament artwork
+
+/// The mushaf ornaments supplied by the app's owner (Assets.xcassets, each with a dark
+/// variant): the surah band, cut in three pieces so it stretches to any width; the page frame,
+/// cut into a corner, two edge tiles and a middle ornament; the page-number medallion; and the
+/// verse marker. Sizes are in pixels of the artwork (1x images).
+enum MushafArt {
+    static let bandEnd = "MushafBandEnd"
+    static let bandSegment = "MushafBandSegment"
+    static let bandCartouche = "MushafBandCartouche"
+    static let frameCorner = "MushafFrameCorner"
+    static let frameEdgeTop = "MushafFrameEdgeTop"
+    static let frameEdgeSide = "MushafFrameEdgeSide"
+    static let frameMid = "MushafFrameMid"
+    static let pageMedallion = "MushafPageMedallion"
+    static let verseMarker = "MushafVerseMarker"
+
+    private static let all = [bandEnd, bandSegment, bandCartouche, frameCorner, frameEdgeTop, frameEdgeSide, frameMid,
+                              pageMedallion, verseMarker]
+    static let isAvailable = all.allSatisfy { UIImage(named: $0) != nil }
+
+    static func size(_ name: String) -> CGSize { UIImage(named: name)?.size ?? .zero }
+
+    /// Where text may start inside the frame: past the side band, and below the top band and
+    /// the corner ornaments.
+    static let frameTextInsets = CGSize(width: 50, height: 82)
+    /// The middle of the frame's band, from its outer edge (the frame's outer line is 15
+    /// pixels in; the band is 28 pixels wide).
+    static let frameBandMiddle: CGFloat = 30
+}
+
+/// The surah title band; the drawn one without the artwork.
+struct SurahBanner: View {
+    let name: String
+    let palette: MushafPalette
+
+    var body: some View {
+        if MushafArt.isAvailable {
+            SurahBand(name: name, palette: palette)
+        } else {
+            DrawnSurahBanner(name: name, palette: palette)
+        }
+    }
+}
+
+/// The page number; the drawn one without the artwork.
+struct PageNumberOrnament: View {
+    let number: Int
+    let palette: MushafPalette
+
+    var body: some View {
+        if MushafArt.isAvailable {
+            PageMedallion(number: number, palette: palette)
+        } else {
+            DrawnPageNumber(number: number, palette: palette)
+        }
+    }
+}
+
+/// The surah band from the artwork: an end piece on each side, the floral segment repeated
+/// (every other copy mirrored, so the copies meet seamlessly) and the cartouche with the name
+/// in the middle. Only the segments stretch, a little, to fill the width.
+struct SurahBand: View {
+    let name: String
+    let palette: MushafPalette
+
+    private struct Geometry {
+        let scale: CGFloat
+        let top: CGFloat
+        let height: CGFloat
+        let endWidth: CGFloat
+        let cartoucheWidth: CGFloat
+        let segments: Int
+        let segmentWidth: CGFloat
+        let left: CGFloat
+
+        init(size: CGSize) {
+            let end = MushafArt.size(MushafArt.bandEnd)
+            let segment = MushafArt.size(MushafArt.bandSegment)
+            let cartouche = MushafArt.size(MushafArt.bandCartouche)
+            let fixed = end.width * 2 + cartouche.width
+            scale = min(size.height / max(1, cartouche.height), size.width / max(1, fixed))
+            height = cartouche.height * scale
+            top = (size.height - height) / 2
+            endWidth = end.width * scale
+            cartoucheWidth = cartouche.width * scale
+            let side = (size.width - fixed * scale) / 2
+            let natural = segment.width * scale
+            segments = natural > 0 && side >= natural * 0.5 ? max(1, Int((side / natural).rounded())) : 0
+            segmentWidth = segments > 0 ? side / CGFloat(segments) : 0
+            left = segments > 0 ? 0 : max(0, side)
+        }
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let geometry = Geometry(size: proxy.size)
+            ZStack {
+                Canvas { context, size in
+                    let geometry = Geometry(size: size)
+                    let end = context.resolve(Image(MushafArt.bandEnd))
+                    let segment = context.resolve(Image(MushafArt.bandSegment))
+                    let cartouche = context.resolve(Image(MushafArt.bandCartouche))
+                    for mirrored in [false, true] {
+                        var half = context
+                        if mirrored {
+                            half.translateBy(x: size.width, y: 0)
+                            half.scaleBy(x: -1, y: 1)
+                        }
+                        for index in 0..<geometry.segments {
+                            // A hair wider, so neighbouring copies leave no seam.
+                            let rect = CGRect(x: geometry.left + geometry.endWidth + CGFloat(index) * geometry.segmentWidth,
+                                              y: geometry.top, width: geometry.segmentWidth + 0.5, height: geometry.height)
+                            MushafArtDrawing.draw(segment, in: rect, flipX: index % 2 == 1, context: half)
+                        }
+                        half.draw(end, in: CGRect(x: geometry.left, y: geometry.top, width: geometry.endWidth,
+                                                  height: geometry.height))
+                    }
+                    context.draw(cartouche, in: CGRect(x: (size.width - geometry.cartoucheWidth) / 2, y: geometry.top,
+                                                       width: geometry.cartoucheWidth, height: geometry.height))
+                }
+                Text(name)
+                    .font(.custom(QuranFont.postScriptName, size: geometry.height * 0.36))
+                    .foregroundStyle(Color(palette.ink))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .frame(width: geometry.cartoucheWidth * 0.68, height: geometry.height * 0.5)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(name)
+        .accessibilityAddTraits(.isHeader)
+    }
+}
+
+/// The page number in the medallion from the artwork.
+struct PageMedallion: View {
+    let number: Int
+    let palette: MushafPalette
+
+    var body: some View {
+        GeometryReader { proxy in
+            let size = MushafArt.size(MushafArt.pageMedallion)
+            let height = min(proxy.size.height, proxy.size.width * size.height / max(1, size.width))
+            ZStack {
+                Image(MushafArt.pageMedallion)
+                    .resizable()
+                    .scaledToFit()
+                Text(QuranMushafNames.digits(number))
+                    .font(.custom(QuranFont.postScriptName, size: height * 0.2))
+                    .foregroundStyle(Color(palette.ink))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .frame(width: height * 0.36)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("الصفحة \(number)")
+    }
+}
+
+/// The page frame from the artwork: a corner in each corner (mirrored), the edge tiles repeated
+/// between them, and the middle ornament at the middle of each side. `scale` is points per
+/// pixel of the artwork.
+struct MushafPageFrame: View {
+    let scale: CGFloat
+
+    var body: some View {
+        Canvas { context, size in
+            let corner = context.resolve(Image(MushafArt.frameCorner))
+            let top = context.resolve(Image(MushafArt.frameEdgeTop))
+            let side = context.resolve(Image(MushafArt.frameEdgeSide))
+            let middle = context.resolve(Image(MushafArt.frameMid))
+            let cornerSize = CGSize(width: corner.size.width * scale, height: corner.size.height * scale)
+            let topSize = CGSize(width: top.size.width * scale, height: top.size.height * scale)
+            let sideSize = CGSize(width: side.size.width * scale, height: side.size.height * scale)
+
+            // Edges first, tiled between the corners and clipped there.
+            for bottom in [false, true] {
+                var edge = context
+                let y = bottom ? size.height - topSize.height : 0
+                edge.clip(to: Path(CGRect(x: cornerSize.width, y: y, width: max(0, size.width - cornerSize.width * 2),
+                                          height: topSize.height)))
+                var x = cornerSize.width
+                while x < size.width - cornerSize.width {
+                    MushafArtDrawing.draw(top, in: CGRect(x: x, y: y, width: topSize.width + 0.5, height: topSize.height),
+                                          flipY: bottom, context: edge)
+                    x += topSize.width
+                }
+            }
+            for right in [false, true] {
+                var edge = context
+                let x = right ? size.width - sideSize.width : 0
+                edge.clip(to: Path(CGRect(x: x, y: cornerSize.height, width: sideSize.width,
+                                          height: max(0, size.height - cornerSize.height * 2))))
+                var y = cornerSize.height
+                while y < size.height - cornerSize.height {
+                    MushafArtDrawing.draw(side, in: CGRect(x: x, y: y, width: sideSize.width, height: sideSize.height + 0.5),
+                                          flipX: right, context: edge)
+                    y += sideSize.height
+                }
+            }
+            for (right, bottom) in [(false, false), (true, false), (false, true), (true, true)] {
+                let rect = CGRect(x: right ? size.width - cornerSize.width : 0, y: bottom ? size.height - cornerSize.height : 0,
+                                  width: cornerSize.width, height: cornerSize.height)
+                MushafArtDrawing.draw(corner, in: rect, flipX: right, flipY: bottom, context: context)
+            }
+            // The middle ornaments, centred on the band.
+            let band = MushafArt.frameBandMiddle * scale
+            let middleSize = CGSize(width: middle.size.width * scale, height: middle.size.height * scale)
+            let centres = [CGPoint(x: size.width / 2, y: band), CGPoint(x: size.width / 2, y: size.height - band),
+                           CGPoint(x: band, y: size.height / 2), CGPoint(x: size.width - band, y: size.height / 2)]
+            for (index, centre) in centres.enumerated() {
+                var ornament = context
+                ornament.translateBy(x: centre.x, y: centre.y)
+                if index >= 2 { ornament.rotate(by: .degrees(90)) }
+                if index == 1 { ornament.scaleBy(x: 1, y: -1) }
+                ornament.draw(middle, in: CGRect(x: -middleSize.width / 2, y: -middleSize.height / 2,
+                                                 width: middleSize.width, height: middleSize.height))
+            }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+enum MushafArtDrawing {
+    /// Draws `image` in `rect`, mirrored about the rect's centre if asked.
+    static func draw(_ image: GraphicsContext.ResolvedImage, in rect: CGRect, flipX: Bool = false, flipY: Bool = false,
+                     context: GraphicsContext) {
+        var flipped = context
+        flipped.translateBy(x: rect.midX, y: rect.midY)
+        flipped.scaleBy(x: flipX ? -1 : 1, y: flipY ? -1 : 1)
+        flipped.draw(image, in: CGRect(x: -rect.width / 2, y: -rect.height / 2, width: rect.width, height: rect.height))
+    }
+}
+
+// MARK: - Ornaments drawn in code (used when the artwork is missing)
 
 /// The surah title band: a green panel with a lattice, gold borders, rosettes at both ends and
 /// the name in a cartouche.
-struct SurahBanner: View {
+struct DrawnSurahBanner: View {
     let name: String
     let palette: MushafPalette
 
@@ -718,7 +1009,7 @@ struct Rosette: View {
 }
 
 /// The page number in a gold cartouche with leaves on both sides.
-struct PageNumberOrnament: View {
+struct DrawnPageNumber: View {
     let number: Int
     let palette: MushafPalette
 
