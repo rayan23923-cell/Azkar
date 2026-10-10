@@ -15,6 +15,7 @@ its terms as found, and what remains before release.
 | DigitalKhatt New Madina font (mushaf pages, printed style) | Amine Anane and Tarteel Inc., file `DigitalKhattV2.ttf` from github.com/DigitalKhatt/digitalkhatt-js (commit 78372d7a1e21), bundled unmodified as `DigitalKhattNewMadina.ttf` | SIL Open Font License 1.1 (name table and DigitalKhatt/madinafont LICENSE); no Reserved Font Name | Licence shipped and shown in «حول التطبيق»; font not sold alone. Independent of the King Fahd Complex fonts |
 | Mushaf line positions (Madina 1421H, 15 lines) | Derived from DigitalKhatt's `quran_text_madina.ts` (same repository) by `tools/mushaf/make_madina_lines.py`; only where each line starts is kept | MIT (Copyright (c) 2020–present DigitalKhatt contributors) | MIT notice shipped (`MushafLines-NOTICE.txt`) and shown in the app. The text shown stays the Tanzil text; tests rebuild every verse from the lines character for character |
 | Mushaf ornaments (surah band, page frame, page-number medallion, verse marker; light and dark) | An image sheet supplied by the app owner in the project chat (2026-10-10), after asking for an image-generation prompt for ChatGPT or Gemini; cut into pieces for `Assets.xcassets`, otherwise unchanged | Whatever the generating tool's terms grant the owner; not checked here | Owner to confirm the right to ship it. The code-drawn ornaments remain as a fallback |
+| Launch animation ornaments (medallion, ring, four corners; light and dark) | An image sheet supplied by the app owner in the project chat (2026-10-10), made with ChatGPT from a prompt written in this project; background removed and cut for `Assets.xcassets`, otherwise unchanged | Whatever the generating tool's terms grant the owner; not checked here | Owner to confirm the right to ship it |
 | App icon | Generated for this project | — | Provisional; the owner may replace it |
 | Hisn audio | none | — | PENDING_RIGHTS_AND_ASSETS (empty pack) |
 | Quran / adhkar audio | none | — | PENDING_RIGHTS_AND_ASSETS (empty pack) |
@@ -49,7 +50,7 @@ its terms as found, and what remains before release.
    - the Hisn content decisions (see `HISN_RELEASE_AUDIT.md`).
 3. Confirm the attribution wording on the About page with counsel. It is a faithful draft,
    not final legal text.
-4. Confirm the right to ship the mushaf ornament artwork (the image-generation tool's terms).
+4. Confirm the right to ship the mushaf and launch ornament artwork (the image-generation tool's terms).
 5. For any audio: licence terms on file per recording, then a READY manifest.
 
 Rights status stays `PENDING_PRE_RELEASE_REVIEW` in code (`ContentRightsStatus` has no cleared
