@@ -56,7 +56,8 @@ struct HisnRootView: View {
         }
         if let itemId = router.hisnItemTarget {
             router.hisnItemTarget = nil
-            if let route = model.route(forItem: itemId) { path = [route] }
+            // An item, or a whole section saved from the index.
+            if let route = model.route(forItem: itemId) ?? model.route(forSavedSection: itemId) { path = [route] }
         }
         guard let target = router.hisnTarget else { return }
         router.hisnTarget = nil
@@ -78,12 +79,21 @@ struct HisnRootView: View {
     }
 }
 
-/// The 133 presentation sections in order, «متابعة القراءة» when a cursor is saved, and search.
-/// The query lives only while this screen exists; it is not saved.
+/// Two lists under the search field: «الأبواب» (the 133 presentation sections in order, with
+/// «متابعة القراءة» when a cursor is saved) and «المفضلة» (saved sections and items). A section is
+/// saved from the index by swiping its row or holding it. The query lives only while this
+/// screen exists; it is not saved.
 private struct HisnIndexView: View {
+    enum Tab: String {
+        case sections
+        case favorites
+    }
+
     let library: HisnLibrary
     let search: HisnSearchEngine
     @ObservedObject var model: HisnLibraryModel
+    @ObservedObject private var favorites = AppServices.shared.favorites
+    @AppStorage("hisn.indexTab") private var tab: Tab = .sections
     @State private var query = ""
     @State private var filter: HisnSearchFilter = .all
     @State private var results: [HisnSearchResult] = []
@@ -100,12 +110,19 @@ private struct HisnIndexView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                } else {
+                    Picker("القائمة", selection: $tab) {
+                        Text("الأبواب").tag(Tab.sections)
+                        Text("المفضلة").tag(Tab.favorites)
+                    }
+                    .pickerStyle(.segmented)
                 }
             }
             if searching {
                 HisnSearchResultsSection(results: results) { model.route(for: $0) }
-            } else {
+            } else if tab == .favorites {
                 HisnFavoritesSection(library: library, model: model)
+            } else {
                 if let position = model.resumePosition, let chapter = library.chapter(id: position.chapterId) {
                     Section {
                         NavigationLink(value: model.route(for: position)) {
@@ -116,9 +133,30 @@ private struct HisnIndexView: View {
                 }
                 Section("الأبواب") {
                     ForEach(library.sections) { entry in
+                        let saved = favorites.contains(.hisnSection(entry.id))
                         NavigationLink(value: model.route(forChapter: entry.id)) {
                             HisnSectionRow(entry: entry, isCurrent: entry.id == model.resumePosition?.chapterId,
-                                           completedToday: model.isCompletedToday(entry.id))
+                                           completedToday: model.isCompletedToday(entry.id), isFavorite: saved)
+                        }
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                favorites.toggle(.hisnSection(entry.id))
+                            } label: {
+                                Label(saved ? "إزالة من المفضلة" : "إضافة إلى المفضلة",
+                                      systemImage: saved ? "star.slash" : "star")
+                            }
+                            .tint(.yellow)
+                        }
+                        .contextMenu {
+                            Button {
+                                favorites.toggle(.hisnSection(entry.id))
+                            } label: {
+                                Label(saved ? "إزالة من المفضلة" : "إضافة إلى المفضلة",
+                                      systemImage: saved ? "star.slash" : "star")
+                            }
+                        }
+                        .accessibilityAction(named: saved ? "إزالة من المفضلة" : "إضافة إلى المفضلة") {
+                            favorites.toggle(.hisnSection(entry.id))
                         }
                     }
                 }
@@ -135,7 +173,8 @@ private struct HisnIndexView: View {
     }
 }
 
-/// «المفضلة»: the saved Hisn items, newest first; each opens at its item. Hidden when none.
+/// «المفضلة»: the saved sections, then the saved items, newest first; a section opens where
+/// reading stopped in it, an item at the item.
 private struct HisnFavoritesSection: View {
     let library: HisnLibrary
     @ObservedObject var model: HisnLibraryModel
@@ -148,11 +187,32 @@ private struct HisnFavoritesSection: View {
     }
 
     var body: some View {
-        let saved = favorites.entries.filter { $0.ref.kind == .hisn }.compactMap { entry in
+        let hisn = favorites.entries.filter { $0.ref.kind == .hisn }
+        let sections = hisn.compactMap { entry in library.sections.first { $0.id == entry.ref.id } }
+        let saved = hisn.compactMap { entry in
             library.locate(itemId: entry.ref.id).map { Saved(id: entry.ref.id, chapter: $0.chapter, index: $0.itemIndex) }
         }
+        if sections.isEmpty && saved.isEmpty {
+            ContentUnavailableView("لا توجد مفضلة بعد", systemImage: "star",
+                                   description: Text("اسحب الباب في قائمة الأبواب أو اضغط عليه مطولاً لإضافته، أو اضغط النجمة داخل الذكر."))
+        }
+        if !sections.isEmpty {
+            Section("الأبواب") {
+                ForEach(sections) { entry in
+                    NavigationLink(value: model.route(forChapter: entry.id)) {
+                        HisnSectionRow(entry: entry, isCurrent: entry.id == model.resumePosition?.chapterId,
+                                       completedToday: model.isCompletedToday(entry.id))
+                    }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            favorites.remove(.hisnSection(entry.id))
+                        } label: { Label("إزالة", systemImage: "star.slash") }
+                    }
+                }
+            }
+        }
         if !saved.isEmpty {
-            Section("المفضلة") {
+            Section("الأذكار") {
                 ForEach(saved) { entry in
                     NavigationLink(value: HisnRoute(chapterId: entry.chapter.id, itemIndex: entry.index,
                                                     highlightedItemId: entry.id)) {
@@ -205,6 +265,8 @@ private struct HisnSectionRow: View {
     let isCurrent: Bool
     /// Read to the end today.
     var completedToday = false
+    /// Saved to Favorites.
+    var isFavorite = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -220,6 +282,11 @@ private struct HisnSectionRow: View {
             }
             Text(entry.title)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            if isFavorite {
+                Image(systemName: "star.fill")
+                    .foregroundStyle(.yellow)
+                    .accessibilityHidden(true)
+            }
             if completedToday {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
@@ -234,7 +301,8 @@ private struct HisnSectionRow: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(HisnAccessibility.sectionLabel(entry))
-        .accessibilityValue(HisnAccessibility.sectionValue(entry, isCurrent: isCurrent, completedToday: completedToday))
+        .accessibilityValue(HisnAccessibility.sectionValue(entry, isCurrent: isCurrent, completedToday: completedToday)
+                            + (isFavorite ? "، في المفضلة" : ""))
     }
 
     private var symbol: String? {

@@ -1,5 +1,6 @@
 import SwiftUI
 import QuranText
+import QuranReading
 
 /// Sources, licences and privacy, shown in the app. The Tanzil notice is reproduced as its
 /// terms require. Rights review of Hisn Al-Muslim is pending, and the page says so.
@@ -39,6 +40,23 @@ struct AboutView: View {
                 Text("خط Amiri Quran، رخصة SIL Open Font License 1.1.")
                 if let url = QuranFont.licenseURL, let text = try? String(contentsOf: url, encoding: .utf8) {
                     DisclosureGroup("نص الرخصة") {
+                        Text(text)
+                            .font(.caption2.monospaced())
+                            .environment(\.layoutDirection, .leftToRight)
+                    }
+                }
+            }
+            Section("صفحات المصحف") {
+                Text("خط DigitalKhatt New Madina (Amine Anane وTarteel)، رخصة SIL Open Font License 1.1. مواضع الأسطر من مشروع DigitalKhatt (رخصة MIT)، والنص المعروض هو نص تنزيل نفسه.")
+                if let url = MushafFont.licenseURL, let text = try? String(contentsOf: url, encoding: .utf8) {
+                    DisclosureGroup("رخصة الخط") {
+                        Text(text)
+                            .font(.caption2.monospaced())
+                            .environment(\.layoutDirection, .leftToRight)
+                    }
+                }
+                if let url = QuranMushafLayout.noticeURL, let text = try? String(contentsOf: url, encoding: .utf8) {
+                    DisclosureGroup("رخصة مواضع الأسطر") {
                         Text(text)
                             .font(.caption2.monospaced())
                             .environment(\.layoutDirection, .leftToRight)

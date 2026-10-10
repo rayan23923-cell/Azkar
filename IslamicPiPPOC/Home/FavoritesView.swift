@@ -65,6 +65,9 @@ struct FavoritesView: View {
             let item = found.collection.items[found.index]
             return (item.text, found.collection.title, item.reviewStatus == .quranVerbatimTanzil)
         case .hisn:
+            if let chapter = hisn?.chapter(id: ref.id) {
+                return (chapter.titleArabic, "حصن المسلم: باب", false)
+            }
             guard let found = hisn?.locate(itemId: ref.id) else { return nil }
             return (found.chapter.items[found.itemIndex].arabicText, "حصن المسلم: \(found.chapter.titleArabic)", false)
         }

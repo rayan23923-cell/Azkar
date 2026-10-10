@@ -63,8 +63,10 @@ Check the length in App Store Connect.
 
 ## App Privacy («nutrition label»)
 
-- Data collection: **Data Not Collected**. There is no network code, no analytics, no
-  accounts, and the privacy manifest declares no collected data.
+- Data collection: **Data Not Collected**. No analytics, no accounts, no server of ours, and
+  the privacy manifest declares no collected data. The only network use is Apple's own
+  reverse geocoding (`CLGeocoder`) to name the device location when the user chooses it;
+  the owner should confirm this answer when filling in the label.
 - Tracking: **No**.
 
 ## Age rating
