@@ -88,25 +88,24 @@ public enum NextPrayerWidgetState: Equatable, Sendable {
     case noPlace
     /// The sun does not rise or set there on this day.
     case noTimes(place: String)
-    /// A city was chosen in the widget, but no calculation method is known for it: none was
-    /// chosen in the widget and the app's settings cannot be read. No default is assumed.
-    case needsMethod(place: String)
     case moments([PrayerMoment], place: String, timeZone: TimeZone, twentyFourHour: Bool, notice: PrayerPlaceNotice?)
 
     /// - Parameters:
     ///   - store: the App Group copy of the settings; nil when the group is unavailable.
-    ///   - choice: what the user set in the widget itself («تعديل الودجة»). A city chosen there
-    ///     is used instead of the app's place, so the widget works where the App Group does not
-    ///     (a build signed without it). The method and Asr school come from the widget when set,
-    ///     else from the app's shared settings, and are never assumed.
+    ///   - choice: what the user set in the widget itself («تعديل الودجة»), or the device's
+    ///     location when the app's settings cannot be read. A place there is used instead of the
+    ///     app's, so the widget works where the App Group does not (a re-signed build). The method
+    ///     and Asr school come from the widget when set, else from the app's shared settings, else
+    ///     the app's own defaults (what the app shows before anything is changed).
     public static func resolve(store: PrayerSettingsStore?, choice: NextPrayerWidgetChoice = NextPrayerWidgetChoice(),
                                deviceTimeZone: TimeZone, now: Date, limit: Int = 16) -> NextPrayerWidgetState {
         if let place = choice.place {
             // The app's settings count only when it shared a place: then they were read and copied
             // whole (see `PrayerSettingsStore.copy(to:)`).
             let app = store?.place != nil ? store : nil
-            guard let method = choice.method ?? app?.parameters.method else { return .needsMethod(place: place.name) }
-            let parameters = PrayerParameters(method: method, asr: choice.asr ?? app?.parameters.asr ?? .standard,
+            let defaults = PrayerParameters()
+            let parameters = PrayerParameters(method: choice.method ?? app?.parameters.method ?? defaults.method,
+                                              asr: choice.asr ?? app?.parameters.asr ?? defaults.asr,
                                               adjustments: app?.parameters.adjustments ?? [:])
             let schedule = PrayerSchedule(coordinates: place.coordinates, timeZone: place.timeZone, parameters: parameters)
             let moments = schedule.moments(from: now, limit: limit)

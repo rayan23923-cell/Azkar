@@ -17,9 +17,8 @@ enum WidgetSettings {
     static func prayerStore() -> PrayerSettingsStore? {
         // No container: unsigned, or the group is not registered for this team. Reported as
         // such, not as "no place chosen".
-        guard let group = Bundle.main.object(forInfoDictionaryKey: "AzkarAppGroup") as? String, !group.isEmpty,
-              FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: group) != nil,
-              let defaults = UserDefaults(suiteName: group) else { return nil }
+        // The group may have been renamed by the tool that signed this installation.
+        guard let group = AppGroupLocator.resolve(), let defaults = UserDefaults(suiteName: group) else { return nil }
         return PrayerSettingsStore(defaults: defaults)
     }
 }
