@@ -20,11 +20,13 @@ struct NextPrayerConfiguration: WidgetConfigurationIntent {
     var asr: WidgetAsrSchool?
 
     var usesCurrentLocation: Bool { city?.id == WidgetCity.currentLocationID }
+    /// No city chosen here: the widget follows the app's place.
+    var followsApp: Bool { city == nil || city?.id == WidgetCity.appID }
 
     /// The choice, with `place` set to the given location when «موقعي الحالي» is chosen.
     func choice(currentLocation: CLLocation? = nil) -> NextPrayerWidgetChoice {
         let place: PrayerPlace?
-        if usesCurrentLocation {
+        if usesCurrentLocation || (followsApp && currentLocation != nil) {
             place = currentLocation.map {
                 PrayerPlace(name: WidgetCity.currentLocationID,
                             coordinates: Coordinates(latitude: $0.coordinate.latitude, longitude: $0.coordinate.longitude),

@@ -11,8 +11,6 @@ struct NextPrayerEntry: TimelineEntry {
         case unavailable
         /// No place saved in the app yet.
         case noPlace
-        /// A city was chosen in the widget, but no method is known for it.
-        case needsMethod(place: String)
         /// «موقعي الحالي» was chosen, but the location is not allowed for widgets.
         case locationNotAllowed
         /// «موقعي الحالي» was chosen, but no location could be read just now.
@@ -40,7 +38,8 @@ struct NextPrayerProvider: AppIntentTimelineProvider {
         let now = Date()
         let entries = await entries(configuration, from: now, limit: 16)
         switch entries.last?.content {
-        case .prayer where configuration.usesCurrentLocation:
+        case .prayer where configuration.usesCurrentLocation
+            || (configuration.followsApp && WidgetSettings.prayerStore() == nil):
             // The device may move: read the location again within the hour.
             return Timeline(entries: entries, policy: .after(min(entries.last?.date ?? now, now.addingTimeInterval(3600))))
         case .prayer:
@@ -49,6 +48,9 @@ struct NextPrayerProvider: AppIntentTimelineProvider {
             return Timeline(entries: entries, policy: .after(now.addingTimeInterval(15 * 60)))
         case .noTimes:
             return Timeline(entries: entries, policy: .after(now.addingTimeInterval(6 * 3600)))
+        case .unavailable:
+            // The location may be allowed for widgets meanwhile: try again within the hour.
+            return Timeline(entries: entries, policy: .after(now.addingTimeInterval(3600)))
         default:
             // The app reloads the widget when a place is chosen; editing the widget reloads it too.
             return Timeline(entries: entries, policy: .never)
@@ -56,6 +58,7 @@ struct NextPrayerProvider: AppIntentTimelineProvider {
     }
 
     private func entries(_ configuration: NextPrayerConfiguration, from now: Date, limit: Int) async -> [NextPrayerEntry] {
+        let store = WidgetSettings.prayerStore()
         var location: CLLocation?
         if configuration.usesCurrentLocation {
             switch await WidgetLocation.read() {
@@ -63,16 +66,18 @@ struct NextPrayerProvider: AppIntentTimelineProvider {
             case .notAllowed: return [NextPrayerEntry(date: now, content: .locationNotAllowed)]
             case .unavailable: return [NextPrayerEntry(date: now, content: .locationUnavailable)]
             }
+        } else if store == nil, configuration.followsApp, case .location(let reading) = await WidgetLocation.read() {
+            // The app's settings cannot be read here (a re-signed installation): the device's
+            // location stands in for the app's place, when the widget may read it.
+            location = reading
         }
-        switch NextPrayerWidgetState.resolve(store: WidgetSettings.prayerStore(),
+        switch NextPrayerWidgetState.resolve(store: store,
                                              choice: configuration.choice(currentLocation: location),
                                              deviceTimeZone: .current, now: now, limit: limit) {
         case .sharedSettingsUnavailable:
             return [NextPrayerEntry(date: now, content: .unavailable)]
         case .noPlace:
             return [NextPrayerEntry(date: now, content: .noPlace)]
-        case .needsMethod(let place):
-            return [NextPrayerEntry(date: now, content: .needsMethod(place: place))]
         case .noTimes(let place):
             return [NextPrayerEntry(date: now, content: .noTimes(place: place))]
         case let .moments(moments, place, zone, twentyFourHour, notice):
@@ -155,12 +160,9 @@ struct NextPrayerView: View {
                     short: "اسمح بالموقع", icon: "location.slash")
         case .locationUnavailable:
             message("تعذّر تحديد موقعك الآن، وستُعاد المحاولة بعد قليل.", short: "الموقع غير متاح", icon: "location")
-        case .needsMethod(let place):
-            message("اختر طريقة الحساب من «تعديل الودجة» لتظهر مواقيت \(place).",
-                    short: "اختر طريقة الحساب", icon: "slider.horizontal.3")
         case .unavailable:
             // Not "no place": the app may have one, but this installation does not share it.
-            message("لا تصل الودجة إلى إعدادات التطبيق في هذا التثبيت. اضغط عليها مطوّلاً، ثم «تعديل الودجة»، واختر مدينتك.",
+            message("اضغط على الودجة مطوّلاً، ثم «تعديل الودجة»، واختر مدينتك أو «موقعي الحالي». أو اسمح بالموقع للودجة من الإعدادات › أذكار › الموقع.",
                     short: "اختر المدينة", icon: "mappin.slash")
         case .noTimes(let place):
             message("لا يمكن حساب المواقيت لـ\(place) اليوم.", short: "لا مواقيت اليوم", icon: "moon.zzz")

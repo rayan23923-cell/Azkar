@@ -43,4 +43,6 @@ final class SystemReminderScheduler: ReminderScheduling {
 enum AppNotificationKeys {
     /// `ContentRef.string` of what the notification opens.
     static let target = "target"
+    /// `AppLink` URL of the screen the notification opens (the adhan alerts open the times).
+    static let link = "link"
 }

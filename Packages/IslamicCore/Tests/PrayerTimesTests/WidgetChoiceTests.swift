@@ -26,15 +26,19 @@ final class WidgetChoiceTests: XCTestCase {
         PrayerSchedule(coordinates: place.coordinates, timeZone: place.timeZone, parameters: parameters).moments(from: now)
     }
 
-    func testACityWithoutAMethodAsksForOneInsteadOfAssuming() throws {
+    func testACityWithoutAMethodUsesTheAppsDefaults() throws {
         let mosul = try city("الموصل")
-        XCTAssertEqual(NextPrayerWidgetState.resolve(store: nil, choice: NextPrayerWidgetChoice(place: mosul),
-                                                     deviceTimeZone: .current, now: now),
-                       .needsMethod(place: "الموصل"))
-        // An App Group with no place shared does not supply a method either.
-        XCTAssertEqual(NextPrayerWidgetState.resolve(store: try store(), choice: NextPrayerWidgetChoice(place: mosul),
-                                                     deviceTimeZone: .current, now: now),
-                       .needsMethod(place: "الموصل"))
+        // As the app shows before its settings are changed; an App Group with no place shared
+        // does not supply a method either.
+        for app in [nil, try store()] {
+            guard case let .moments(moments, place, _, _, _) =
+                    NextPrayerWidgetState.resolve(store: app, choice: NextPrayerWidgetChoice(place: mosul),
+                                                  deviceTimeZone: .current, now: now) else {
+                return XCTFail("times expected")
+            }
+            XCTAssertEqual(place, "الموصل")
+            XCTAssertEqual(moments, expected(mosul, PrayerParameters()))
+        }
     }
 
     func testACityAndMethodChosenInTheWidgetWorkWithoutTheAppGroup() throws {
@@ -95,5 +99,31 @@ final class WidgetChoiceTests: XCTestCase {
         for place in PrayerCities.all {
             XCTAssertNotNil(place.timeZoneID.flatMap(TimeZone.init(identifier:)), place.name)
         }
+    }
+}
+
+/// The App Group a re-signed installation really shares.
+final class AppGroupLocatorTests: XCTestCase {
+    private func profile(groups: [String]) -> Data {
+        let entitlements: [String: Any] = ["com.apple.security.application-groups": groups,
+                                           "application-identifier": "ABCDE12345.com.example.app"]
+        let plist = try! PropertyListSerialization.data(fromPropertyList: ["Name": "test", "Entitlements": entitlements],
+                                                        format: .xml, options: 0)
+        // A provisioning profile wraps the property list in binary CMS data.
+        return Data([0x30, 0x82, 0x01, 0x00, 0x06, 0x09]) + plist + Data([0xA0, 0x82, 0x00, 0x10])
+    }
+
+    func testGroupsAreReadFromTheProfile() {
+        XCTAssertEqual(AppGroupLocator.profileGroups(profile(groups: ["group.com.signer.Azkar"])), ["group.com.signer.Azkar"])
+        XCTAssertEqual(AppGroupLocator.profileGroups(Data("not a profile".utf8)), [])
+    }
+
+    func testTheBuildsGroupComesFirstThenTheProfiles() {
+        let data = profile(groups: ["group.com.example.IslamicPiPPOC", "group.renamed", "group.*"])
+        XCTAssertEqual(AppGroupLocator.candidates(infoPlistGroup: "group.com.example.IslamicPiPPOC", profile: data),
+                       ["group.com.example.IslamicPiPPOC", "group.renamed"])
+        XCTAssertEqual(AppGroupLocator.candidates(infoPlistGroup: "$(AZKAR_APP_GROUP)", profile: nil), [])
+        XCTAssertEqual(AppGroupLocator.candidates(infoPlistGroup: nil, profile: data),
+                       ["group.com.example.IslamicPiPPOC", "group.renamed"])
     }
 }

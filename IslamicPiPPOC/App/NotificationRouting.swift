@@ -17,7 +17,12 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        guard let raw = response.notification.request.content.userInfo[AppNotificationKeys.target] as? String,
+        let info = response.notification.request.content.userInfo
+        if let raw = info[AppNotificationKeys.link] as? String, let url = URL(string: raw), let link = AppLink(url: url) {
+            await MainActor.run { AppServices.shared.router.handle(link) }
+            return
+        }
+        guard let raw = info[AppNotificationKeys.target] as? String,
               let ref = ContentRef(string: raw) else { return }
         await MainActor.run {
             AppServices.shared.router.open(ref, library: nil)
