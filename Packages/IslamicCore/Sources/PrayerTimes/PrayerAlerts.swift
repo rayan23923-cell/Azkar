@@ -61,32 +61,40 @@ public enum PrayerAlertPlanner {
     /// room are left, so the five prayers fit nine days ahead.
     public static let maximumRequests = 45
 
-    /// The alerts from `now` on: each enabled prayer's time on the following days, soonest
-    /// first, up to `limit`. Times are the schedule's own, corrections included. The app
-    /// schedules them again each time it opens, so they keep running ahead.
+    /// The alerts from `now` on: each enabled prayer's time on the following days, and its
+    /// iqama when `iqama` is on, soonest first, up to `limit`. Times are the schedule's own,
+    /// corrections included. The app schedules them again each time it opens, so they keep
+    /// running ahead.
     public static func requests(schedule: PrayerSchedule, settings: PrayerAlertSettings, placeName: String,
-                                from now: Date, limit: Int = maximumRequests) -> [PrayerAlertRequest] {
+                                iqama: IqamaSettings = IqamaSettings(), from now: Date,
+                                limit: Int = maximumRequests) -> [PrayerAlertRequest] {
         guard settings.anyEnabled, limit > 0 else { return [] }
         let calendar = schedule.calendar
         var requests: [PrayerAlertRequest] = []
         var offset = 0
-        // Days without times (polar days) are skipped; a bound keeps that from looping.
+        // Days without times (polar days) are skipped; a bound keeps that from looping. A day
+        // past the limit is still read whole, then the list is cut, so it ends soonest-first.
         while requests.count < limit && offset < 60 {
             defer { offset += 1 }
             guard let day = schedule.day(containing: now, offset: offset) else { continue }
-            for entry in day.all where settings.isEnabled(entry.prayer) && entry.time > now {
-                guard requests.count < limit else { break }
+            for entry in day.all where settings.isEnabled(entry.prayer) {
                 let parts = calendar.dateComponents([.year, .month, .day], from: entry.time)
                 let stamp = String(format: "%04d%02d%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
-                requests.append(PrayerAlertRequest(
-                    identifier: "\(identifierPrefix)\(stamp).\(entry.prayer.rawValue)",
-                    prayer: entry.prayer,
-                    date: entry.time,
-                    title: "صلاة \(entry.prayer.arabicName)",
-                    body: "حان الآن وقت صلاة \(entry.prayer.arabicName) في \(placeName)"))
+                let id = "\(identifierPrefix)\(stamp).\(entry.prayer.rawValue)"
+                let name = entry.prayer.arabicName
+                if entry.time > now {
+                    requests.append(PrayerAlertRequest(identifier: id, prayer: entry.prayer, date: entry.time,
+                                                       title: "صلاة \(name)",
+                                                       body: "حان الآن وقت صلاة \(name) في \(placeName)"))
+                }
+                if let time = iqama.time(of: entry.prayer, adhan: entry.time), time > now {
+                    requests.append(PrayerAlertRequest(identifier: "\(id).iqama", prayer: entry.prayer, date: time,
+                                                       title: "إقامة صلاة \(name)",
+                                                       body: "حان وقت إقامة صلاة \(name) في \(placeName)"))
+                }
             }
         }
-        return requests
+        return Array(requests.sorted { $0.date < $1.date }.prefix(limit))
     }
 }
 

@@ -41,6 +41,19 @@ final class WidgetChoiceTests: XCTestCase {
         }
     }
 
+    func testCorrectionsSetInTheWidgetMoveItsTimes() throws {
+        let mosul = try city("الموصل")
+        let choice = NextPrayerWidgetChoice(place: mosul, adjustments: [.fajr: 0, .isha: 4])
+        XCTAssertEqual(choice.adjustments, [.isha: 4])
+        guard case let .moments(moments, _, _, _, _) =
+                NextPrayerWidgetState.resolve(store: nil, choice: choice, deviceTimeZone: .current, now: now) else {
+            return XCTFail("times expected")
+        }
+        XCTAssertEqual(moments, expected(mosul, PrayerParameters(adjustments: [.isha: 4])))
+        // All at zero: none set, so the app's corrections would apply.
+        XCTAssertNil(NextPrayerWidgetChoice(place: mosul, adjustments: [.fajr: 0]).adjustments)
+    }
+
     func testACityAndMethodChosenInTheWidgetWorkWithoutTheAppGroup() throws {
         let mosul = try city("الموصل")
         let choice = NextPrayerWidgetChoice(place: mosul, method: .egyptian, asr: .hanafi)

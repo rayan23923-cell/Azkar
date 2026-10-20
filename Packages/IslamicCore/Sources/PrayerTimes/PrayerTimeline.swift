@@ -71,11 +71,16 @@ public struct NextPrayerWidgetChoice: Equatable, Sendable {
     public var place: PrayerPlace?
     public var method: CalculationMethod?
     public var asr: AsrSchool?
+    /// Corrections set in the widget; nil (none set) means the app's when it can read them.
+    public var adjustments: [Prayer: Int]?
 
-    public init(place: PrayerPlace? = nil, method: CalculationMethod? = nil, asr: AsrSchool? = nil) {
+    public init(place: PrayerPlace? = nil, method: CalculationMethod? = nil, asr: AsrSchool? = nil,
+                adjustments: [Prayer: Int]? = nil) {
         self.place = place
         self.method = method
         self.asr = asr
+        let set = adjustments?.filter { $0.value != 0 }
+        self.adjustments = set?.isEmpty == false ? set : nil
     }
 }
 
@@ -106,7 +111,7 @@ public enum NextPrayerWidgetState: Equatable, Sendable {
             let defaults = PrayerParameters()
             let parameters = PrayerParameters(method: choice.method ?? app?.parameters.method ?? defaults.method,
                                               asr: choice.asr ?? app?.parameters.asr ?? defaults.asr,
-                                              adjustments: app?.parameters.adjustments ?? [:])
+                                              adjustments: choice.adjustments ?? app?.parameters.adjustments ?? [:])
             let schedule = PrayerSchedule(coordinates: place.coordinates, timeZone: place.timeZone, parameters: parameters)
             let moments = schedule.moments(from: now, limit: limit)
             guard !moments.isEmpty else { return .noTimes(place: place.name) }

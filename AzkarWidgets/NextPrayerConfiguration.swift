@@ -19,6 +19,23 @@ struct NextPrayerConfiguration: WidgetConfigurationIntent {
     @Parameter(title: "صلاة العصر", default: .app)
     var asr: WidgetAsrSchool?
 
+    // Corrections for this widget, for installations where it cannot read the app's («تصحيح
+    // المواقيت»). Left at zero, the app's corrections apply when the widget can read them.
+    @Parameter(title: "تصحيح الفجر (دقيقة)", default: 0, controlStyle: .stepper, inclusiveRange: (-30, 30))
+    var fajrMinutes: Int
+    @Parameter(title: "تصحيح الظهر (دقيقة)", default: 0, controlStyle: .stepper, inclusiveRange: (-30, 30))
+    var dhuhrMinutes: Int
+    @Parameter(title: "تصحيح العصر (دقيقة)", default: 0, controlStyle: .stepper, inclusiveRange: (-30, 30))
+    var asrMinutes: Int
+    @Parameter(title: "تصحيح المغرب (دقيقة)", default: 0, controlStyle: .stepper, inclusiveRange: (-30, 30))
+    var maghribMinutes: Int
+    @Parameter(title: "تصحيح العشاء (دقيقة)", default: 0, controlStyle: .stepper, inclusiveRange: (-30, 30))
+    var ishaMinutes: Int
+
+    var adjustments: [Prayer: Int] {
+        [.fajr: fajrMinutes, .dhuhr: dhuhrMinutes, .asr: asrMinutes, .maghrib: maghribMinutes, .isha: ishaMinutes]
+    }
+
     var usesCurrentLocation: Bool { city?.id == WidgetCity.currentLocationID }
     /// No city chosen here: the widget follows the app's place.
     var followsApp: Bool { city == nil || city?.id == WidgetCity.appID }
@@ -35,7 +52,7 @@ struct NextPrayerConfiguration: WidgetConfigurationIntent {
         } else {
             place = city?.place
         }
-        return NextPrayerWidgetChoice(place: place, method: method?.method, asr: asr?.school)
+        return NextPrayerWidgetChoice(place: place, method: method?.method, asr: asr?.school, adjustments: adjustments)
     }
 }
 

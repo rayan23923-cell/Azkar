@@ -37,6 +37,7 @@ struct PrayerTimesView: View {
                     Text("النافذة العائمة تعرض الصلاة القادمة والوقت المتبقي بخط كبير، وتحتها مواقيت اليوم. التقديم والرجوع ينتقلان بين الأيام، حتى ستة أيام قادمة.")
                 }
                 PrayerAlertsSection(model: model, alerts: model.alerts)
+                IqamaSection(model: model)
                 settings(place: place)
             } else {
                 PrayerPlaceSetup(model: model)
@@ -78,7 +79,23 @@ struct PrayerTimesView: View {
             let current = schedule.current(at: now)
             Section {
                 // The adhan is due: said plainly for a while, before the screen counts to the next.
-                if let entered = schedule.justEntered(at: now) {
+                if let pending = schedule.pendingIqama(at: now, settings: model.iqama) {
+                    // Between the adhan and the iqama: the time left to the iqama, as a timer.
+                    VStack(alignment: .leading, spacing: 4) {
+                        Label("حان وقت صلاة \(pending.prayer.arabicName)", systemImage: "bell.and.waves.left.and.right")
+                            .font(.title3.bold())
+                        HStack(alignment: .firstTextBaseline) {
+                            Text("الإقامة \(clock(pending.iqama, zone))")
+                            Spacer()
+                            Text(PrayerFormat.countdown(from: now, to: pending.iqama))
+                                .font(.title2.monospacedDigit().bold())
+                                .environment(\.layoutDirection, .leftToRight)
+                        }
+                    }
+                    .foregroundStyle(.tint)
+                    .padding(.vertical, 4)
+                    .accessibilityElement(children: .combine)
+                } else if let entered = schedule.justEntered(at: now) {
                     Label("حان الآن وقت صلاة \(entered.prayer.arabicName)", systemImage: "bell.and.waves.left.and.right")
                         .font(.title3.bold())
                         .foregroundStyle(.tint)
@@ -135,9 +152,16 @@ struct PrayerTimesView: View {
                                 .padding(.vertical, 2)
                                 .background(.tint.opacity(0.15), in: Capsule())
                         }
-                        Text(clock(entry.time, zone))
-                            .monospacedDigit()
-                            .fontWeight(isCurrent ? .bold : .regular)
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text(clock(entry.time, zone))
+                                .monospacedDigit()
+                                .fontWeight(isCurrent ? .bold : .regular)
+                            if let iqama = model.iqama.time(of: prayer, adhan: entry.time) {
+                                Text("الإقامة \(clock(iqama, zone))")
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
                     .accessibilityElement(children: .combine)
                 }
@@ -254,7 +278,7 @@ struct PrayerAdjustmentsView: View {
                     .accessibilityValue(label(minutes))
                 }
             } footer: {
-                Text("أضف دقائق أو أنقصها من كل وقت ليطابق تقويم مسجدك، حتى 30 دقيقة. يُطبَّق التصحيح على الشاشة والنافذة العائمة.")
+                Text("أضف دقائق أو أنقصها من كل وقت ليطابق تقويم مسجدك، حتى 30 دقيقة. يُطبَّق التصحيح على الشاشة والنافذة العائمة والتنبيهات، وعلى الودجة حين تصل إلى إعدادات التطبيق؛ وإلا فاضبطه للودجة من «تعديل الودجة».")
             }
             if !model.parameters.adjustments.isEmpty {
                 Section {
@@ -375,5 +399,35 @@ private struct PrayerAlertsSection: View {
             Text("إشعار بصوت عند دخول وقت كل صلاة تختارها، ولو كان التطبيق مغلقاً. يُجدول على جهازك لأيام قادمة ويتجدّد كلما فتحت التطبيق، فافتحه مرة كل بضعة أيام.")
         }
         .task { await alerts.refreshAuthorization() }
+    }
+}
+
+/// The wait between each adhan and its iqama, turned on or off as a whole.
+private struct IqamaSection: View {
+    @ObservedObject var model: PrayerModel
+
+    var body: some View {
+        Section {
+            Toggle("وقت الإقامة", isOn: $model.iqama.isEnabled)
+            if model.iqama.isEnabled {
+                ForEach(Prayer.allCases.filter(\.isPrayer), id: \.self) { prayer in
+                    let minutes = model.iqama.minutes(for: prayer)
+                    Stepper(value: Binding(get: { model.iqama.minutes(for: prayer) },
+                                           set: { model.iqama.setMinutes($0, for: prayer) }),
+                            in: IqamaSettings.minutesRange) {
+                        HStack {
+                            Text(prayer.arabicName)
+                            Spacer()
+                            Text("\(minutes) د").monospacedDigit().foregroundStyle(.secondary)
+                        }
+                    }
+                    .accessibilityValue("\(minutes) دقيقة بعد الأذان")
+                }
+            }
+        } header: {
+            Text("الإقامة")
+        } footer: {
+            Text("الدقائق بين الأذان والإقامة كما في مسجدك. تظهر الإقامة تحت كل وقت، ويعدّ التطبيق إليها بعد الأذان، ويصلك تنبيه عندها للصلوات التي فعّلت تنبيه أذانها.")
+        }
     }
 }

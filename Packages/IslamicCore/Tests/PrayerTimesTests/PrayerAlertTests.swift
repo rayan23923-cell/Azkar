@@ -92,3 +92,59 @@ final class PrayerCountdownTests: XCTestCase {
         XCTAssertEqual(PrayerFormat.countdown(from: now, to: now.addingTimeInterval(-5)), "0:00")
     }
 }
+
+final class IqamaTests: XCTestCase {
+    private let baghdad = Coordinates(latitude: 33.3152, longitude: 44.3661)
+    /// 2026-10-09 12:20 in Baghdad, after Dhuhr.
+    private let morning = Date(timeIntervalSince1970: 1_791_537_600)
+
+    private var schedule: PrayerSchedule {
+        PrayerSchedule(coordinates: baghdad, timeZone: TimeZone(identifier: "Asia/Baghdad")!, parameters: PrayerParameters())
+    }
+
+    func testWaitsDefaultAndStayInRange() {
+        var settings = IqamaSettings(isEnabled: true)
+        XCTAssertEqual(settings.minutes(for: .fajr), 25)
+        XCTAssertEqual(settings.minutes(for: .maghrib), 10)
+        settings.setMinutes(500, for: .asr)
+        XCTAssertEqual(settings.minutes(for: .asr), 60)
+        settings.setMinutes(15, for: .sunrise)
+        XCTAssertEqual(settings.minutes(for: .sunrise), 0)
+        XCTAssertNil(settings.time(of: .sunrise, adhan: morning))
+        XCTAssertNil(IqamaSettings(isEnabled: false).time(of: .asr, adhan: morning), "off: no iqama")
+    }
+
+    func testStoreKeepsTheSettings() {
+        let defaults = UserDefaults(suiteName: "IqamaTests")!
+        defaults.removePersistentDomain(forName: "IqamaTests")
+        let store = IqamaStore(defaults: defaults)
+        XCTAssertEqual(store.settings, IqamaSettings())
+        var settings = IqamaSettings(isEnabled: true)
+        settings.setMinutes(12, for: .isha)
+        store.settings = settings
+        XCTAssertEqual(store.settings, settings)
+        XCTAssertEqual(store.settings.minutes(for: .isha), 12)
+    }
+
+    func testPendingIqamaRunsFromTheAdhanToTheIqama() throws {
+        let today = try XCTUnwrap(schedule.day(containing: morning))
+        let settings = IqamaSettings(isEnabled: true, minutes: [.asr: 20])
+        let pending = try XCTUnwrap(schedule.pendingIqama(at: today.asr.addingTimeInterval(60), settings: settings))
+        XCTAssertEqual(pending.prayer, .asr)
+        XCTAssertEqual(pending.iqama, today.asr.addingTimeInterval(1200))
+        XCTAssertNil(schedule.pendingIqama(at: today.asr.addingTimeInterval(1201), settings: settings))
+        XCTAssertNil(schedule.pendingIqama(at: today.asr.addingTimeInterval(60), settings: IqamaSettings()))
+    }
+
+    func testIqamaAlertsFollowTheirAdhan() throws {
+        let iqama = IqamaSettings(isEnabled: true, minutes: [.asr: 20])
+        let requests = PrayerAlertPlanner.requests(schedule: schedule, settings: PrayerAlertSettings(prayers: [.asr]),
+                                                   placeName: "بغداد", iqama: iqama, from: morning, limit: 4)
+        let today = try XCTUnwrap(schedule.day(containing: morning))
+        XCTAssertEqual(requests.map(\.date), [today.asr, today.asr.addingTimeInterval(1200),
+                                              requests[2].date, requests[2].date.addingTimeInterval(1200)])
+        XCTAssertEqual(requests[1].identifier, "azkar.adhan.20261009.asr.iqama")
+        XCTAssertEqual(requests[1].body, "حان وقت إقامة صلاة العصر في بغداد")
+        XCTAssertEqual(Set(requests.map(\.identifier)).count, 4)
+    }
+}

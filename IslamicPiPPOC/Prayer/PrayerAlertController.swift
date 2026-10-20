@@ -30,7 +30,8 @@ final class PrayerAlertController: ObservableObject {
         authorization = await Self.authorization(center)
     }
 
-    func setEnabled(_ enabled: Bool, for prayer: Prayer, schedule: PrayerSchedule?, placeName: String?) async {
+    func setEnabled(_ enabled: Bool, for prayer: Prayer, schedule: PrayerSchedule?, placeName: String?,
+                    iqama: IqamaSettings) async {
         settings.set(prayer, enabled: enabled)
         store.settings = settings
         authorization = await Self.authorization(center)
@@ -38,11 +39,12 @@ final class PrayerAlertController: ObservableObject {
             let granted = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
             authorization = granted ? .allowed : .denied
         }
-        apply(schedule: schedule, placeName: placeName)
+        apply(schedule: schedule, placeName: placeName, iqama: iqama)
     }
 
-    /// Replaces the pending alerts with the ones for `schedule` from now on.
-    func apply(schedule: PrayerSchedule?, placeName: String?) {
+    /// Replaces the pending alerts with the ones for `schedule` from now on, with an alert at
+    /// each iqama too when `iqama` is on.
+    func apply(schedule: PrayerSchedule?, placeName: String?, iqama: IqamaSettings) {
         let settings = settings
         applying?.cancel()
         let previous = applying
@@ -59,7 +61,7 @@ final class PrayerAlertController: ObservableObject {
                 return
             }
             let requests = PrayerAlertPlanner.requests(schedule: schedule, settings: settings,
-                                                       placeName: placeName, from: Date())
+                                                       placeName: placeName, iqama: iqama, from: Date())
             do {
                 for request in requests {
                     guard !Task.isCancelled else { return }
