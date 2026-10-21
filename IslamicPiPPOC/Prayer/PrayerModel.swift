@@ -24,12 +24,19 @@ final class PrayerModel: NSObject, ObservableObject {
 
     @Published private(set) var place: PrayerPlace?
     @Published var parameters: PrayerParameters {
-        didSet { store.parameters = parameters; refreshPiP(); publishToWidgets() }
+        didSet { store.parameters = parameters; refreshPiP(); publishToWidgets(); rescheduleAlerts() }
     }
     @Published var twentyFourHour: Bool {
         didSet { store.twentyFourHour = twentyFourHour; refreshPiP(); publishToWidgets() }
     }
     @Published private(set) var locationState: LocationState = .idle
+    /// The notifications at each chosen prayer's time.
+    let alerts = PrayerAlertController()
+    /// The wait between each adhan and its iqama, shown with the times and alerted with the adhan.
+    @Published var iqama: IqamaSettings {
+        didSet { iqamaStore.settings = iqama; rescheduleAlerts() }
+    }
+    private let iqamaStore: IqamaStore
 
     private let store: PrayerSettingsStore
     /// The copy the next-prayer widget reads (App Group); nil when the build has none.
@@ -40,8 +47,11 @@ final class PrayerModel: NSObject, ObservableObject {
     private var provider: PrayerPiPProvider?
 
     init(store: PrayerSettingsStore = PrayerSettingsStore(),
-         widgetStore: PrayerSettingsStore? = SharedContainer.prayerStore()) {
+         widgetStore: PrayerSettingsStore? = SharedContainer.prayerStore(),
+         iqamaStore: IqamaStore = IqamaStore()) {
         self.store = store
+        self.iqamaStore = iqamaStore
+        iqama = iqamaStore.settings
         self.widgetStore = widgetStore
         place = store.place
         parameters = store.parameters
@@ -94,6 +104,19 @@ final class PrayerModel: NSObject, ObservableObject {
         store.place = newPlace
         refreshPiP()
         publishToWidgets()
+        rescheduleAlerts()
+    }
+
+    /// Turns the alert for one prayer on or off (asking for notification permission the first
+    /// time one is turned on) and schedules again.
+    func setAlert(_ enabled: Bool, for prayer: Prayer) async {
+        await alerts.setEnabled(enabled, for: prayer, schedule: schedule, placeName: place?.name, iqama: iqama)
+    }
+
+    /// Schedules the adhan alerts again from now (at launch, on returning to the app, and when
+    /// the place or the times change), so they keep running days ahead.
+    func rescheduleAlerts() {
+        alerts.apply(schedule: schedule, placeName: place?.name, iqama: iqama)
     }
 
     /// Copies the place and settings for the widgets and reloads them when anything changed.

@@ -31,6 +31,11 @@ struct IslamicPiPPOCApp: App {
                 // Keep the scheduled reminders equal to the saved settings (permission may
                 // have changed in system Settings). Never asks for permission here.
                 .task { await AppServices.shared.reminders.apply() }
+                // The adhan alerts are one-off notifications a few days ahead: scheduled again
+                // whenever the app opens so they never run out.
+                .onChange(of: scenePhase, initial: true) { _, phase in
+                    if phase == .active { PrayerModel.shared.rescheduleAlerts() }
+                }
                 // azkarapp:// links from the widgets, shortcuts or another app. Unknown or
                 // malformed links are ignored.
                 .onOpenURL { url in
