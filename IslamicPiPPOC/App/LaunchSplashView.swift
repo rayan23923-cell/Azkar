@@ -10,7 +10,6 @@ struct LaunchSplashView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var shown = false
-    @State private var turned = false
     @State private var leaving = false
 
     var body: some View {
@@ -25,14 +24,6 @@ struct LaunchSplashView: View {
                                center: .center, startRadius: 0, endRadius: side * 0.95)
                     .frame(width: side * 2, height: side * 2)
                     .scaleEffect(shown ? 1 : 0.6)
-                    .opacity(shown ? 1 : 0)
-
-                Image("SplashRing")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: side * 1.42, height: side * 1.42)
-                    .rotationEffect(.degrees(turned ? 0 : -50))
-                    .scaleEffect(shown ? 1 : 1.15)
                     .opacity(shown ? 1 : 0)
 
                 Image("SplashMedallion")
@@ -75,12 +66,10 @@ struct LaunchSplashView: View {
 
     private func run() async {
         if reduceMotion {
-            turned = true
             withAnimation(.easeOut(duration: 0.35)) { shown = true }
             try? await Task.sleep(nanoseconds: 900_000_000)
         } else {
             withAnimation(.spring(response: 0.9, dampingFraction: 0.8)) { shown = true }
-            withAnimation(.easeOut(duration: 1.6)) { turned = true }
             try? await Task.sleep(nanoseconds: 1_900_000_000)
         }
         withAnimation(.easeIn(duration: 0.35)) { leaving = true }
